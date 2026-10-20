@@ -33,23 +33,25 @@ impl Snapshots {
         {
             return Err(invalid(span));
         }
-        let Some(version) = scalar.version else {
+        let Some(local) = scalar.local else {
             return Ok(before);
         };
         if !flow.spend(state.cells.depth() + 4) {
             return Err(budget(span));
         }
-        let cell = state.get(version.local).ok_or_else(|| invalid(span))?;
+        let cell = state.get(local).ok_or_else(|| invalid(span))?;
         let Data::Initialized {
-            version: Some(current),
+            version: current,
             domain: Some(domain),
             origin,
         } = &cell.data
         else {
             return Err(invalid(span));
         };
-        if version.owner != state.owner()
-            || version != *current
+        if scalar
+            .version
+            .is_some_and(|version| version.owner != state.owner() || version.local != local)
+            || scalar.version != *current
             || *domain != full
             || *origin != scalar.origin
             || cell.control
@@ -58,17 +60,20 @@ impl Snapshots {
         }
         let cell = Cell {
             data: Data::Initialized {
-                version: Some(version),
+                version: *current,
                 domain: Some(Domain::boolean(value)),
                 origin: *origin,
             },
             control: false,
         };
         let mut after = state.snapshot(flow, span, self.room())?;
-        after.put(version.local, &cell, flow, span, self.room())?;
+        after.put(local, &cell, flow, span, self.room())?;
         self.keep(after, span)
     }
 }
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod places;

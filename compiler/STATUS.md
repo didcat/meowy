@@ -5565,6 +5565,17 @@ formatting pass (`/tmp/meowy-scalar-places-capture.log`, `/tmp/meowy-scalar-plac
 Next: consume the retained local for merged-version boolean cells. User-owned
 `docs/programs/hey/` stays excluded.
 
+Read-identity prerequisite: `b9e75663`. Four new regression cases reproduce missing
+merged-cell refinement; the stale-history case already rejects correctly
+(`/tmp/meowy-scalar-places-before.log`). The consumer now selects the retained local,
+checks optional version equality and preserves absent versions/origins. Both boolean
+edges, wrappers, separate equal cells, old copies and exact budgets pass. All five new
+consumer tests, 194 scalar-fact tests, the original 1000-matcher case, formatting and
+all-target Clippy pass (`/tmp/meowy-scalar-places-merged.log`,
+`/tmp/meowy-scalar-places-facts.log`, `/tmp/meowy-scalar-places-matchers.log`,
+`/tmp/meowy-scalar-places-clippy.log`). Missing local evidence stays conservative;
+no version or origin is manufactured. Next: evidence links and the full repository gate.
+
 1. Qualify stable boolean places after version merges in `facts/observations/reads.rs`
    and `state/snapshots/branches/booleans.rs`. Retain exact current-read storage through
    transparent wrappers without inventing a version or inferring identity from equal

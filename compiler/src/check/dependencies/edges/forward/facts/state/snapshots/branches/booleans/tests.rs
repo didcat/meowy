@@ -90,7 +90,7 @@ pub(crate) fn scalar_boolean_edges_do_not_reapply_old_versions_after_writes() {
 }
 
 #[test]
-pub(crate) fn scalar_boolean_edges_keep_merged_versions_conservative() {
+pub(crate) fn scalar_boolean_edges_refine_merged_versions_without_inventing_identity() {
     let (checker, _, _, snapshots) = capture("f:(b<boolean>,c<boolean>){x:=b;|c|x=true;|x|x}");
     let x = checker
         .operations
@@ -111,14 +111,25 @@ pub(crate) fn scalar_boolean_edges_keep_merged_versions_conservative() {
             .version,
         None
     );
-    for arm in fact.input.arms {
+    for (arm, value) in fact.input.arms.into_iter().zip([true, false]) {
         let Some(View::Known(state)) = snapshots.before(Port::Entry(arm)) else {
             panic!()
         };
-        assert!(
-            matches!(&state.get(x).unwrap().data, Data::Initialized { version: None, domain: Some(domain), .. } if domain.values == Some(Values::Bool(3)))
+        assert_eq!(
+            state.get(x).unwrap().data,
+            Data::Initialized {
+                version: None,
+                domain: Some(Domain::boolean(value)),
+                origin: None,
+            }
         );
     }
+    let Some(View::Known(after)) = snapshots.after(Port::Normal(fact.input.point)) else {
+        panic!()
+    };
+    assert!(
+        matches!(&after.get(x).unwrap().data, Data::Initialized { version: None, domain: Some(domain), origin: None } if domain.values == Some(Values::Bool(3)))
+    );
 }
 
 #[test]
