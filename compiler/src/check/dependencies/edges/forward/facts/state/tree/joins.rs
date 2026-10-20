@@ -55,18 +55,18 @@ impl Node {
             match (&left.kind, &right.kind) {
                 (Kind::Leaf(a, x), Kind::Leaf(b, y)) if a == b => {
                     let cell = Cell::join(Some(x), Some(y), flow, span)?;
-                    if !flow.spend(x.weight() + y.weight() + cell.weight()) {
-                        return Err(budget(span));
-                    }
-                    if cell == *x {
+                    if cell.same(x, flow, span)? {
                         return Ok(Some(left.clone()));
                     }
-                    if cell == *y {
+                    if cell.same(y, flow, span)? {
                         return Ok(Some(right.clone()));
                     }
                     *room = room
                         .checked_sub(1 + cell.weight())
                         .ok_or_else(|| budget(span))?;
+                    if !flow.spend(1) {
+                        return Err(budget(span));
+                    }
                     return Ok(Some(Arc::new(Self::leaf(*a, cell))));
                 }
                 (Kind::Branch(a, b), Kind::Branch(x, y)) if b.low == y.low => {

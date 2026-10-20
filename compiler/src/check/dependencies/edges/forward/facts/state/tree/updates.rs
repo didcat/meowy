@@ -58,10 +58,7 @@ impl Node {
                 if *id != local {
                     return Ok(None);
                 }
-                if !flow.spend(old.weight() + cell.weight() + 1) {
-                    return Err(budget(span));
-                }
-                if old == cell {
+                if old.same(cell, flow, span)? {
                     return Ok(Some(node.clone()));
                 }
                 *room = room

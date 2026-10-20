@@ -78,11 +78,7 @@ impl Cell {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Self> {
-        if !flow.spend(
-            left.map_or(0, Self::weight)
-                .saturating_add(right.map_or(0, Self::weight))
-                .saturating_add(4),
-        ) {
+        if !flow.spend(4) {
             return Err(budget(span));
         }
         let control =
@@ -104,6 +100,9 @@ impl Cell {
                     origin: q,
                 }),
             ) => {
+                if !flow.spend(left.unwrap().weight() + right.unwrap().weight()) {
+                    return Err(budget(span));
+                }
                 let domain = match (x, y) {
                     (Some(x), Some(y)) => Some(x.join(y, flow, span)?),
                     _ => None,

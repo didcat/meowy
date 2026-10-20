@@ -12,6 +12,9 @@ pub(in super::super) enum Data {
     },
 }
 
+#[cfg(test)]
+mod tests;
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(in super::super) struct Cell {
     pub(in super::super) data: Data,
@@ -19,6 +22,23 @@ pub(in super::super) struct Cell {
 }
 
 impl Cell {
+    pub(super) fn same(&self, other: &Self, flow: &mut Flow, span: Span) -> Result<bool> {
+        if !flow.spend(2) {
+            return Err(budget(span));
+        }
+        if self.control != other.control
+            || std::mem::discriminant(&self.data) != std::mem::discriminant(&other.data)
+        {
+            return Ok(false);
+        }
+        if matches!(self.data, Data::Initialized { .. })
+            && !flow.spend(self.weight() + other.weight())
+        {
+            return Err(budget(span));
+        }
+        Ok(self == other)
+    }
+
     pub(super) fn weight(&self) -> usize {
         1 + match &self.data {
             Data::Initialized {

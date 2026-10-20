@@ -5504,8 +5504,12 @@ expectations are unchanged. Definition lookup tables now use bounded hashes; ord
 source construction and the independent execution schedule still choose processing
 order. All 267 focused scalar tests, formatting and Clippy pass, including duplicate,
 stale-identity and exact-resource cases (`/tmp/meowy-scalar-storage-definition-lookups.log`).
-The stress case still exhausts work; shape-aware cell comparisons are next before the
-Bind capture commit.
+Definition lookups are committed as `87690865`. Cell equality now stops at differing
+initialization/control tags, and joins traverse domains only when both cells are
+initialized. All 268 focused scalar tests, the original 1000-matcher case, formatting
+and Clippy pass with Bind capture enabled (`/tmp/meowy-scalar-storage-cell-work.log`,
+`/tmp/meowy-scalar-storage-bind-matchers.log`). Commit the cell-work optimization and
+Bind activation separately, then enable Write replacement.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.
