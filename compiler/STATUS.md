@@ -5528,6 +5528,16 @@ guard tests (five new dependency cases), formatting and the original 1000-matche
 pass (`/tmp/meowy-scalar-guards-controls.log`, `/tmp/meowy-scalar-guards-matchers.log`).
 Next: record authority from the qualified original condition snapshots.
 
+Dependency commit: `92499645`. Snapshot guard records now distinguish ordinary boolean
+subsets, proof dependency, unavailable evidence and bottom using the original Normal
+input and unchanged storage history. Fourteen focused guard tests and the stress case
+pass. The existing complete-capture budget fixture now retains and compares the new
+guard map. All 174 scalar fact tests, all-target Clippy and formatting pass
+(`/tmp/meowy-scalar-guards-facts.log`, `/tmp/meowy-scalar-guards-clippy.log`).
+The preliminary preservation audit passes all 599 protected files and 37 reference
+hashes/gaps/prior evidence. No state restriction is enabled. Next: link evidence,
+document the qualification boundary and run the complete repository gate.
+
 1. Qualify guard authority and E225 dependencies before restricting states in
    `facts/state/joins.rs`. Integrate guarded Call inputs from
    `arguments/mutations/transfers.rs` into `facts/state/snapshots/capture.rs` only after

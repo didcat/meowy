@@ -264,6 +264,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let sources = observations.sources;
     let forwarded = observations.forwarded;
     let declared = observations.declared;
+    let guards = observations.guards;
     for fault in 0..3 {
         let mut order = orders.clone();
         match fault {
@@ -289,6 +290,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             sources: sources.clone(),
             forwarded: forwarded.clone(),
             declared: declared.clone(),
+            guards: guards.clone(),
             ..observations::Observations::new(&definitions)
         };
         assert!(
@@ -317,6 +319,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
         sources,
         forwarded,
         declared,
+        guards,
         ..observations::Observations::new(&definitions)
     };
     let before = format!("{reports:?}{entries:?}{definitions:?}");
@@ -337,6 +340,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             assert_eq!(snapshots.rows, expected.rows);
             assert_eq!(snapshots.states, expected.states);
             assert_eq!(snapshots.expressions, expected.expressions);
+            assert_eq!(snapshots.guards, expected.guards);
         }
         assert_eq!(format!("{reports:?}{entries:?}{definitions:?}"), before);
     }

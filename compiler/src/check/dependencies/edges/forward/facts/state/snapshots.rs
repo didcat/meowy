@@ -2,6 +2,7 @@ use super::*;
 
 mod capture;
 mod expressions;
+mod guards;
 mod inputs;
 mod storage;
 
@@ -31,6 +32,7 @@ pub(in super::super) struct Snapshots {
     pub(self) seeds: HashMap<Port, usize>,
     pub(self) rows: HashMap<Port, Row>,
     pub(self) expressions: HashMap<PointId, expressions::Fact>,
+    pub(self) guards: HashMap<PointId, guards::Fact>,
     pub(self) parts: usize,
 }
 
@@ -52,6 +54,7 @@ impl Checker {
             seeds: HashMap::new(),
             rows: HashMap::new(),
             expressions: HashMap::new(),
+            guards: HashMap::new(),
             parts: parts.min(MAX_EDGES),
         };
         for (&owner, (port, state)) in entries {

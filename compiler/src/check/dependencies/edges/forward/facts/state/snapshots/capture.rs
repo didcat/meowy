@@ -97,6 +97,12 @@ impl Checker {
             return Err(invalid(span));
         }
         snapshots.definition_rows(observations.definitions, &mut self.flow, span)?;
+        if !self.flow.spend(observations.guards.len() + 1) {
+            return Err(budget(span));
+        }
+        for (&port, input) in &observations.guards {
+            snapshots.guard(port, input, &mut self.flow, span)?;
+        }
         Ok(snapshots)
     }
 }
