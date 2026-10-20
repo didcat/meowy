@@ -5452,8 +5452,11 @@ equal domains. All four tree construction/update tests pass
 (`/tmp/meowy-scalar-storage-tree-updates.log`), formatting and Clippy; updates are
 committed as `33a8cc07`. Shared-subtree joins now reuse the existing Cell join rules,
 including conservative missing-key fallback. All seven construction/update/join tests
-pass (`/tmp/meowy-scalar-storage-tree-joins.log`); Clippy is running before the join
-commit. Production State and arena integration are next.
+pass (`/tmp/meowy-scalar-storage-tree-joins.log`), formatting and Clippy; joins are
+committed as `b15951f8`. Closed tree validation and isolated mutable test fixtures now
+support existing corruption regressions without exposing mutable production cells.
+All eight tree tests, formatting and Clippy pass
+(`/tmp/meowy-scalar-storage-tree-validation.log`). State and arena integration are next.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.

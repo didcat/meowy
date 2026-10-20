@@ -14,6 +14,8 @@ impl Tree {
         if self.owner != other.owner {
             return Err(invalid(span));
         }
+        self.validate(flow, span)?;
+        other.validate(flow, span)?;
         let limit = limit.min(MAX_EDGES);
         let mut room = limit;
         let root = Node::joined(
@@ -30,13 +32,7 @@ impl Tree {
         {
             return Err(budget(span));
         }
-        Ok((
-            Self {
-                owner: self.owner,
-                root,
-            },
-            limit - room,
-        ))
+        Ok((Self::from_root(self.owner, root), limit - room))
     }
 }
 
@@ -101,14 +97,8 @@ impl Node {
         span: Span,
         room: &mut usize,
     ) -> Result<Option<Arc<Self>>> {
-        let left = Tree {
-            owner,
-            root: left.cloned(),
-        };
-        let right = Tree {
-            owner,
-            root: right.cloned(),
-        };
+        let left = Tree::from_root(owner, left.cloned());
+        let right = Tree::from_root(owner, right.cloned());
         if !flow.spend((left.len() + right.len()) * 2 + 1) {
             return Err(budget(span));
         }

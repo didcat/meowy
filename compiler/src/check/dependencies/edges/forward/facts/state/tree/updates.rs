@@ -9,6 +9,7 @@ impl Tree {
         span: Span,
         limit: usize,
     ) -> Result<(Self, usize)> {
+        self.validate(flow, span)?;
         cell.validate(self.owner, local, flow, span)?;
         let limit = limit.min(MAX_EDGES);
         let mut room = limit;
@@ -18,13 +19,7 @@ impl Tree {
             if root.weight >= MAX_EDGES {
                 return Err(budget(span));
             }
-            return Ok((
-                Self {
-                    owner: self.owner,
-                    root: Some(root),
-                },
-                limit - room,
-            ));
+            return Ok((Self::from_root(self.owner, Some(root)), limit - room));
         }
         let weight = self
             .weight()

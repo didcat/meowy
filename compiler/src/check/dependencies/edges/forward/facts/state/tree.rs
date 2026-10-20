@@ -1,18 +1,23 @@
 use super::*;
 use std::sync::Arc;
 
+#[cfg(test)]
+mod fixtures;
 mod joins;
 mod updates;
+mod validation;
 
 #[derive(Clone, Debug)]
 pub(super) struct Tree {
     pub(self) owner: usize,
     pub(self) root: Option<Arc<Node>>,
+    pub(self) checked: bool,
 }
 
 #[derive(Clone, Debug)]
 pub(super) struct Node {
     pub(self) low: hir::LocalId,
+    pub(self) high: hir::LocalId,
     pub(self) len: usize,
     pub(self) weight: usize,
     pub(self) depth: usize,
@@ -36,7 +41,19 @@ impl Tree {
     }
 
     pub(super) fn new(owner: usize) -> Self {
-        Self { owner, root: None }
+        Self::from_root(owner, None)
+    }
+
+    pub(self) fn from_root(owner: usize, root: Option<Arc<Node>>) -> Self {
+        Self {
+            owner,
+            root,
+            checked: true,
+        }
+    }
+
+    pub(super) fn is_empty(&self) -> bool {
+        self.root.is_none()
     }
 
     pub(super) fn len(&self) -> usize {
@@ -94,7 +111,7 @@ impl Tree {
         }
         let len = cells.len();
         let root = Node::build(&mut cells.into_iter(), len);
-        Ok((Self { owner, root }, weight))
+        Ok((Self::from_root(owner, root), weight))
     }
 }
 
@@ -118,6 +135,7 @@ impl Node {
     pub(self) fn leaf(local: hir::LocalId, cell: Cell) -> Self {
         Self {
             low: local,
+            high: local,
             len: 1,
             weight: 1 + cell.weight(),
             depth: 1,
@@ -129,6 +147,7 @@ impl Node {
     pub(self) fn branch(left: Arc<Self>, right: Arc<Self>) -> Self {
         Self {
             low: left.low,
+            high: right.high,
             len: left.len + right.len,
             weight: left.weight + right.weight,
             depth: 1 + left.depth.max(right.depth),
