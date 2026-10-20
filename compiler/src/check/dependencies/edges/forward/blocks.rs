@@ -1,6 +1,6 @@
 use super::{entries::Reports, *};
 use crate::check::dependencies::{SequenceSource, sequences::MAX_ITEMS};
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 mod report;
 pub(crate) use report::Blocks;
@@ -81,15 +81,13 @@ impl Checker {
         if sequence.items.len() > MAX_ITEMS
             || !self.flow.spend(
                 sequence.items.len()
-                    * (self.sites.len().checked_ilog2().unwrap_or(0) as usize
-                        + sequence.items.len().checked_ilog2().unwrap_or(0) as usize
-                        + 10)
+                    * (self.sites.len().checked_ilog2().unwrap_or(0) as usize + 10)
                     + 8,
             )
         {
             return Err(budget());
         }
-        let mut seen = BTreeSet::new();
+        let mut seen = HashSet::new();
         for &item in sequence.items.iter().flatten() {
             let point = self.points.get(item).ok_or_else(invalid)?;
             let site = point.site.ok_or_else(invalid)?;

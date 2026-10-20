@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Scalar Bind/Write transfers pass all 14 verification groups.
+Updated: 2026-10-20. Scalar guard qualification is in progress after validated Bind/Write transfers.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5471,6 +5471,40 @@ expectation or capability pin changed.
 Baseline `d28285c5` and all 589 protected-file hashes
 are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/` is
 untouched and excluded. Nothing was pushed.
+
+### Scalar guard qualification
+
+Current investigation: scalar snapshots join structural branch inputs without applying
+guards. The frontend's span-keyed guards and final dependency maps cannot establish
+historical scalar authority. Capture condition input identities and data/control marks
+before checking branch bodies, then use independently observed current scalar facts.
+Proof-derived or unavailable conditions must retain both successors.
+
+Dependency-ordered commit plan:
+
+0. Use bounded hash membership for duplicate block statements. Profiling identified
+   repeated ordered membership work in block qualification; statement/edge order remains
+   the original sequence order. Validate block corruption/budget tests and the stress case.
+1. Retain bounded condition-input identities and dependency marks for matcher and
+   short-circuit branches, with capture-time, stopped-input and identity/budget tests.
+2. Qualify those inputs against completed source points and exact graph edges; missing
+   observations stay conservative and malformed/cyclic associations reject.
+3. Record per-condition scalar authority from current snapshots, retaining proof/control
+   dependency, unknown and bottom as distinct cases. Test historical reads, both boolean
+   outcomes, stopped paths and exact publication/work limits.
+4. Link structural evidence, update the foundation/handoff, and run the full compiler
+   gate, the original 1000-matcher case, strict conformance and preservation checks.
+
+This series establishes authority metadata only. State restriction, guarded call
+invalidation, transitive query/E225 completion and proof outcomes remain separate.
+No new language capability or reference expectation is planned. User-owned
+`docs/programs/hey/` remains untracked and excluded. All six capture tests, 16 block
+qualification/corruption tests and the original 1000-matcher test pass. Logs:
+`/tmp/meowy-scalar-guards-capture.log`, `/tmp/meowy-scalar-guards-blocks.log`,
+`/tmp/meowy-scalar-guards-matchers.log`. The stress case exposed insufficient headroom;
+hash membership removes 72,072 ordered-lookup work units from its repeated block checks
+without changing traversal or existing limits. Profiling is removed; measurement:
+`/tmp/meowy-scalar-guards-profile.log`. Formatting passes. Next: qualify graph inputs.
 
 1. Qualify guard authority and E225 dependencies before restricting states in
    `facts/state/joins.rs`. Integrate guarded Call inputs from
