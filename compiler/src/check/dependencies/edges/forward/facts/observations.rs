@@ -11,6 +11,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) sources: HashMap<Port, &'a (usize, Effect)>,
     pub(super) declared: HashMap<hir::LocalId, domain::Domain>,
     pub(super) forwarded: HashMap<Port, Forward>,
+    pub(super) guards: guards::Inputs,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -20,6 +21,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             sources: HashMap::new(),
             declared: HashMap::new(),
             forwarded: HashMap::new(),
+            guards: guards::Inputs::new(),
         }
     }
 }
@@ -63,7 +65,11 @@ impl Checker {
                 }
             }
         }
-        self.scalar_wrapper_observations(reports, graph, observations, span, parts)
+        let (mut observations, parts) =
+            self.scalar_wrapper_observations(reports, graph, observations, span, parts)?;
+        let (guards, parts) = self.scalar_guard_inputs(graph, span, parts)?;
+        observations.guards = guards;
+        Ok((observations, parts))
     }
 }
 

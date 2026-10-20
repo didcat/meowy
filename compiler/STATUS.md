@@ -5512,6 +5512,15 @@ the dependency mark computed before the body. A bounded hash map stores identiti
 later qualification follows ordered branch edges. Required evaluation adds no rows.
 Source errors, cycles, stale identities and exact work/map limits reject atomically.
 
+Capture commit: `2b11c76b`. Guard-input qualification now validates completed
+condition/arm/source identities, exact branch and region edges, independent owners
+and observed predecessor/successor links. Missing observations produce no authority;
+stopped conditions retain no normal input. All four qualifier tests and the original
+1000-matcher test pass (`/tmp/meowy-scalar-guards-inputs.log`,
+`/tmp/meowy-scalar-guards-matchers.log`). Before snapshot authority, qualify enclosing
+branch dependencies too: frontend short-circuit RHS checking does not propagate
+`Checker.control`, so a nested ordinary condition must inspect retained parent branches.
+
 1. Qualify guard authority and E225 dependencies before restricting states in
    `facts/state/joins.rs`. Integrate guarded Call inputs from
    `arguments/mutations/transfers.rs` into `facts/state/snapshots/capture.rs` only after
