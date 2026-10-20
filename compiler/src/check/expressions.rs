@@ -1,5 +1,5 @@
 use super::{
-    Checker, Result, Value,
+    Checker, Constant, Result, Value,
     dependencies::{Coercion, FormatInput, PointKind},
 };
 use crate::ast::{self, ExprKind, Span};
@@ -532,8 +532,10 @@ impl Checker {
                 {
                     return Some(Type::Bool);
                 }
-                if let Some(Value::Static { ty, .. }) = self.hint_symbol(expr) {
-                    return Some(ty);
+                match self.hint_symbol(expr) {
+                    Some(Value::Static { ty, .. }) => return Some(ty),
+                    Some(Value::Constant(Constant::Bool(_))) => return Some(Type::Bool),
+                    _ => (),
                 }
                 let ty = self.hint(value).map(|ty| match ty {
                     Type::Reference(ty) => *ty,

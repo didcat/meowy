@@ -1,6 +1,6 @@
 use crate::ast::{self, ExprKind};
 use crate::check::{
-    Checker, Result,
+    Checker, Constant, Result, Value,
     type_values::{MAX_DEPTH, MAX_WORK, Work},
 };
 use crate::diagnostic::Diagnostic;
@@ -42,7 +42,16 @@ impl Checker {
                         expr.span,
                     )
                 }),
-            ExprKind::Field { .. } => self.required_path(expr).map(|(_, ty, _)| ty),
+            ExprKind::Field { .. } => {
+                if matches!(
+                    self.hint_symbol(expr),
+                    Some(Value::Constant(Constant::Bool(_)))
+                ) {
+                    Ok(Type::Bool)
+                } else {
+                    self.required_path(expr).map(|(_, ty, _)| ty)
+                }
+            }
             ExprKind::Block(block) => {
                 self.required_block_form(block, "boolean operand", depth, count)?;
                 Ok(Type::Bool)

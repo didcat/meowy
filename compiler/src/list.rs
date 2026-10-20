@@ -17,7 +17,9 @@ pub(crate) struct Fact {
 impl Checker {
     pub(crate) fn extent_form(&mut self, expr: &ast::Expr) -> Result<bool> {
         let literal = self.literal_expression(expr)?;
-        let expr = literal.as_deref().unwrap_or(expr);
+        if literal.is_some() {
+            return Ok(true);
+        }
         Ok(match &expr.kind {
             ExprKind::Int(_) | ExprKind::Float(_) | ExprKind::String(_) | ExprKind::Name(_) => true,
             ExprKind::Group(value) | ExprKind::Unary { value, .. } => self.extent_form(value)?,
@@ -153,6 +155,10 @@ impl Checker {
         let number = self.numeric_expression(expr);
         let expr = number.as_deref().unwrap_or(expr);
         match &expr.kind {
+            ExprKind::Field { .. } => matches!(
+                self.hint_symbol(expr),
+                Some(Value::Constant(Constant::Bool(_)))
+            ),
             ExprKind::Int(_) | ExprKind::Float(_) => true,
             ExprKind::String(parts) => parts
                 .iter()
@@ -302,6 +308,14 @@ impl Checker {
         let number = self.numeric_expression(value);
         let value = number.as_deref().unwrap_or(value);
         match &value.kind {
+            ExprKind::Field { .. }
+                if matches!(
+                    self.hint_symbol(value),
+                    Some(Value::Constant(Constant::Bool(_)))
+                ) =>
+            {
+                Some(Type::Bool)
+            }
             ExprKind::Int(_) => Some(Type::Int {
                 bits: 32,
                 signed: true,

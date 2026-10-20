@@ -36,6 +36,8 @@ impl Checker {
     }
 
     pub(crate) fn required_boolean(&mut self, expr: &ast::Expr) -> Result<bool> {
+        let literal = self.literal_expression(expr)?;
+        let expr = literal.as_deref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
         let expr = number.as_deref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;
@@ -65,15 +67,24 @@ impl Checker {
                     _ => None,
                 },
                 ExprKind::Field { .. } => {
-                    self.charge_ancestors(expr)?;
-                    let (id, ty, path) = self.required_path(expr)?;
-                    if ty != Type::Bool {
-                        return Err(Diagnostic::unsupported(
-                            "computed field without a boolean leaf",
-                            expr.span,
-                        ));
+                    if let Some(Value::Constant(Constant::Bool(value))) = self.hint_symbol(expr) {
+                        Some(Input {
+                            derived: false,
+                            value: Some(value),
+                            error: None,
+                            work: 0,
+                        })
+                    } else {
+                        self.charge_ancestors(expr)?;
+                        let (id, ty, path) = self.required_path(expr)?;
+                        if ty != Type::Bool {
+                            return Err(Diagnostic::unsupported(
+                                "computed field without a boolean leaf",
+                                expr.span,
+                            ));
+                        }
+                        id.boolean(self, &path)
                     }
-                    id.boolean(self, &path)
                 }
                 ExprKind::Block(_) => {
                     let Value::Static {

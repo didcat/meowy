@@ -1,5 +1,5 @@
 use crate::ast::{self, ExprKind, StmtKind};
-use crate::check::{Checker, Result, Scope, Value};
+use crate::check::{Checker, Constant, Result, Scope, Value};
 use crate::diagnostic::Diagnostic;
 use crate::flow::Guard;
 use crate::hir::Type;
@@ -229,6 +229,18 @@ impl Checker {
                 "list candidate work budget exhausted",
                 value.span,
             ));
+        }
+        if matches!(&value.kind, ExprKind::Field { .. })
+            && matches!(
+                self.hint_symbol(value),
+                Some(Value::Constant(Constant::Bool(_)))
+            )
+        {
+            return Ok(if expected.accepts(&Type::Bool) {
+                Fit::Yes
+            } else {
+                Fit::No
+            });
         }
         let scalar = match &value.kind {
             ExprKind::Int(text) => Some(self.integer(text, false, Some(expected), value.span)),

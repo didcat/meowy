@@ -7163,6 +7163,37 @@ ownership/cleanup, executable networking, public artifacts/replay and LSP remain
 platforms or bundled distributions. That earlier validation used Rust 1.98.1 and
 LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
+### Boolean literal escape work plan
+
+The user requested `@"core".literal(true)` and `literal(false)` alongside numeric syntax.
+The current intrinsic is numeric-only. `true`/`false` remain ordinary shadowable names;
+inside the resolved intrinsic, their exact spellings will request the original boolean
+without evaluating or looking up the argument. Numeric defaults/ranges, ordinary callee
+resolution and unrelated functions named `literal` retain their behavior. Negative/grouped
+boolean arguments, other names and expressions remain invalid syntax operands.
+
+Dependency-ordered commits:
+1. Extend literal expansion using the existing intrinsic core constants, with checker,
+   required/list-context and native regressions for shadowing, aliases and rejection rules.
+2. Update the owning language contracts and add required conformance cases, reviewing
+   reference hashes/evidence/gaps before regenerating coverage.
+3. Update compiler guidance and Vim/Neovim fixtures, validate the full gate and strict pins,
+   and leave the prior call-result handoff as the next compiler continuation.
+
+Tracked files were clean at `6b90e399`. Preserve `docs/programs/hey/` and all existing
+reference source expectations. Baseline: `/tmp/meowy-boolean-literal-baseline.json`.
+No new parser keyword or reserved name is needed. The new positive checker regressions
+first reproduced the numeric-only restriction (`/tmp/meowy-boolean-literal-before.log`).
+Expansion now reuses intrinsic core boolean constants, with required evaluation and list
+classification handling the same constants. Shadowing/callee-identity and rejection
+regressions pass. Required evaluation exposed a missing boolean type hint for qualified
+core constants; that hint is now added. Logical work and invalid-capacity checks are
+included; all four new checker tests now pass (`/tmp/meowy-boolean-literal-checker.log`).
+All 9 literal tests, 196 required-evaluation tests and 22 list-probe tests pass. Both
+numeric and boolean native cases pass in debug/release (`/tmp/meowy-boolean-literal-native.log`);
+focused logs are `/tmp/meowy-boolean-literal-{literals,required,lists}.log`. The contract/source-fixture slice will be
+kept separate from cross-reference propagation and the editor/final handoff slice.
+
 ## Next steps
 
 Resume the ordered actions in [Scheduled scalar call invalidation](#scheduled-scalar-call-invalidation):

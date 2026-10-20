@@ -101,6 +101,27 @@ d.print(f)
 }
 
 #[test]
+pub(crate) fn core_literal_booleans_bypass_names_in_runtime_required_and_list_contexts() {
+    Case::new(
+        r#"
+d:@"debug"
+literal:@"core".literal
+true:"shadowed"
+false:7
+d.print(@"core".literal(true))
+d.print(literal(false))
+<T>:{flag:literal(true)&&!literal(false);->flag<>}
+x<T>:literal(false)
+d.print(x)
+values<boolean[2]><int32[2]>:[literal(true),literal(false)]
+|values<boolean[2]>|{d.print(values[1]);d.print(values[2])}
+{literal<int32>:(value<int32>){->value};d.print(literal(false))}
+"#,
+    )
+    .runs(b"true\nfalse\nfalse\ntrue\nfalse\n7\n");
+}
+
+#[test]
 pub(crate) fn numeric_roots_select_members_and_unbound_roots_remain_literals() {
     Case::new(
         r#"

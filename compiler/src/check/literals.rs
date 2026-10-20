@@ -23,7 +23,7 @@ impl Checker {
         let [arg] = args.as_slice() else {
             return Err(Self::error(
                 "E212",
-                "core.literal expects one numeric syntax argument",
+                "core.literal expects one literal syntax argument",
                 expr.span,
             ));
         };
@@ -32,6 +32,18 @@ impl Checker {
             _ => (arg, false),
         };
         let mut leaf = match &leaf.kind {
+            ExprKind::Name(name) if !negative && matches!(name.as_str(), "true" | "false") => {
+                Expr {
+                    kind: ExprKind::Field {
+                        value: Box::new(Expr {
+                            kind: ExprKind::Import("core".into()),
+                            span: leaf.span,
+                        }),
+                        name: name.clone(),
+                    },
+                    span: leaf.span,
+                }
+            }
             ExprKind::Int(number) | ExprKind::Float(number) => {
                 let mut number = number.clone();
                 number.literal = true;
@@ -47,7 +59,7 @@ impl Checker {
             _ => {
                 return Err(Self::error(
                     "E207",
-                    "core.literal requires a numeric token, optionally preceded by `-`",
+                    "core.literal requires `true`, `false`, or a numeric token optionally preceded by `-`",
                     arg.span,
                 ));
             }
@@ -152,6 +164,93 @@ mod lookup {
         ] {
             let errors = crate::compile(source).unwrap_err();
             assert_eq!(errors[0].code, code, "{source}: {errors:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod booleans {
+    #[test]
+    pub(crate) fn boolean_literal_escape_bypasses_shadowing_and_preserves_callable_identity() {
+        for source in [
+            r#"true:"shadowed";false:7;x<boolean>:@"core".literal(true);y<boolean>:@"core".literal(false)"#,
+            r#"core:@"core";literal:core.literal;true:"shadowed";x<boolean>:literal(true)"#,
+            r#"true:@"core".literal;false:"shadowed";x<boolean>:true(false)"#,
+            r#"literal<int32>:(value<int32>){->value};true:7;x<int32>:literal(true)"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+    }
+
+    #[test]
+    pub(crate) fn boolean_literal_escape_keeps_required_and_contextual_list_values() {
+        for source in [
+            r#"lit:@"core".literal;true:"shadowed";false:7;<T>:{flag:lit(true);other:!lit(false);both:lit(true)&&lit(false);->flag<>};x<T>:lit(false)"#,
+            r#"lit:@"core".literal;true:7;false:"shadowed";v:[lit(true),lit(false)]"#,
+            r#"lit:@"core".literal;true:7;v<boolean[1]><int32[1]>:[lit(true)]"#,
+            r#"lit:@"core".literal;false:7;v<boolean[1]><float32[1]>:[lit(false)]"#,
+            r#"lit:@"core".literal;<T>:lit(true)<>;x<T>:lit(false)"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+    }
+
+    #[test]
+    pub(crate) fn boolean_literal_escape_rejects_expressions_negation_and_wrong_types() {
+        for arg in [
+            "(true)",
+            "!false",
+            "-true",
+            "-false",
+            "true&&false",
+            "flag",
+            "True",
+            "null",
+            "\"true\"",
+        ] {
+            let source = format!(r#"flag:true;x:@"core".literal({arg})"#);
+            let errors = crate::compile(&source).unwrap_err();
+            assert_eq!(errors[0].code, "E207", "{source}: {errors:?}");
+        }
+        for source in [
+            r#"x<int32>:@"core".literal(true)"#,
+            r#"x<int32>:@"core".literal(false)"#,
+        ] {
+            assert_eq!(crate::compile(source).unwrap_err()[0].code, "E207");
+        }
+        for args in ["", "true,false"] {
+            assert_eq!(
+                crate::compile(&format!(r#"x:@"core".literal({args})"#)).unwrap_err()[0].code,
+                "E212"
+            );
+        }
+        assert_eq!(
+            crate::compile(r#"x<int32[@"core".literal(true)]>:[]"#).unwrap_err()[0].code,
+            "E104"
+        );
+    }
+
+    #[test]
+    pub(crate) fn boolean_literal_escape_charges_literal_work_without_argument_reads() {
+        for (source, steps) in [
+            (r#"@"core".literal(true)"#, 1),
+            (r#"!@"core".literal(false)"#, 2),
+            (r#"@"core".literal(true)||@"core".literal(false)"#, 2),
+            (r#"@"core".literal(true)&&@"core".literal(false)"#, 3),
+        ] {
+            let mut checker = crate::check::Checker::new();
+            let block = crate::parser::parse(&format!("flag:{source}")).unwrap();
+            let crate::ast::StmtKind::Bind { value, .. } = &block.stmts[0].kind else {
+                panic!()
+            };
+            checker
+                .required_root(value.span, |checker| {
+                    checker.type_boolean(value, None)?;
+                    assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, steps);
+                    Ok(())
+                })
+                .unwrap();
+            assert!(checker.body_inputs.is_empty());
         }
     }
 }
