@@ -5424,6 +5424,33 @@ User-owned `docs/programs/hey/` is untouched and excluded. Nothing was pushed.
 
 ### Next: scalar Bind/Write transfers
 
+Current slice: ordinary scalar Bind/Write transfers. Full-map snapshot copies would
+retain every cell again at each write; updates and branch joins need bounded immutable
+cell sharing before production integration. Preserve all declared-entry, missing/bottom,
+version/origin, control and exact-resource boundaries. Unsupported mutation/scope effects
+remain unavailable, and cached initializer candidates cannot supply current values.
+
+Dependency-ordered commit plan:
+
+1. Add bounded immutable cell-tree construction, lookup and persistent updates, with
+   focused ownership/history and exact work/payload tests.
+2. Add joins that reuse unchanged subtrees, then integrate shared cells into State and
+   the snapshot arena without changing existing facts or source expectations.
+3. Retain qualified Bind/Write RHS/type/control associations at definition sites.
+4. Apply Bind initialization and then Write replacement in separate slices, preserving
+   historical expressions and fresh storage versions; update `definition_rows` with them.
+5. Cover copies, stopped/unknown inputs, joins, stale identities and shared budgets;
+   run the 1000-matcher case, full `make test`, strict conformance and preservation
+   audit, then update structural evidence and both handoffs.
+
+Immutable cell-tree construction, ordered lookup and constant-size shared snapshots
+are implemented as an isolated test-only prerequisite. Both focused construction/identity/
+resource tests, formatting and all-target Clippy pass (`/tmp/meowy-scalar-storage-tree.log`,
+`/tmp/meowy-scalar-storage-clippy.log`). Persistent updates and joins precede integration.
+Baseline `d28285c5` and 589 protected-file
+hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
+is unchanged and excluded. No source contract or capability pin is being changed.
+
 1. Apply Bind/Write updates in `facts/state/snapshots/capture.rs` using qualified
    `definitions` and expression facts at original RHS PointIds. The transparent wrapper
    prerequisite is complete. Cached copy candidates cannot supply missing current values.

@@ -7,6 +7,8 @@ mod cells;
 mod entries;
 mod joins;
 mod snapshots;
+#[cfg(test)]
+mod tree;
 pub(super) use cells::{Cell, Data};
 pub(super) use entries::Entries;
 
