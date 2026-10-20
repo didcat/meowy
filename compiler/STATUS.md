@@ -5480,7 +5480,16 @@ qualified RHS facts, creates a fresh storage version and retains unknown value/c
 fallback separately from missing state. All three focused transfer/history/limit tests,
 formatting and Clippy pass (`/tmp/meowy-scalar-storage-bind-transfer.log`) before
 enabling it in the scheduled capture.
-Production storage updates remain disabled; limits and source expectations are unchanged.
+The isolated transfer is committed as `7f658206`. Integration qualifies Bind values,
+versions and histories, but the 1000-matcher case exhausts work during result publication.
+Capture starts at 3,634,939 work and fails above 4,194,304 with over 30,000 payload units
+still free (`/tmp/meowy-scalar-storage-bind-measure.log`). Bind integration is saved in
+`/tmp/meowy-scalar-storage-bind-integration.patch` while reducing unnecessary domain
+construction work. Wrapper tests now use explicit unqualified calls for missing-state
+coverage and check storage before Bind; all 264 focused scalar tests and formatting pass
+(`/tmp/meowy-scalar-storage-wrapper-boundaries.log`). All temporary measurements are
+removed. Production Bind/Write
+transfers remain disabled; limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.

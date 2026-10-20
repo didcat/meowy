@@ -31,10 +31,13 @@ pub(crate) fn scalar_forward_values_reach_typed_binding_inputs_without_changing_
             .domain,
         Domain::integer(18446744073709551615, &mut checker.flow, Span::default()).unwrap()
     );
+    let Some(View::Known(before)) = snapshots.before(Port::Operation(
+        *checker.operations.first_key_value().unwrap().0,
+    )) else {
+        panic!()
+    };
     assert_eq!(
-        snapshots.after(Port::Operation(
-            *checker.operations.first_key_value().unwrap().0
-        )),
-        Some(View::Missing)
+        before.get(binding.storage).unwrap().data,
+        Data::Uninitialized
     );
 }

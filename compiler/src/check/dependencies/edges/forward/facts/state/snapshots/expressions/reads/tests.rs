@@ -34,7 +34,7 @@ pub(crate) fn scalar_expression_reads_use_declared_parameter_values_and_original
         );
     }
     let (checker, _, _, snapshots) =
-        capture("x:=1;x;x=2;x;stable:3;stable;f<never>:(n<never>){->n}");
+        capture("g:(){};g();x:=1;x;x=2;x;stable:3;stable;f<never>:(n<never>){->n}");
     for (&point, read) in &checker.local_reads {
         if read.normal {
             assert!(snapshots.expressions[&point].value.is_none());
