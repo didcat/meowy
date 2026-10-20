@@ -63,6 +63,16 @@ impl Checker {
                         }
                         if observations.forwarded.contains_key(&port) {
                             before
+                        } else if let Port::Operation(point) = port {
+                            snapshots
+                                .storage(
+                                    point,
+                                    before,
+                                    observations.definitions,
+                                    &mut self.flow,
+                                    span,
+                                )?
+                                .unwrap_or(Value::Missing)
                         } else {
                             Value::Missing
                         }
@@ -126,10 +136,32 @@ impl Snapshots {
                     if location.port != Port::Operation(point) {
                         return Err(invalid(span));
                     }
-                    if let Value::Known(id) = row.after
-                        && (row.before != row.after || self.states[id].reach != FALSE)
-                    {
-                        return Err(invalid(span));
+                    if let Value::Known(id) = row.after {
+                        let after = self.states.get(id).ok_or_else(|| invalid(span))?;
+                        if after.owner() != row.owner {
+                            return Err(invalid(span));
+                        }
+                        if after.reach == FALSE {
+                            if row.before != row.after {
+                                return Err(invalid(span));
+                            }
+                        } else {
+                            if !flow.spend(after.cells.depth() + 2) {
+                                return Err(budget(span));
+                            }
+                            if !matches!(location.version.definition, Definition::Bind(_))
+                                || row.before == Value::Missing
+                                || definitions
+                                    .storage
+                                    .get(&point)
+                                    .is_none_or(|storage| storage.version != location.version)
+                                || !matches!(after.get(location.version.local).map(|cell| &cell.data),
+                                    Some(Data::Initialized { version: Some(version), .. })
+                                        if *version == location.version)
+                            {
+                                return Err(invalid(span));
+                            }
+                        }
                     }
                     if let Some(normal) = location.normal {
                         if !flow.spend(1) {

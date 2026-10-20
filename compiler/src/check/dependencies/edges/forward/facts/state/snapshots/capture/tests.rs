@@ -148,7 +148,7 @@ pub(crate) fn scalar_capture_preserves_empty_never_and_restart_entry_boundaries(
 }
 
 #[test]
-pub(crate) fn scalar_capture_does_not_publish_candidate_bind_or_write_values() {
+pub(crate) fn scalar_capture_keeps_bindings_uninitialized_in_entry_states() {
     let (checker, _, reports, snapshots) =
         capture("x:=1;x=2;stable:3;copy:stable;f:(n<int32>){v:=n;v=2}");
     for (&point, operation) in &checker.operations {
@@ -165,8 +165,55 @@ pub(crate) fn scalar_capture_does_not_publish_candidate_bind_or_write_values() {
                 .data,
             Data::Uninitialized
         ));
-        assert_eq!(snapshots.after(Port::Operation(point)), Some(View::Missing));
+        if snapshots.before(Port::Operation(point)) == Some(View::Missing) {
+            assert_eq!(snapshots.after(Port::Operation(point)), Some(View::Missing));
+        }
     }
+}
+
+#[test]
+pub(crate) fn scalar_capture_initializes_bindings_and_copies_with_distinct_storage_versions() {
+    let (checker, _, _, snapshots) =
+        capture("x:=7;x;copy:x;copy;stable:copy;stable;f:(n<uint8>){v:((n)~<uint8>);v}");
+    let mut origins = Vec::new();
+    let mut versions = Vec::new();
+    for (&point, read) in &checker.local_reads {
+        let value = snapshots.expressions[&point].value.as_ref().unwrap();
+        let version = value.version.unwrap();
+        assert_eq!(version.owner, read.owner);
+        assert_eq!(version.local, read.local);
+        let definition = match version.definition {
+            Definition::Bind(point) => Port::Operation(point),
+            Definition::Parameter(_) => continue,
+            Definition::Write(_) => panic!(),
+        };
+        let Some(View::Known(before)) = snapshots.before(definition) else {
+            panic!()
+        };
+        let Some(View::Known(after)) = snapshots.after(definition) else {
+            panic!()
+        };
+        assert_eq!(before.get(read.local).unwrap().data, Data::Uninitialized);
+        assert_eq!(
+            after.get(read.local).unwrap().data,
+            Data::Initialized {
+                version: Some(version),
+                domain: Some(value.domain.clone()),
+                origin: value.origin,
+            }
+        );
+        if read.owner == 0 {
+            origins.push(value.origin.unwrap());
+            versions.push(version);
+        } else {
+            assert_eq!(value.origin, Some(Origin::Parameter(read.owner - 1, 0)));
+        }
+    }
+    assert!(origins.len() >= 3);
+    assert!(origins.iter().all(|origin| *origin == origins[0]));
+    versions.sort_by_key(|version| version.local);
+    versions.dedup();
+    assert_eq!(versions.len(), 3);
 }
 
 #[test]

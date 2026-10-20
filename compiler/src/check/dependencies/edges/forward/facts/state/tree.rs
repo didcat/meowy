@@ -4,7 +4,6 @@ use std::sync::Arc;
 #[cfg(test)]
 mod fixtures;
 mod joins;
-#[cfg(test)]
 mod updates;
 mod validation;
 

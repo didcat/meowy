@@ -3,7 +3,6 @@ use super::*;
 mod capture;
 mod expressions;
 mod inputs;
-#[cfg(test)]
 mod storage;
 
 #[cfg(test)]

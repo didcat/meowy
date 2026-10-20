@@ -5443,73 +5443,31 @@ Dependency-ordered commit plan:
    run the 1000-matcher case, full `make test`, strict conformance and preservation
    audit, then update structural evidence and both handoffs.
 
-Immutable cell-tree construction, ordered lookup and constant-size shared snapshots
-are implemented as an isolated test-only prerequisite. Both focused construction/identity/
-resource tests, formatting and all-target Clippy pass (`/tmp/meowy-scalar-storage-tree.log`,
-`/tmp/meowy-scalar-storage-clippy.log`); construction is committed as `1c2e53c1`.
-Persistent updates now copy only the changed path and preserve version identity even for
-equal domains. All four tree construction/update tests pass
-(`/tmp/meowy-scalar-storage-tree-updates.log`), formatting and Clippy; updates are
-committed as `33a8cc07`. Shared-subtree joins now reuse the existing Cell join rules,
-including conservative missing-key fallback. All seven construction/update/join tests
-pass (`/tmp/meowy-scalar-storage-tree-joins.log`), formatting and Clippy; joins are
-committed as `b15951f8`. Closed tree validation and isolated mutable test fixtures now
-support existing corruption regressions without exposing mutable production cells.
-All eight tree tests, formatting and Clippy pass
-(`/tmp/meowy-scalar-storage-tree-validation.log`); validation is committed as `459a13d8`.
-State and arena integration now share immutable cells and account separately for newly
-allocated paths versus logical cell contents. External arena imports reserve the full
-reachable tree. All 258 focused scalar tests, the original 1000-matcher case, formatting
-and Clippy pass (`/tmp/meowy-scalar-storage-sharing.log`). A 1000-update/branch-join
-regression retains histories within one quarter of the unchanged payload allowance.
-State sharing is committed as `9465146d`. Bind/Write definitions now retain qualified
-RHS, declared domain and control metadata alongside their distinct versions. Missing
-domains/inputs and opaque or alias storage do not gain transfers. All 260 focused
-scalar tests and Clippy pass, but the added qualification exceeds the existing
-1000-matcher work allowance. Entry preparation now skips unused initializer-candidate
-evaluation and retains that analysis as a test reference; the entry regression compares
-both routes. The stress case passes; two now-test-only imports and the explicit
-candidate-value fixture are adjusted to preserve their original coverage. All 260 focused
-scalar tests, the stress case, formatting and Clippy now pass. Commit declaration-only
-entry preparation is committed as `42b37dac`; storage metadata is committed as `1a3d55b2`.
-Version-backed value origins now distinguish unknown-value assignments while preserving
-identity through direct copies. Parameter origins remain unchanged. All 261 focused
-scalar tests, formatting and Clippy pass (`/tmp/meowy-scalar-storage-origins.log`).
-Version origins are committed as `480225f0`. The isolated Bind transfer now consumes
-qualified RHS facts, creates a fresh storage version and retains unknown value/control
-fallback separately from missing state. All three focused transfer/history/limit tests,
-formatting and Clippy pass (`/tmp/meowy-scalar-storage-bind-transfer.log`) before
-enabling it in the scheduled capture.
-The isolated transfer is committed as `7f658206`. Integration qualifies Bind values,
-versions and histories, but the 1000-matcher case exhausts work during result publication.
-Capture starts at 3,634,939 work and fails above 4,194,304 with over 30,000 payload units
-still free (`/tmp/meowy-scalar-storage-bind-measure.log`). Bind integration is saved in
-`/tmp/meowy-scalar-storage-bind-integration.patch` while reducing unnecessary domain
-construction work. Wrapper tests now use explicit unqualified calls for missing-state
-coverage and check storage before Bind; all 264 focused scalar tests and formatting pass
-(`/tmp/meowy-scalar-storage-wrapper-boundaries.log`). All temporary measurements are
-removed. Wrapper prerequisites are committed as `67f87cd2`. Integer singleton
-construction now skips duplicate sorting, and intervals charge element work only when
-materializing a small finite set. All 265 focused scalar tests, formatting and Clippy
-pass, including exact empty/extreme/singleton/full-interval work boundaries
-(`/tmp/meowy-scalar-storage-domain-work.log`), committed as `9e30c879`. Bind capture is
-restored; all 266 focused scalar tests, formatting and Clippy pass. The 1000-matcher
-case still exhausts work. Read/transfer domain checks now use bounded containment
-without building throwaway joins. All 267 focused scalar tests and Clippy pass, including
-differential containment and exact-limit checks (`/tmp/meowy-scalar-storage-containment.log`).
-The 21,009-port stress capture still exceeds work. Bounded hash definition lookups and
-avoiding discarded-cell payload comparisons are the next measured optimization before
-committing Bind integration. Temporary measurements are removed. Limits and source
-expectations are unchanged. Definition lookup tables now use bounded hashes; ordered
-source construction and the independent execution schedule still choose processing
-order. All 267 focused scalar tests, formatting and Clippy pass, including duplicate,
-stale-identity and exact-resource cases (`/tmp/meowy-scalar-storage-definition-lookups.log`).
-Definition lookups are committed as `87690865`. Cell equality now stops at differing
-initialization/control tags, and joins traverse domains only when both cells are
-initialized. All 268 focused scalar tests, the original 1000-matcher case, formatting
-and Clippy pass with Bind capture enabled (`/tmp/meowy-scalar-storage-cell-work.log`,
-`/tmp/meowy-scalar-storage-bind-matchers.log`). Commit the cell-work optimization and
-Bind activation separately, then enable Write replacement.
+Immutable cell trees, path-copy updates and shared-subtree joins now preserve historical
+states without retaining each full map again. Allocation accounting charges new nodes
+and full external imports separately. Closed roots validate cheaply; test-only mutation
+fixtures retain full corruption checks. Declared entry seeding no longer computes unused
+initializer candidates; that analysis remains a test reference. Qualified storage inputs
+retain original versions, RHS points, declared domains and controls.
+
+Prerequisite commits: tree construction `1c2e53c1`, updates `33a8cc07`, joins `b15951f8`,
+validation `459a13d8`, State sharing `9465146d`, entry seeding `42b37dac`, storage inputs
+`1a3d55b2`, version origins `480225f0`, Bind transfer `7f658206` and wrapper boundaries
+`67f87cd2`. Domain constructors `9e30c879`, allocation-free containment `71c04697`,
+definition lookups `87690865` and shape-aware cell work `1a6f7203` retain the original
+limits, canonical values and identity checks. Source construction and snapshot scheduling
+still determine order; hash iteration does not choose transfers.
+
+Bind capture is now enabled. Literal/parameter/current-copy inputs initialize fresh
+storage versions while preserving value origins, controls and earlier snapshots. Missing
+state cannot use cached candidates; unsupported calls/effects remain unavailable. Entry
+seeds stay uninitialized. All 268 focused scalar tests, the original 1000-matcher case,
+formatting and Clippy pass (`/tmp/meowy-scalar-storage-cell-work.log`,
+`/tmp/meowy-scalar-storage-bind-matchers.log`, `/tmp/meowy-scalar-storage-clippy.log`).
+The stress regression exposed redundant domain construction/lookup/comparison work;
+those paths are now bounded by the work performed. All temporary measurements are removed.
+Next enable Write replacement, add history/boundary regressions and run the final full gate.
+Limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.

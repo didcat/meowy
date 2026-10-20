@@ -54,7 +54,6 @@ impl State {
         self.used
     }
 
-    #[cfg(test)]
     pub(super) fn put(
         &mut self,
         local: hir::LocalId,
