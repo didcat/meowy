@@ -31,6 +31,16 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
             parts,
         )
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_borrow_observations(
+            &program,
+            &reports,
+            &graph,
+            observations,
+            Span::default(),
+            parts,
+        )
+        .unwrap();
     let snapshots = checker
         .scalar_snapshots(
             &graph,
@@ -42,6 +52,25 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
         )
         .unwrap();
     (checker, program, reports, snapshots)
+}
+
+#[test]
+pub(crate) fn scalar_capture_keeps_direct_borrows_storage_only() {
+    for source in ["n:7;&n;n", "n:=7;&!n;n"] {
+        let (checker, _, _, snapshots) = capture(source);
+        let point = *checker.place_borrows.keys().next().unwrap();
+        let entry = snapshots.before(Port::Entry(point)).unwrap();
+        for port in [
+            Port::Address { point, step: 0 },
+            Port::Operation(point),
+            Port::Normal(point),
+        ] {
+            assert_eq!(snapshots.after(port), Some(entry));
+        }
+        assert!(!snapshots.expressions.contains_key(&point));
+        let read = *checker.local_reads.keys().next_back().unwrap();
+        assert!(snapshots.expressions[&read].value.is_some());
+    }
 }
 
 #[test]

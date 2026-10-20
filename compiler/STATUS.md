@@ -5556,6 +5556,38 @@ Strict mode exits 1 only for the exact 19 pinned names/reasons
 All four final documentation/tooling checks pass
 (`/tmp/meowy-call-guards-docs.log`). No known failures remain. Nothing was pushed.
 
+### Scalar call invalidation work plan
+
+The tracked tree is clean at `7efca4f8`; `docs/programs/hey/` remains user-owned and
+excluded. Baseline: `/tmp/meowy-call-invalidation-baseline.json`. Direct scalar borrows
+currently make scalar state unavailable before a call, so their storage-preserving
+address/acquisition stages are a prerequisite. No reference value/provenance fact is
+needed to preserve storage across a qualified direct borrow.
+
+Dependency-ordered commits:
+1. Qualify direct scalar borrow stages as storage-preserving, keeping aliases, fields,
+   receivers, temporaries and unsupported reference operations conservative.
+2. Project existing call transfers into bounded conservative scalar invalidation inputs.
+   Never filter candidates with raw entry/argument/origin guards; only direct qualified
+   scalar borrows can supply exact exclusive targets. Missing/unknown targets stay unknown.
+3. Apply invalidation to immutable snapshots, preserving initialization and old copies,
+   dropping affected version/origin identity and retaining control marks; integrate qualified
+   call operations without recovering missing state. Path/Indirect/alias writes retain the
+   unavailable fallback before post-mutation facts can be used.
+4. Add independently useful boundary scenarios, link structural evidence and update the
+   handoff after focused checks, the original 1000-matcher case, formatting/Clippy, the
+   full 14-group gate and strict-gap/preservation audits.
+
+Direct-borrow qualification and capture pass all four new regressions, all 211 scalar-fact
+tests and the unchanged 1000-matcher case (`/tmp/meowy-call-invalidation-borrow-facts.log`,
+`/tmp/meowy-call-invalidation-borrow-matchers.log`). The exclusion fixture uses supported
+field-borrow syntax. No reference value facts or wider place eligibility were added.
+Conservative call input projection is next.
+
+Call results, scope/results, broader references/aliases, restarts, arithmetic and proof
+outcomes remain separate. Signature access is not callee purity, and no callee body or
+final reference/refinement map may reconstruct caller history.
+
 1. Build conservative scalar call-invalidation inputs from `arguments/mutations/transfers.rs`.
    Keep entry classification separate from argument/origin guard authority; missing knowledge
    never proves no mutation, and unqualified false guards cannot suppress candidates/fallback.
