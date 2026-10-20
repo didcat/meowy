@@ -98,3 +98,6 @@ mod tests;
 
 #[cfg(test)]
 mod writes;
+
+#[cfg(test)]
+mod boundaries;

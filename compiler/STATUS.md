@@ -5472,7 +5472,13 @@ New capture regressions cover historical copies, branch joins and missing state 
 unsupported calls/path writes. All 271 focused scalar tests, the original 1000-matcher
 case, formatting and Clippy pass (`/tmp/meowy-scalar-storage-writes.log`,
 `/tmp/meowy-scalar-storage-write-matchers.log`). Shared-budget and stopped/unknown-input
-boundaries precede the final full gate.
+boundaries precede the final full gate. Write replacement is committed as `377baa57`.
+Coverage now exercises exact Bind/Write allocation and work bounds, unknown values
+versus incomplete/missing cells, inherited RHS/operation controls, stopped RHS and
+bottom frames. All 274 focused scalar tests pass (`/tmp/meowy-scalar-storage-boundaries.log`).
+Unreachable-predecessor rows stay missing; known bottom states remain unchanged.
+Formatting and Clippy pass. Update structural evidence, then run the complete gate,
+strict conformance and preservation audit before the final handoff.
 Limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`

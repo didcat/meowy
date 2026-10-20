@@ -116,8 +116,18 @@ pub(crate) fn scalar_bind_transfer_keeps_missing_state_separate_from_unknown_val
 }
 
 #[test]
-pub(crate) fn scalar_bind_transfer_bounds_allocations_and_rejects_stale_sources_atomically() {
-    let (mut checker, mut snapshots, mut definitions, point) = setup("x:7");
+pub(crate) fn scalar_storage_transfers_bound_allocations_and_reject_stale_sources_atomically() {
+    bounds("x:7", false);
+    bounds("x:=1;x=7", true);
+}
+
+pub(super) fn bounds(source: &str, write: bool) {
+    let (mut checker, mut snapshots, mut definitions, point) = setup(source);
+    let point = if write {
+        *definitions.writes.keys().next().unwrap()
+    } else {
+        point
+    };
     let before = snapshots.rows[&Port::Operation(point)].before;
     let room = snapshots.room();
     let start = checker.flow.work;
