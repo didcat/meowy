@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Short-circuit result facts pass all 14 verification groups.
+Updated: 2026-10-20. Call entry authority passes all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5495,105 +5495,73 @@ extension below preserves these boundaries; Git retains the earlier milestone.
 
 ### Short-circuit boolean result facts
 
-Qualified And/Or observations retain the original condition and right-operand regions,
-exact region/join edges, owners and independent normal observations. Match points remain
-separate. Scheduled result capture combines boolean domains from the bypass and selected
-RHS facts; nested results feed guards and Bind/Write transfers. Computed results gain a
-fresh expression origin and no local/version association. Copies retain result identity
-while historical reads and states stay immutable.
+Qualified And/Or operands and branch/region joins feed scheduled boolean result facts.
+Computed results have fresh origins and no local/version association. Nested guards,
+Bind/Write transfers and copies preserve source/control marks and historical states;
+stopped or unobserved inputs remain conservative. The current call-entry prerequisite
+below preserves those boundaries. Git retains the earlier milestone.
 
-Source and enclosing control marks survive into later guards. Unknown live facts or
-control remain unavailable. Skipped unsupported expressions add no values, but stopped
-or unobserved predecessors still make the join unavailable, including beside a known
-bypass. Bottom gains no origin. No frontend cache, final map or callee body supplies facts.
-This is structural scalar analysis; proof outcomes and release qualification remain gated.
+### Call entry guard authority
+
+Call transfers retain entry authority separately from their raw target/fallback guards.
+An observed operation, complete borrowed argument snapshot and available transfer knowledge
+are required. Original invocation/site/owner/span, entry guards and source-control ancestry
+are revalidated. Independent, Dependent and Unknown remain distinct. Result-only calls,
+stopped prefixes, absent snapshots and incomplete ancestry cannot establish independence.
+Known dependency dominates missing ancestor capture; a condition does not inherit the
+later branch it computes, and function owners remain separate.
+
+The shared ancestry walk preserves scalar-condition diagnostics and exact work accounting.
+Each retained call authority charges an additional payload unit. Late identity, ancestry,
+work and payload failures publish no partial map. Final refinement maps and current checker
+flags cannot rewrite captured control. False raw guards retain candidate roots.
+
+Entry independence does not qualify argument-presence or mutation-origin guards and does
+not prove no mutation. Scalar invalidation remains gated until those guards are handled
+conservatively and Path/Indirect/alias fallback is integrated. No call body supplies scalar
+facts. Proof outcomes, transitive query/E225 completion and release qualification remain open.
 
 | Commit | Reviewable slice |
 | --- | --- |
-| `22c4dd8a` | Qualify original logical operands and branch/region joins |
-| `007542b9` | Capture short-circuit domains with fresh result identity |
-| `34df1dce` | Verify control, unavailable/stopped inputs, histories and exact budgets |
+| `72be3664` | Share bounded source-control ancestry without changing scalar behavior |
+| `c63d4177` | Qualify call entry authority with independent operation/result observations |
+| `b2b4bb8a` | Verify unknown mutations, stopped calls, stale ancestry and exact budgets |
 
-All 13 new structural tests and 207 scalar-fact tests pass. Four result regressions first
-reproduced the gap. The original 1000-matcher case, formatting and all-target Clippy pass;
-no resource limit or dependency changed. Unsupported-guard coverage now uses unary and
-equality expressions, preserving the unavailable-evidence boundary. Exact capture-budget
-coverage includes logical observations and result payloads.
+All nine new structural tests and 137 argument tests pass. The five existing scalar ancestry
+tests pass before/after extraction; all 207 scalar-fact tests and the original 1000-matcher
+case pass. Formatting and all-target Clippy pass. Limits and dependencies are unchanged.
+The false-entry regression explicitly seeds matching entry evidence on a complete observed
+call; it does not mistake symbolic proof-dependent conditions or absent borrow snapshots
+for runtime completion. Independent entry with unknown mutation targets is pinned separately.
 
-Focused logs: `/tmp/meowy-scalar-logical-inputs.log`,
-`/tmp/meowy-scalar-logical-before.log`, `/tmp/meowy-scalar-logical-results.log`,
-`/tmp/meowy-scalar-logical-boundaries.log`, `/tmp/meowy-scalar-logical-facts.log`,
-`/tmp/meowy-scalar-logical-matchers-results.log`, `/tmp/meowy-scalar-logical-clippy.log`.
-Three test files are linked as structural evidence for the existing contracts. Reference
-hashes, source expectations, coverage gaps and capability pins remain unchanged.
-The audit preserves 589 protected tracked files and all 37 reference hashes/gaps/prior
-evidence (`/tmp/meowy-scalar-logical-preservation.log`). Baseline `e91ab087` and separate
-user-file hashes are in `/tmp/meowy-scalar-logical-baseline.json`.
-User-owned `docs/programs/hey/` stays excluded from edits and commits.
+Logs: `/tmp/meowy-call-guards-controls-before.log`, `/tmp/meowy-call-guards-controls.log`,
+`/tmp/meowy-call-guards-facts-refactor.log`, `/tmp/meowy-call-guards-matchers-refactor.log`,
+`/tmp/meowy-call-guards-authority.log`, `/tmp/meowy-call-guards-boundaries.log`,
+`/tmp/meowy-call-guards-arguments-final.log`, `/tmp/meowy-call-guards-clippy.log`.
+Two test files are linked as structural evidence. The audit preserves 589 protected tracked
+files and all 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-call-guards-preservation.log`). Baseline `79c2c28a` and separate user-file hashes
+are in `/tmp/meowy-call-guards-baseline.json`. No reference contract, source expectation or
+capability pin changed. The audit reports concurrent changes to the user-owned
+`docs/programs/hey/test.mwy` and its debug executable; this work leaves them untouched
+and excludes the entire folder from commits.
 
-All 14 `make test` groups pass: 3553 library, 923 native, 86 Python and 495 required
+All 14 `make test` groups pass: 3562 library, 923 native, 86 Python and 495 required
 conformance cases, with 19 unchanged gaps and zero debug/release failures. Runtime
 debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
 subprocess probes, outside sandbox ptrace supervision. Summary:
-`/tmp/meowy-scalar-logical-gate.log`; details: `build/verification-scalar-logical`.
+`/tmp/meowy-call-guards-gate.log`; details: `build/verification-call-guards`.
 Strict mode exits 1 only for the exact 19 pinned names/reasons
-(`/tmp/meowy-scalar-logical-strict.log`); the preservation audit confirms them.
+(`/tmp/meowy-call-guards-strict.log`); the preservation audit confirms them.
 All four final documentation/tooling checks pass
-(`/tmp/meowy-scalar-logical-docs.log`). No known failures remain. Nothing was pushed.
+(`/tmp/meowy-call-guards-docs.log`). No known failures remain. Nothing was pushed.
 
-### Call guard authority work plan
-
-The first prerequisite is to qualify control authority on existing call mutation
-transfers. Their raw BDD guards are validated structurally but currently carry no
-independent/dependent/unknown authority for scalar consumers. Operation observation,
-complete argument capture and control ancestry must stay separate. Missing evidence
-cannot establish no mutation, and proof-dependent false guards cannot suppress effects.
-The tracked tree was clean at `79c2c28a`; user-owned `docs/programs/hey/` stays excluded.
-Baseline: `/tmp/meowy-call-guards-baseline.json`.
-
-Dependency-ordered commits:
-1. Share the existing bounded source-control ancestry walk between scalar conditions
-   and calls, preserving current diagnostics, ownership, ordering and exact work checks.
-2. Qualify call guard authority from original invocation/control and borrowed argument
-   snapshots, retaining independent operation/result stages and conservative unknowns;
-   include focused source, history and resource-bound regressions.
-3. Link structural evidence and update the handoff after focused checks, the original
-   1000-matcher case, formatting, Clippy, all 14 gate groups and strict/preservation audits.
-
-The shared ancestry walk is extracted without changing the scalar wrapper diagnostics
-or its work accounting. All five existing ancestry tests pass before and after
-(`/tmp/meowy-call-guards-controls-before.log`, `/tmp/meowy-call-guards-controls.log`).
-All 207 scalar-fact tests and the unchanged 1000-matcher case pass
-(`/tmp/meowy-call-guards-facts-refactor.log`,
-`/tmp/meowy-call-guards-matchers-refactor.log`). Inspection also confirms entry
-control alone cannot authorize argument/origin guards; their independent qualification
-must not be inferred from an unchanged invocation control flag.
-
-The shared helper is committed as `72be3664`. Call-entry authority now has explicit
-Unknown/Dependent/Independent states, retained separately from raw target/fallback guards.
-Only an observed operation with complete snapshot and transfer knowledge can establish
-entry authority. All four focused tests pass (`/tmp/meowy-call-guards-authority.log`):
-independent operation/result observations, missing/stopped snapshots, seeded false
-entry under dependent control, short-circuit ancestry and function isolation.
-The fixture preserves symbolic proof-dependent conditions and explicitly seeds false
-entry evidence; it does not invent borrow snapshots for statically skipped calls.
-No argument/origin guard inherits the entry classification. All 132 argument tests pass
-(`/tmp/meowy-call-guards-arguments.log`); committed as `c63d4177`. Five new boundary
-tests pass for independent entry with unknown mutations, stopped/unvisited calls,
-stale ancestry, final-map independence and exact work/payload publication
-(`/tmp/meowy-call-guards-boundaries.log`). All 137 argument tests and all-target Clippy
-pass (`/tmp/meowy-call-guards-arguments-final.log`, `/tmp/meowy-call-guards-clippy.log`).
-The preservation audit passes. Evidence links and the full gate are next.
-
-Scalar invalidation integration is the next dependent slice after this authority
-boundary. It must include conservative Path/Indirect/alias fallback before post-call
-facts can be used. Existing call transfer qualification and scalar capture are separate;
-this prerequisite will not treat signature access or a false guard as callee purity.
-
-1. Qualify Call guard authority before integrating `arguments/mutations/transfers.rs`
-   with snapshot capture. Missing knowledge never proves no mutation. Conservative
-   Path/Indirect/alias fallback must precede using post-mutation facts; aliases need
-   completed backing layouts.
+1. Build conservative scalar call-invalidation inputs from `arguments/mutations/transfers.rs`.
+   Keep entry classification separate from argument/origin guard authority; missing knowledge
+   never proves no mutation, and unqualified false guards cannot suppress candidates/fallback.
+   Integrate with `facts/state/snapshots/capture.rs` only alongside conservative
+   Path/Indirect/alias fallback; aliases require complete backing layouts. Verify unaffected
+   locals, old copies, dependent/unknown calls, stopped arguments and exact budgets.
 2. Keep scope/result transfers, nullable/alias/emission facts, restart resets, arithmetic
    and wider guards as separate slices. Complete transitive query/E225 qualification
    and per-query logical charging before proof outcomes. Preserve source expectations,
@@ -7180,8 +7148,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Short-circuit boolean result facts](#short-circuit-boolean-result-facts):
-qualify Call guard authority before integrating guarded call invalidation.
+Resume the ordered actions in [Call entry guard authority](#call-entry-guard-authority):
+connect conservative mutation inputs and overlap fallback to scalar snapshot capture.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7226,7 +7194,7 @@ and definition-site associations feed immutable per-port snapshot transport. Sca
 expression values, Bind/Write transfers and condition-authority metadata are complete.
 Scheduled boolean edge restriction supports qualified current locals, including merged
 versions. Short-circuit boolean result facts now feed guards and storage transfers.
-Qualified call mutation transfers are next.
+Call entry authority is qualified; conservative scalar mutation integration is next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

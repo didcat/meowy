@@ -2080,9 +2080,24 @@ missing; a false guard is a known inactive fallback. Neither claims purity of th
 All call reports, including orphan rows, are validated before publication. Late identity,
 guard, root-capacity or work/payload failure returns no partial map.
 
+Call transfers also retain entry-control authority: Independent, Dependent or Unknown.
+Qualification uses the original invocation, observed operation, complete borrowed argument
+snapshot and source-control ancestry. Result-only observations, stopped prefixes, missing
+snapshots/transfer knowledge and incomplete ancestry stay Unknown. A known dependency
+survives missing ancestor captures. Conditions do not inherit the later branch they compute,
+and function owners remain separate. Source identity and entry guards are revalidated.
+
+Entry classification does not qualify argument-presence or mutation-origin guards and
+cannot establish that a call has no mutations. An independent entry may still have unknown
+mutation targets. Dependent entries retain all candidates even when their raw entry/root
+guards are false. No final refinement map or current checker control flag supplies history.
+Each retained authority consumes an additional shared payload unit; ancestry work and late
+failures stay bounded and atomic. These are structural records, not executable proof results.
+
 Ordinary `bools`/`tags` refinements still use lexical place keys and their existing forgetting
 rules. Proof-dependency marks remain monotone. These transfer inputs change neither fact
-table. Versioned graph facts are still required before applying invalidation.
+table. Scalar snapshot integration and conservative overlap fallback remain required
+before applying invalidation.
 
 The bounded scalar-domain representation now implements the
 [profile 1 abstract values](../../docs/reference/stdlib/proof.md#abstract-values).
