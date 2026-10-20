@@ -5541,6 +5541,39 @@ Strict mode exits 1 only for the exact 19 pinned names/reasons
 All four final documentation/tooling checks pass
 (`/tmp/meowy-scalar-logical-docs.log`). No known failures remain. Nothing was pushed.
 
+### Call guard authority work plan
+
+The first prerequisite is to qualify control authority on existing call mutation
+transfers. Their raw BDD guards are validated structurally but currently carry no
+independent/dependent/unknown authority for scalar consumers. Operation observation,
+complete argument capture and control ancestry must stay separate. Missing evidence
+cannot establish no mutation, and proof-dependent false guards cannot suppress effects.
+The tracked tree was clean at `79c2c28a`; user-owned `docs/programs/hey/` stays excluded.
+Baseline: `/tmp/meowy-call-guards-baseline.json`.
+
+Dependency-ordered commits:
+1. Share the existing bounded source-control ancestry walk between scalar conditions
+   and calls, preserving current diagnostics, ownership, ordering and exact work checks.
+2. Qualify call guard authority from original invocation/control and borrowed argument
+   snapshots, retaining independent operation/result stages and conservative unknowns;
+   include focused source, history and resource-bound regressions.
+3. Link structural evidence and update the handoff after focused checks, the original
+   1000-matcher case, formatting, Clippy, all 14 gate groups and strict/preservation audits.
+
+The shared ancestry walk is extracted without changing the scalar wrapper diagnostics
+or its work accounting. All five existing ancestry tests pass before and after
+(`/tmp/meowy-call-guards-controls-before.log`, `/tmp/meowy-call-guards-controls.log`).
+All 207 scalar-fact tests and the unchanged 1000-matcher case pass
+(`/tmp/meowy-call-guards-facts-refactor.log`,
+`/tmp/meowy-call-guards-matchers-refactor.log`). Inspection also confirms entry
+control alone cannot authorize argument/origin guards; their independent qualification
+must not be inferred from an unchanged invocation control flag.
+
+Scalar invalidation integration is the next dependent slice after this authority
+boundary. It must include conservative Path/Indirect/alias fallback before post-call
+facts can be used. Existing call transfer qualification and scalar capture are separate;
+this prerequisite will not treat signature access or a false guard as callee purity.
+
 1. Qualify Call guard authority before integrating `arguments/mutations/transfers.rs`
    with snapshot capture. Missing knowledge never proves no mutation. Conservative
    Path/Indirect/alias fallback must precede using post-mutation facts; aliases need

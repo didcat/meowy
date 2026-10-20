@@ -6,6 +6,7 @@ mod bindings;
 mod blocks;
 mod calls;
 mod consumers;
+mod controls;
 mod effects;
 mod entries;
 mod facts;
