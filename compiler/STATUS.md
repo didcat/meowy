@@ -5520,6 +5520,13 @@ stopped conditions retain no normal input. All four qualifier tests and the orig
 `/tmp/meowy-scalar-guards-matchers.log`). Before snapshot authority, qualify enclosing
 branch dependencies too: frontend short-circuit RHS checking does not propagate
 `Checker.control`, so a nested ordinary condition must inspect retained parent branches.
+Graph qualification is committed as `999b41c6`. The dependency prerequisite walks
+completed same-owner parent chains with strictly decreasing PointIds, combining retained
+marks only at Then/Else regions. Missing parent captures stay unknown; a known dependency
+remains dependent. Conditions do not inherit the decision that they compute. All nine
+guard tests (five new dependency cases), formatting and the original 1000-matcher test
+pass (`/tmp/meowy-scalar-guards-controls.log`, `/tmp/meowy-scalar-guards-matchers.log`).
+Next: record authority from the qualified original condition snapshots.
 
 1. Qualify guard authority and E225 dependencies before restricting states in
    `facts/state/joins.rs`. Integrate guarded Call inputs from

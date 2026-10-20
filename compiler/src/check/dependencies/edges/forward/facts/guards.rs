@@ -1,10 +1,13 @@
 use super::*;
 use crate::check::dependencies::Branch;
 
+mod controls;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) struct Input {
     pub(super) point: PointId,
     pub(super) source: Branch,
+    pub(super) control: Option<bool>,
 }
 
 pub(super) type Inputs = HashMap<Port, Input>;
@@ -142,12 +145,21 @@ impl Checker {
                 return Err(invalid(span));
             }
             parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
+            let control = controls::dependency(
+                id,
+                branch,
+                &self.points,
+                &self.branch_inputs,
+                &mut self.flow,
+                span,
+            )?;
             if inputs
                 .insert(
                     link.to,
                     Input {
                         point: id,
                         source: branch,
+                        control,
                     },
                 )
                 .is_some()
