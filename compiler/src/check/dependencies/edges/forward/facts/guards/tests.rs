@@ -28,6 +28,13 @@ pub(crate) fn scalar_guard_inputs_keep_exact_conditions_and_independent_owners()
         assert_eq!(port, Port::Normal(condition));
         assert_eq!(checker.points[condition].parent, Some(input.point));
         assert_eq!(input.source, checker.branch_inputs[&input.point]);
+        for (arm, edge) in input
+            .arms
+            .iter()
+            .zip(&checker.branch_edges[&input.point][1..3])
+        {
+            assert_eq!(edge.to, Port::Entry(*arm));
+        }
     }
     assert!(inputs.values().any(|input| input.source.owner == 1));
 }

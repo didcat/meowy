@@ -265,7 +265,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let forwarded = observations.forwarded;
     let declared = observations.declared;
     let guards = observations.guards;
-    for fault in 0..3 {
+    for fault in 0..4 {
         let mut order = orders.clone();
         match fault {
             0 => {
@@ -284,15 +284,20 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
                     .version
                     .owner += 1
             }
+            3 => {}
             _ => unreachable!(),
         }
-        let observations = observations::Observations {
+        let mut observations = observations::Observations {
             sources: sources.clone(),
             forwarded: forwarded.clone(),
             declared: declared.clone(),
             guards: guards.clone(),
             ..observations::Observations::new(&definitions)
         };
+        if fault == 3 {
+            let input = *observations.guards.values().next().unwrap();
+            observations.guards.insert(Port::Entry(input.point), input);
+        }
         assert!(
             checker
                 .scalar_snapshots(

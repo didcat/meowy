@@ -6,6 +6,7 @@ mod controls;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) struct Input {
     pub(super) point: PointId,
+    pub(super) arms: [PointId; 2],
     pub(super) source: Branch,
     pub(super) control: Option<bool>,
 }
@@ -158,6 +159,7 @@ impl Checker {
                     link.to,
                     Input {
                         point: id,
+                        arms: [taken, skipped],
                         source: branch,
                         control,
                     },

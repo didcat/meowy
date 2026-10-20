@@ -90,19 +90,21 @@ impl Checker {
                 )?;
                 if matches!(port, Port::Normal(_)) {
                     snapshots.expression(port, observations, &mut self.flow, span)?;
+                    if !self.flow.spend(1) {
+                        return Err(budget(span));
+                    }
+                    if let Some(input) = observations.guards.get(&port) {
+                        snapshots.guard(port, input, &mut self.flow, span)?;
+                    }
                 }
             }
         }
-        if snapshots.rows.len() != graph.nodes.len() {
+        if snapshots.rows.len() != graph.nodes.len()
+            || snapshots.guards.len() != observations.guards.len()
+        {
             return Err(invalid(span));
         }
         snapshots.definition_rows(observations.definitions, &mut self.flow, span)?;
-        if !self.flow.spend(observations.guards.len() + 1) {
-            return Err(budget(span));
-        }
-        for (&port, input) in &observations.guards {
-            snapshots.guard(port, input, &mut self.flow, span)?;
-        }
         Ok(snapshots)
     }
 }

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Scalar guard authority metadata passes all 14 verification groups.
+Updated: 2026-10-20. Scheduled scalar guard transfers are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5559,6 +5559,14 @@ ordinary errors and restored control after success/error. Three regressions firs
 the missing write/query/exit marks. Logs: `/tmp/meowy-scalar-branches-control-before.log`,
 `/tmp/meowy-scalar-branches-control.log`, `/tmp/meowy-scalar-branches-ancestry.log`,
 `/tmp/meowy-scalar-branches-matchers.log`. Formatting passes. Next: scheduled guard capture.
+
+Control propagation is committed as `a2458acc`. Guard authority now records at its
+scheduled Normal condition port, after the original expression fact and before either
+successor. Qualified inputs retain exact true/false arm identities. Missing scheduled
+guard records reject at capture completion. All 174 scalar-fact tests, the 1000-matcher
+case and formatting pass (`/tmp/meowy-scalar-branches-schedule.log`,
+`/tmp/meowy-scalar-branches-matchers.log`). This move changes no states; boolean edge
+availability is next.
 
 1. Complete per-port proof-control propagation and guarded state restriction before
    consuming authority in `facts/state/joins.rs` or `snapshots/inputs.rs`. Guard records
