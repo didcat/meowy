@@ -5533,6 +5533,31 @@ All four final documentation/tooling checks pass
 source expectation or capability pin changed. Logical result facts, call invalidation
 and proof outcomes remain gated. Nothing was pushed.
 
+### Short-circuit result work plan
+
+The next slice uses qualified branch/region edges and scheduled operand facts; no
+frontend constant cache or callee body supplies values. The tracked tree was clean at
+`e91ab087`; user-owned `docs/programs/hey/` remains excluded. Preservation baseline:
+`/tmp/meowy-scalar-logical-baseline.json`.
+
+Dependency-ordered commits:
+1. Qualify logical-result operand/edge observations, distinguishing And/Or from Match,
+   with stopped-input, identity and exact-budget regressions.
+2. Capture computed boolean domains from scheduled paths, with fresh result origins,
+   no local/version association, control propagation and historical-state regressions.
+3. Add any independently useful boundary scenarios, then link structural evidence and
+   update the handoff after focused checks, the original 1000-matcher regression,
+   formatting, Clippy, all 14 gate groups and strict-gap/preservation audits.
+
+Operand qualification is implemented with original region/branch edges, owner/site
+checks and independent normal observations. Four focused tests pass, including stopped
+operands, stale links and exact work/payload limits
+(`/tmp/meowy-scalar-logical-inputs.log`). It records no result values yet. Condition
+authority remains captured before successors; unreached inputs remain unavailable.
+All 198 scalar-fact tests and the unchanged 1000-matcher regression pass
+(`/tmp/meowy-scalar-logical-facts-inputs.log`,
+`/tmp/meowy-scalar-logical-matchers-inputs.log`). Result capture is next.
+
 1. Add short-circuit boolean result facts in `state/snapshots/expressions` using scheduled
    operand/edge observations. Preserve source/control marks, independent matcher rules,
    stopped operands and historical states. Computed results must not inherit a local

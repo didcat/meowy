@@ -1,8 +1,10 @@
 use super::super::effects::Effect;
 use super::*;
 
+mod logical;
 mod reads;
 mod wrappers;
+pub(super) use logical::Logical;
 pub(super) use wrappers::Forward;
 
 #[derive(Debug)]
@@ -12,6 +14,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) declared: HashMap<hir::LocalId, domain::Domain>,
     pub(super) forwarded: HashMap<Port, Forward>,
     pub(super) guards: guards::Inputs,
+    pub(super) logical: HashMap<Port, Logical>,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -22,6 +25,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             declared: HashMap::new(),
             forwarded: HashMap::new(),
             guards: guards::Inputs::new(),
+            logical: HashMap::new(),
         }
     }
 }
@@ -69,6 +73,9 @@ impl Checker {
             self.scalar_wrapper_observations(reports, graph, observations, span, parts)?;
         let (guards, parts) = self.scalar_guard_inputs(graph, span, parts)?;
         observations.guards = guards;
+        let (logical, parts) =
+            self.scalar_logical_observations(&observations.guards, graph, span, parts)?;
+        observations.logical = logical;
         Ok((observations, parts))
     }
 }
