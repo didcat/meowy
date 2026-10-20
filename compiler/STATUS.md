@@ -5471,7 +5471,8 @@ evaluation and retains that analysis as a test reference; the entry regression c
 both routes. The stress case passes; two now-test-only imports and the explicit
 candidate-value fixture are adjusted to preserve their original coverage. All 260 focused
 scalar tests, the stress case, formatting and Clippy now pass. Commit declaration-only
-entry preparation separately from the qualified storage metadata.
+entry preparation is now committed separately. Qualified storage metadata passes the
+same checks and is ready to commit; Bind initialization is next.
 Production storage updates remain disabled; limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`

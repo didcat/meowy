@@ -30,6 +30,7 @@ pub(super) fn context() -> (
         .into_iter()
         .collect(),
         writes: BTreeMap::new(),
+        ..definitions::Definitions::default()
     };
     (checker, reports, snapshots, definitions, point, local)
 }

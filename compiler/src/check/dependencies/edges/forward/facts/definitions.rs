@@ -2,6 +2,9 @@ use super::super::effects::Effect;
 use super::*;
 use versions::{Definition, Version};
 
+mod storage;
+pub(super) use storage::Storage;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) struct Location {
     pub(super) version: Version,
@@ -13,6 +16,7 @@ pub(super) struct Location {
 pub(super) struct Definitions {
     pub(super) declarations: BTreeMap<hir::LocalId, Location>,
     pub(super) writes: BTreeMap<PointId, Location>,
+    pub(super) storage: HashMap<PointId, Storage>,
 }
 
 impl Checker {
@@ -42,6 +46,14 @@ impl Checker {
             let location =
                 self.scalar_definition(reports, graph, slot.version, slot.source, span)?;
             self.insert_scalar_definition(&mut definitions, location, span, &mut parts)?;
+            self.scalar_storage_definition(
+                &mut definitions,
+                location,
+                (slot.ty, slot.declared.as_ref()),
+                slot.source,
+                span,
+                &mut parts,
+            )?;
         }
         for (&point, event) in events {
             let Some(version) = event.version else {
@@ -54,6 +66,14 @@ impl Checker {
             let location =
                 self.scalar_definition(reports, graph, version, Some(event.source), span)?;
             self.insert_scalar_definition(&mut definitions, location, span, &mut parts)?;
+            self.scalar_storage_definition(
+                &mut definitions,
+                location,
+                (event.ty, event.declared.as_ref()),
+                Some(event.source),
+                span,
+                &mut parts,
+            )?;
         }
         Ok((definitions, parts))
     }
