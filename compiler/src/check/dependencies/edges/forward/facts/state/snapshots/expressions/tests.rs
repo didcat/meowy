@@ -32,7 +32,7 @@ pub(crate) fn scalar_expression_literals_keep_values_owners_and_distinct_origins
 #[test]
 pub(crate) fn scalar_expression_literals_keep_unavailable_and_bottom_separate() {
     let (checker, _, _, snapshots) =
-        capture("x:1;g:(){};g();2;d:@\"debug\";d.panic(\"stop\");late:9;f:(n<never>){7}");
+        capture("x:1;5+6;2;d:@\"debug\";d.panic(\"stop\");late:9;f:(n<never>){7}");
     for (&point, leaf) in &checker.scalar_leaves {
         match leaf.value {
             Some(ScalarLiteral::Int(1)) => assert!(snapshots.expressions[&point].value.is_some()),

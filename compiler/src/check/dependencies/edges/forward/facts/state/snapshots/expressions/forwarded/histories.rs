@@ -2,9 +2,9 @@ use super::super::super::capture::tests::capture;
 use super::*;
 
 #[test]
-pub(crate) fn scalar_wrapper_histories_survive_unqualified_calls_and_storage_updates() {
-    for middle in ["g()", "r:={->n:=1};r.n=2"] {
-        let source = format!("g:(){{}};f:(n<uint8>){{((n)~<uint8>);{middle};((n)~<uint8>)}}");
+pub(crate) fn scalar_wrapper_histories_survive_unqualified_arithmetic_and_storage_updates() {
+    for middle in ["5+6", "r:={->n:=1};r.n=2"] {
+        let source = format!("f:(n<uint8>){{((n)~<uint8>);{middle};((n)~<uint8>)}}");
         let (checker, program, _, snapshots) = capture(&source);
         let function = program
             .functions

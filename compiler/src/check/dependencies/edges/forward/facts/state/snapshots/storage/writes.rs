@@ -117,8 +117,8 @@ pub(crate) fn scalar_write_capture_replaces_joined_values_across_conditional_wri
 
 #[test]
 pub(crate) fn scalar_write_capture_cannot_restore_state_after_unqualified_effects() {
-    for middle in ["g()", "r:={->n:=1};r.n=2"] {
-        let (checker, _, _, snapshots) = capture(&format!("g:(){{}};x:=1;x;{middle};x=2;x"));
+    for middle in ["5+6", "r:={->n:=1};r.n=2"] {
+        let (checker, _, _, snapshots) = capture(&format!("x:=1;x;{middle};x=2;x"));
         let write = checker
             .operations
             .iter()

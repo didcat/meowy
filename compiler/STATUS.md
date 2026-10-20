@@ -5597,7 +5597,12 @@ application so each review isolates one responsibility. Projection is committed 
 with borrowed metadata and exact identity/work/payload checks. All 213 scalar-fact tests
 pass (`/tmp/meowy-call-invalidation-call-observations.log`). Generic unavailable-state
 fixtures still use calls as placeholders; they will use unsupported arithmetic before
-call application is enabled, keeping that boundary independently covered.
+call application is enabled, keeping that boundary independently covered. The operation
+bridge is committed as `90e7c6a0`.
+All 213 scalar-fact tests pass with the four generic fixtures using unsupported arithmetic
+(`/tmp/meowy-call-invalidation-fallback-fixtures.log`). These test-only updates preserve
+unknown-state coverage before enabling calls. The small cell reset will remain with the
+scheduled call consumer and its regressions; no separate public state API is needed.
 
 Call results, scope/results, broader references/aliases, restarts, arithmetic and proof
 outcomes remain separate. Signature access is not callee purity, and no callee body or
