@@ -1,6 +1,7 @@
 use super::*;
 use std::sync::Arc;
 
+mod joins;
 mod updates;
 
 #[derive(Clone, Debug)]
@@ -15,6 +16,7 @@ pub(super) struct Node {
     pub(self) len: usize,
     pub(self) weight: usize,
     pub(self) depth: usize,
+    pub(self) bottom: bool,
     pub(self) kind: Kind,
 }
 
@@ -47,6 +49,10 @@ impl Tree {
 
     pub(super) fn depth(&self) -> usize {
         self.root.as_ref().map_or(0, |node| node.depth)
+    }
+
+    pub(super) fn bottom(&self) -> bool {
+        self.root.as_ref().is_some_and(|node| node.bottom)
     }
 
     pub(super) fn get(&self, key: &hir::LocalId) -> Option<&Cell> {
@@ -115,6 +121,7 @@ impl Node {
             len: 1,
             weight: 1 + cell.weight(),
             depth: 1,
+            bottom: cell.bottom(),
             kind: Kind::Leaf(local, cell),
         }
     }
@@ -125,6 +132,7 @@ impl Node {
             len: left.len + right.len,
             weight: left.weight + right.weight,
             depth: 1 + left.depth.max(right.depth),
+            bottom: left.bottom || right.bottom,
             kind: Kind::Branch(left, right),
         }
     }

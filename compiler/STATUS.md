@@ -5449,7 +5449,11 @@ resource tests, formatting and all-target Clippy pass (`/tmp/meowy-scalar-storag
 `/tmp/meowy-scalar-storage-clippy.log`); construction is committed as `1c2e53c1`.
 Persistent updates now copy only the changed path and preserve version identity even for
 equal domains. All four tree construction/update tests pass
-(`/tmp/meowy-scalar-storage-tree-updates.log`); Clippy is running. Joins precede integration.
+(`/tmp/meowy-scalar-storage-tree-updates.log`), formatting and Clippy; updates are
+committed as `33a8cc07`. Shared-subtree joins now reuse the existing Cell join rules,
+including conservative missing-key fallback. All seven construction/update/join tests
+pass (`/tmp/meowy-scalar-storage-tree-joins.log`); Clippy is running before the join
+commit. Production State and arena integration are next.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.

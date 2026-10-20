@@ -72,7 +72,7 @@ impl State {
 }
 
 impl Cell {
-    pub(self) fn join(
+    pub(super) fn join(
         left: Option<&Self>,
         right: Option<&Self>,
         flow: &mut Flow,
