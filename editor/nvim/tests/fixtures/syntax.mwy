@@ -273,6 +273,8 @@ numeric_member : 10.4
 numeric_chain : 10.4.5
 numeric_named_member : 10.4.value()
 numeric_intrinsic : @"core".literal(10.4)
+boolean_true_intrinsic : @"core".literal(true)
+boolean_false_alias : literal(false)
 
 2_or_more_cats <uint32> : 4
 mixed_read : 2_or_more_cats

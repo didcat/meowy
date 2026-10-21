@@ -75,7 +75,7 @@ construction. Undotted names remain distinct; dotted declaration names are inval
 numeric syntax operand without reading a same-spelled binding. The same rule applies to
 [`core.literal(true)` and `core.literal(false)`](stdlib/core.md#intrinsic-boolean-literals).
 These remain boolean values in required evaluation and list inference. The literal and
-optional negation use ordinary literal evaluation charges, with no runtime call
+optional numeric negation use ordinary literal evaluation charges, with no runtime call
 or evaluation of an arbitrary argument expression. Aliasing the intrinsic retains
 this rule; aliasing its result creates an ordinarily typed value.
 

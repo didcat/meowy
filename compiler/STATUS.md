@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Direct scalar call invalidation passes all 14 verification groups.
+Updated: 2026-10-20. Boolean literal escapes pass all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5584,6 +5584,54 @@ All four final documentation/tooling checks pass
    outcomes. Preserve source expectations, capability pins and the original 1000-matcher
    case; run the full gate across each series.
 
+### Boolean literal escapes
+
+`@"core".literal(true)` and `literal(false)` now construct intrinsic booleans without
+reading shadowing bindings. Callable identity remains lexical, including immutable aliases
+and ordinary functions named `literal`. Expansion reuses core constants; no parser keyword,
+reserved name, runtime call or allocation is introduced. Numeric behavior is preserved.
+
+Required boolean evaluation, type queries and contextual list inference retain ordinary
+types and literal work. Grouped/negated boolean operands, other names, strings and
+expressions remain invalid syntax operands (E207); wrong arity is E212. Boolean results cannot
+be used as integer capacities. Existing capability and proof-outcome gates remain separate.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `1bbc1a18` | Add boolean syntax expansion, context integration and checker/native regressions |
+| `cde3e0e8` | Specify the core contract and three required conformance cases |
+| `08bd73b1` | Align syntax/required references and compiler guides |
+
+All four new checker tests, 9 literal tests, 196 required-evaluation tests and 22 list-probe
+tests pass. Both numeric/boolean native cases and all three new conformance cases pass in
+debug/release. The positive tests first reproduced the original numeric-only restriction.
+Vim/Neovim fixtures now cover calls, boolean operands and the builtin-highlighting opt-out;
+existing syntax rules already recognize these forms. Required-evaluation wording explicitly
+limits optional numeric negation to numbers.
+
+Focused logs: `/tmp/meowy-boolean-literal-before.log`,
+`/tmp/meowy-boolean-literal-checker.log`, `/tmp/meowy-boolean-literal-literals.log`,
+`/tmp/meowy-boolean-literal-required.log`, `/tmp/meowy-boolean-literal-lists.log`,
+`/tmp/meowy-boolean-literal-native.log`, `/tmp/meowy-boolean-literal-cases.log`.
+All four contract/guide documentation checks pass; coverage regeneration passes. The core,
+syntax and required-evaluation reference changes have reviewed evidence/gaps and current
+hashes. No proof obligation changed. The audit preserves 585 protected files, all 514 prior
+case records and 34 unchanged reference records. Three cases are added, never made optional.
+Baseline: `/tmp/meowy-boolean-literal-baseline.json`; audit:
+`/tmp/meowy-boolean-literal-preservation.log`. User-owned `docs/programs/hey/` is excluded.
+
+All 14 `make test` groups pass: 3584 library, 924 native, 86 Python and 498 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Runtime
+debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
+subprocess probes, outside sandbox ptrace supervision. Summary:
+`/tmp/meowy-boolean-literal-gate.log`; details: `build/verification-boolean-literal`.
+Strict mode exits 1 only for the exact 19 pinned names/reasons
+(`/tmp/meowy-boolean-literal-strict.log`); the preservation audit confirms them.
+All four final documentation/tooling checks pass
+(`/tmp/meowy-boolean-literal-final-docs.log`). No known failures remain. Nothing was pushed.
+The next compiler continuation remains call-result dependency qualification in the
+[scheduled call handoff](#scheduled-scalar-call-invalidation).
+
 The Makefile is complete; the root tracker records release build and staged installation
 validation. Reference formatting and reference-bearing lists remain separate B001
 prerequisites. The contextual-list blocker remains exactly
@@ -7162,52 +7210,6 @@ resolution, full required evaluation and generic specialization, public FFI, wid
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
 platforms or bundled distributions. That earlier validation used Rust 1.98.1 and
 LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
-
-### Boolean literal escape work plan
-
-The user requested `@"core".literal(true)` and `literal(false)` alongside numeric syntax.
-The current intrinsic is numeric-only. `true`/`false` remain ordinary shadowable names;
-inside the resolved intrinsic, their exact spellings will request the original boolean
-without evaluating or looking up the argument. Numeric defaults/ranges, ordinary callee
-resolution and unrelated functions named `literal` retain their behavior. Negative/grouped
-boolean arguments, other names and expressions remain invalid syntax operands.
-
-Dependency-ordered commits:
-1. Extend literal expansion using the existing intrinsic core constants, with checker,
-   required/list-context and native regressions for shadowing, aliases and rejection rules.
-2. Update the owning language contracts and add required conformance cases, reviewing
-   reference hashes/evidence/gaps before regenerating coverage.
-3. Update compiler guidance and Vim/Neovim fixtures, validate the full gate and strict pins,
-   and leave the prior call-result handoff as the next compiler continuation.
-
-Tracked files were clean at `6b90e399`. Preserve `docs/programs/hey/` and all existing
-reference source expectations. Baseline: `/tmp/meowy-boolean-literal-baseline.json`.
-No new parser keyword or reserved name is needed. The new positive checker regressions
-first reproduced the numeric-only restriction (`/tmp/meowy-boolean-literal-before.log`).
-Expansion now reuses intrinsic core boolean constants, with required evaluation and list
-classification handling the same constants. Shadowing/callee-identity and rejection
-regressions pass. Required evaluation exposed a missing boolean type hint for qualified
-core constants; that hint is now added. Logical work and invalid-capacity checks are
-included; all four new checker tests now pass (`/tmp/meowy-boolean-literal-checker.log`).
-All 9 literal tests, 196 required-evaluation tests and 22 list-probe tests pass. Both
-numeric and boolean native cases pass in debug/release (`/tmp/meowy-boolean-literal-native.log`);
-focused logs are `/tmp/meowy-boolean-literal-{literals,required,lists}.log`. The contract/source-fixture slice will be
-kept separate from cross-reference propagation and the editor/final handoff slice.
-Implementation is committed as `1bbc1a18`. The core contract now documents boolean syntax
-under a separate anchor, preserving numeric anchors. Three required source cases cover
-values/contexts and syntax rejection. Core evidence and remaining gaps were reviewed before
-its hash update. Proof obligations are unchanged: no proof contract or outcome changed.
-All three new required cases pass in debug/release (`/tmp/meowy-boolean-literal-cases.log`).
-Catalog validation and all four documentation/tooling checks pass
-(`/tmp/meowy-boolean-literal-catalog.log`, `/tmp/meowy-boolean-literal-contract-docs.log`).
-Coverage regeneration passes; existing case records and proof obligations are preserved.
-The syntax and required-evaluation references and compiler guides now describe the same
-boolean escape. Their existing evidence and remaining gaps were reviewed before hash
-updates. All four documentation/tooling checks pass
-(`/tmp/meowy-boolean-literal-guide-docs.log`). The audit preserves 585 protected files,
-all 514 existing case records and 34 unchanged reference records; only the three reviewed
-literal-related contracts changed (`/tmp/meowy-boolean-literal-preservation.log`).
-The core contract/source slice is `cde3e0e8`. Editor fixtures and final qualification follow.
 
 ## Next steps
 
