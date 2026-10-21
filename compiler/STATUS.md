@@ -5620,8 +5620,13 @@ not narrow declared domains; later guards preserve argument and entry dependenci
 Logs: `/tmp/meowy-call-results-observations.log`,
 `/tmp/meowy-call-results-facts-prerequisite.log`, `/tmp/meowy-call-results-before.log`,
 `/tmp/meowy-call-results-values-facts.log`. Formatting and all-target Clippy pass
-(`/tmp/meowy-call-results-clippy.log`). Next: malformed/late histories, argument-time
-mutation and exact consumer limits (plan item 3), then the complete gate/evidence update.
+(`/tmp/meowy-call-results-clippy.log`). `77df0c02` commits the declared-domain consumer
+with its focused regressions. All five consumer boundary tests now pass: stale/missing
+histories, later argument mutation, result-only storage, nested-call dependencies and exact
+work/payload/argument limits publish no partial facts. The nested-call fixture qualifies its
+original forwarding coercion before replay. The original 1000-matcher test passes unchanged.
+Logs: `/tmp/meowy-call-results-boundaries.log`, `/tmp/meowy-call-results-matchers.log`.
+Next: complete gate, structural evidence links and final handoff (plan item 4).
 
 The checkout moved during this continuation to `/nvme/Projects/work/didcat/repos/meowy`.
 The same Git history and pending slice were verified there; user-owned example files remain
