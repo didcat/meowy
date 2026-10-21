@@ -67,7 +67,7 @@ impl Snapshots {
         }
         let (owner, effect) = *source;
         let (normal, control) = match effect {
-            Effect::Borrow(_) => return Ok(()),
+            Effect::Borrow(_) | Effect::Call { .. } => return Ok(()),
             Effect::Scalar(observed) => (observed.result, observed.control),
             Effect::Read {
                 normal, control, ..

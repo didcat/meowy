@@ -5584,6 +5584,41 @@ All four final documentation/tooling checks pass
    outcomes. Preserve source expectations, capability pins and the original 1000-matcher
    case; run the full gate across each series.
 
+### Scheduled scalar call results
+
+Continuation plan, in dependency order:
+
+1. Associate independently observed call-result ports with original signatures,
+   returned edges and qualified entry control. Keep result values unavailable until
+   argument-time dependencies are qualified; verify result-only/stopped observations.
+2. Consume saved argument expression facts, then capture full declared scalar result
+   domains with fresh origins. Preserve data/control dependencies, copies and old
+   argument histories without inspecting callee bodies or specializing arguments.
+3. Qualify missing/dependent inputs, malformed histories, bottom, recursive/nonreturning
+   calls and exact work/payload boundaries with focused regression tests.
+4. Link structural evidence, run the full gate and strict pin/preservation audit, then
+   update this handoff and the root tracker. Proof outcomes remain separately gated.
+
+Inspection confirms that call-entry authority excludes argument data dependencies.
+Original `Effect::Call` arguments and scheduled expression snapshots provide the
+required history; the final mutable frontend maps cannot substitute for them. Scalar
+reference/opaque arguments without expression facts remain conservative. Result-only
+observations must not create a call operation or recover missing storage.
+
+Result-port qualification is complete: original signatures, scalar shapes, returned edges
+and entry ancestry are checked independently of operation observation. Borrowed source
+records and qualified entry control are retained; scalar result values remain unavailable.
+All five new observation tests and 226 scalar-fact tests pass, including exact observation
+work/payload boundaries, missing ancestry, recursion and normally typed calls whose bodies
+stop. Logs: `/tmp/meowy-call-results-observations.log` and
+`/tmp/meowy-call-results-facts-prerequisite.log`. Next: argument-time dependency consumption
+and full declared result facts (plan item 2).
+
+Baseline: `e881f2e7`; `/tmp/meowy-call-results-baseline.json` protects reference sources,
+conformance expectations, proof obligations and capability pins. User-owned
+`docs/programs/hey/` is recorded separately and excluded. The full gate remains pending;
+the previous gate is recorded in the boolean-literal handoff below.
+
 ### Boolean literal escapes
 
 `@"core".literal(true)` and `literal(false)` now construct intrinsic booleans without

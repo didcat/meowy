@@ -43,6 +43,8 @@ impl Checker {
             self.scalar_borrow_observations(program, reports, &graph, observations, span, parts)?;
         let (observations, parts) =
             self.scalar_call_observations(reports, &graph, calls, observations, span, parts)?;
+        let (observations, parts) =
+            self.scalar_call_result_observations(reports, &graph, observations, span, parts)?;
         self.scalar_snapshots(&graph, &orders, &entries, &observations, span, parts)?;
         Ok(())
     }
