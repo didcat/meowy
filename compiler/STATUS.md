@@ -1,23 +1,23 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Null literal escape implementation is under focused verification.
+Updated: 2026-10-21. Null literal escapes pass all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
 ## Null literal escape
 
-`core.literal` now accepts null syntax. Its complete lookup-escape domain is numbers
-plus the three predefined values
-`true`, `false` and `null`; strings, lists, blocks, types and arbitrary expressions remain
-outside this syntax-only intrinsic. Reuse core constant expansion and lexical callee identity.
+`core.literal` now accepts null syntax. Its complete lookup-escape domain is numbers plus
+the three predefined values `true`, `false` and `null`; strings, lists, blocks, types and
+arbitrary expressions remain outside this syntax-only intrinsic. Core constant expansion
+and lexical callee identity are preserved.
 Existing proof/scalar work and user-owned `docs/programs/hey/` remain separate.
 
 Dependency-ordered commits:
 
 1. `0b4bbd6a`: null expansion and constant-kind context integration with checker/native/editor tests.
-2. Specify the complete operand contract with required source cases and reviewed coverage.
-3. Align compiler/syntax/required guides; run the complete verification gate.
+2. `974280ff`: complete operand contract with required source cases and reviewed coverage.
+3. Compiler/syntax/required guides and the complete verification handoff are finished.
 
 All three new checker tests reproduced E207 rejection before implementation
 (`/tmp/meowy-null-literal-before.log`). Null now uses the existing core constant expansion.
@@ -31,10 +31,20 @@ The complete core operand contract and three required source cases pass debug/re
 (`/tmp/meowy-null-literal-cases.log`). Core evidence/gaps were reviewed and its hash and
 coverage report updated; proof obligations and prior expectations remain unchanged.
 All four contract checks pass (`/tmp/meowy-null-literal-contract-docs.log`).
-Clippy passes with warnings denied
-(`/tmp/meowy-null-literal-clippy.log`). The guide updates and complete final gate remain.
-The checkout moved to `/nvme/Projects/work/didcat/repos/meowy`; the session's writable root
-still names the old path, so applying edits requires filesystem approval.
+Compiler guides and syntax/required references include null and the closed operand set.
+Their evidence/gaps were reviewed and coverage regenerated. Proof obligations are unchanged.
+
+All 14 `make test` groups pass: 3602 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged capability gaps and zero debug/release failures.
+Runtime debug/release/sanitized profiles each pass 100 regular cases across nine suites
+plus subprocess probes. Formatting, all-target Clippy, both editors, build and all
+contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
+`build/verification-null-literal`.
+The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
+records, prior evidence, proof obligations, exact capability pins and user-owned files
+(`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
+Next: resume scope/block scalar result histories from the
+[call-result handoff](#scheduled-scalar-call-results); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -7245,8 +7255,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scheduled scalar call invalidation](#scheduled-scalar-call-invalidation):
-qualify call-result dependencies before propagating full declared scalar result domains.
+Resume the ordered actions in [Scheduled scalar call results](#scheduled-scalar-call-results):
+qualify scope/block scalar source and control histories before emission/completion transfers.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are

@@ -94,6 +94,31 @@ continue to evaluate ordinary arguments. See the
 [boolean contract](../../docs/reference/stdlib/core.md#intrinsic-boolean-literals) and
 [required source case](../../docs/conformance/sources/boolean_literal_values.mwy).
 
+## Null escape and complete operands
+
+`literal(null)` constructs intrinsic null even when a local variable or parameter named
+`null` has another type. Immutable intrinsic aliases preserve this behavior:
+
+```meowy
+literal : @"core".literal
+null := 7
+
+absent <int32><null> : literal(null)
+<T> : literal(null)<>
+value <T> : literal(null)
+```
+
+Type queries and contextual lists preserve the null type; ordinary union/type rules apply.
+`literal((null))`, `literal(-null)` and `literal("null")` are `E207`. Null cannot serve as
+an integer list capacity. Broader required scalar-binding limits remain unchanged.
+
+The [complete operand contract](../../docs/reference/stdlib/core.md#literal-operand-contract)
+is numeric tokens, optionally directly negated, plus the exact names `true`, `false` and
+`null`. Strings, lists, blocks and type expressions already have distinct syntax and are
+outside this lookup escape. `<never>` has no values. The
+[required null source case](../../docs/conformance/sources/null_literal_values.mwy) covers
+shadowing, aliases, queries, nullable values, lists and ordinary callable identity.
+
 ## Integration
 
 Numeric storage uses ordinary mutation, borrowing, narrowing and scope rules.

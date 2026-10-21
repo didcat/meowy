@@ -115,7 +115,10 @@ numeric token, optionally directly negated, including through an alias of the
 intrinsic. Use `core.literal(-128)` for an intrinsic signed literal. Grouping or
 member syntax inside the argument is not a numeric token.
 The same intrinsic accepts the exact [boolean spellings](stdlib/core.md#intrinsic-boolean-literals)
-`true` and `false`, bypassing their local bindings without making them keywords.
+`true` and `false`, and the [null spelling](stdlib/core.md#intrinsic-null-literal) `null`,
+bypassing their local bindings without making them keywords. These and numeric tokens
+form the [complete operand set](stdlib/core.md#literal-operand-contract). Strings, lists,
+blocks, type expressions and arbitrary expressions are outside this syntax-only escape.
 
 ## Literals, values, and comments
 

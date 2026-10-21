@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-20. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-21. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -42,6 +42,24 @@ the exact six-asset contract migration, verification and individual commits.
 Unrelated docs/programs/hey/ remains excluded. The current compiler handoff below
 records the next milestone; full release qualification and proof evaluation remain
 incomplete.
+
+## Null literal escape
+
+`@"core".literal(null)` now bypasses shadowing and retains the intrinsic null type in
+queries, nullable values and contextual lists. The
+[complete operand contract](docs/reference/stdlib/core.md#literal-operand-contract)
+is numeric tokens (optionally directly negated), `true`, `false` and `null`.
+Other expression forms remain outside the lookup escape.
+
+Implementation `0b4bbd6a` and source contract `974280ff` pass focused checker/native/editor
+checks and all three new required cases in debug/release. The
+[compiler handoff](compiler/STATUS.md#null-literal-escape) tracks final verification.
+All 14 `make test` groups pass: 3602 library, 925 native, 86 Python and 501 required
+conformance cases; 19 unchanged gaps and zero debug/release failures. Runtime/sanitizer,
+formatting, Clippy and both editors pass (`/tmp/meowy-null-literal-gate.log`). The audit
+preserves all 517 prior cases, proof obligations, capability pins and user-owned
+`docs/programs/hey/` files (`/tmp/meowy-null-literal-preservation.log`).
+Existing proof/scalar continuation remains next. Nothing was pushed.
 
 ## Current compiler and coverage handoff
 

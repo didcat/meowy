@@ -73,11 +73,13 @@ work and input eligibility. Missing or ineligible fields do not retry decimal
 construction. Undotted names remain distinct; dotted declaration names are invalid.
 [`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) constructs its
 numeric syntax operand without reading a same-spelled binding. The same rule applies to
-[`core.literal(true)` and `core.literal(false)`](stdlib/core.md#intrinsic-boolean-literals).
-These remain boolean values in required evaluation and list inference. The literal and
-optional numeric negation use ordinary literal evaluation charges, with no runtime call
-or evaluation of an arbitrary argument expression. Aliasing the intrinsic retains
-this rule; aliasing its result creates an ordinarily typed value.
+[`core.literal(true)` and `core.literal(false)`](stdlib/core.md#intrinsic-boolean-literals),
+and [`core.literal(null)`](stdlib/core.md#intrinsic-null-literal). They retain their boolean
+or null types in required evaluation, type queries and list inference. Ordinary input
+eligibility and work rules still apply. The literal and optional numeric negation use
+ordinary literal evaluation charges, with no runtime call or evaluation of an arbitrary
+argument expression. Aliasing the intrinsic retains this rule; aliasing its result creates
+an ordinarily typed value. Null and boolean values cannot serve as integer list capacities.
 
 A pure ordinary function called at runtime remains a runtime operation. Optimizer
 folding does not make a runtime-dependent type legal. Type queries inspect types
