@@ -5511,131 +5511,79 @@ The current consumer below preserves this boundary; Git retains the qualificatio
 
 ### Scheduled scalar call invalidation
 
-Qualified direct scalar borrows preserve storage across address/acquisition/result stages,
-without scalar reference value facts. Call inputs retain original sites, owners and the
-last-argument/entry predecessor, independently of normal-result observation. Existing
-transparent wrapper qualifiers identify exact direct exclusive targets. Raw entry, argument
-and origin guards never filter candidates or erase unknown fallback.
-
-At a scheduled Call operation, input history and owner must match the current immutable
-state. Initialized target cells reset to declared domains and lose current version/origin
-identity; unavailable, uninitialized and partial cells retain their status. Control marks
-accumulate. Unaffected locals, old reads and copied values remain unchanged. Value/shared
-signature inputs have no caller mutation targets; no callee body establishes purity or
-specializes a value. Conditional paths join conservatively and stopped arguments create
-no operation transfer. Nonreturning calls do not gain normal-result rows.
-
-Unknown/incomplete targets and missing state remain unavailable. Reference variables,
-fields/aliases, receivers, temporaries and unsupported reference operations keep their
-existing gates. Path/Indirect/alias writes retain unavailable fallback before post-mutation
-facts can be used; precise alias handling still needs full backing layouts. No call or write
-recovers lost state. Call-result values, scope/results, broader places and proof outcomes
-remain separate. Late metadata, shape, history and budget failures publish no partial state.
-
-| Commit | Reviewable slice |
-| --- | --- |
-| `78408a24` | Preserve scalar storage across qualified direct borrows |
-| `75de22d7` | Project conservative call mutation inputs without raw-guard pruning |
-| `90e7c6a0` | Associate the borrowed call inputs with exact observed operation edges |
-| `0f7b68e9` | Keep generic unavailable-state fixtures independent of call support |
-| `fc4132ca` | Apply scheduled target invalidation while preserving historical state |
-| `c307d20a` | Verify initialization/control, late failures, budgets, joins and stopped inputs |
-
-All 18 new structural tests, 221 scalar-fact tests, 141 argument tests, the original
-1000-matcher case, formatting and all-target Clippy pass. Two capture regressions first
-reproduced missing call state. Four generic fixtures now use unsupported arithmetic;
-nonreturning-call and narrowing expectations reflect preserved storage. Limits and package
-dependencies are unchanged.
-
-Focused logs: `/tmp/meowy-call-invalidation-borrow-facts.log`,
-`/tmp/meowy-call-invalidation-inputs.log`, `/tmp/meowy-call-invalidation-arguments.log`,
-`/tmp/meowy-call-invalidation-call-observations.log`,
-`/tmp/meowy-call-invalidation-fallback-fixtures.log`, `/tmp/meowy-call-invalidation-before.log`,
-`/tmp/meowy-call-invalidation-capture.log`, `/tmp/meowy-call-invalidation-boundaries.log`,
-`/tmp/meowy-call-invalidation-facts.log`, `/tmp/meowy-call-invalidation-matchers.log`,
-`/tmp/meowy-call-invalidation-clippy.log`.
-Five new test files are linked as structural evidence. The audit preserves 589 protected
-tracked files and all 37 reference hashes/gaps/prior evidence
-(`/tmp/meowy-call-invalidation-preservation.log`). Baseline `7efca4f8` and separate user-file
-hashes are in `/tmp/meowy-call-invalidation-baseline.json`. The audit reports concurrent
-changes under user-owned `docs/programs/hey/`; this work leaves that entire folder untouched
-and excludes it from commits. No reference contract, source expectation or capability pin
-changed. No proof query executes and full release qualification remains incomplete.
-
-All 14 `make test` groups pass: 3580 library, 923 native, 86 Python and 495 required
-conformance cases, with 19 unchanged gaps and zero debug/release failures. Runtime
-debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
-subprocess probes, outside sandbox ptrace supervision. Summary:
-`/tmp/meowy-call-invalidation-gate.log`; details: `build/verification-call-invalidation`.
-Strict mode exits 1 only for the exact 19 pinned names/reasons
-(`/tmp/meowy-call-invalidation-strict.log`); the preservation audit confirms them.
-All four final documentation/tooling checks pass
-(`/tmp/meowy-call-invalidation-docs.log`). No known failures remain. Nothing was pushed.
-
-1. Qualify call-result data/control dependencies, then add normally observed scalar result
-   facts from full declared domains. Keep entry authority separate from argument/value
-   dependencies, preserve operation/result independence and never inspect callee bodies.
-   Verify empty/recursive/nonreturning calls, dependent or unknown arguments, storage copies
-   and exact work/payload limits before enabling downstream result facts.
-2. Keep scope/result transfers, broader reference/alias/emission precision, restart resets,
-   arithmetic and wider guards as separate slices. The current Path/Indirect/alias fallback
-   must remain until complete overlap/backing evidence supports more precise transfer.
-   Complete transitive query/E225 qualification and per-query logical charging before proof
-   outcomes. Preserve source expectations, capability pins and the original 1000-matcher
-   case; run the full gate across each series.
+Qualified direct scalar borrows preserve storage without reference value facts. Scheduled
+call operations reset every qualified exclusive target to its declared domain and discard
+current identity; unaffected cells and historical copies remain unchanged. Raw guards never
+prune candidates, and missing/incomplete targets remain unavailable. Path/Indirect/alias
+writes keep conservative fallback; no call or write restores lost state. Operation and
+result observations remain independent. The result consumer below preserves these rules;
+Git retains the earlier qualification, six implementation commits and full validation.
 
 ### Scheduled scalar call results
 
-Continuation plan, in dependency order:
+Normally observed call results retain original signatures, scalar shapes, returned edges,
+argument PointIds and qualified entry ancestry. Operation/result observations remain
+independent; a result-only observation cannot create a mutation transfer or recover storage.
+Scheduled consumption combines saved argument dependencies with entry control. Known
+dependency dominates unknown input; missing independence evidence keeps values unavailable.
+Later argument mutation cannot replace an earlier argument's value/control history.
 
-1. Associate independently observed call-result ports with original signatures,
-   returned edges and qualified entry control. Keep result values unavailable until
-   argument-time dependencies are qualified; verify result-only/stopped observations.
-2. Consume saved argument expression facts, then capture full declared scalar result
-   domains with fresh origins. Preserve data/control dependencies, copies and old
-   argument histories without inspecting callee bodies or specializing arguments.
-3. Qualify missing/dependent inputs, malformed histories, bottom, recursive/nonreturning
-   calls and exact work/payload boundaries with focused regression tests.
-4. Link structural evidence, run the full gate and strict pin/preservation audit, then
-   update this handoff and the root tracker. Proof outcomes remain separately gated.
+Null, boolean and integer results use full declared domains and fresh expression origins.
+Copies and transparent wrappers preserve result identity; separate calls have distinct
+origins. Constant, empty, recursive and normally typed aborting bodies never specialize the
+result or establish termination. Unknown storage stays unavailable, and bottom stays distinct.
+Reference/opaque inputs without scalar facts, float/string results and non-scalar result
+shapes retain conservative fallback. No callee body or final mutable frontend map is read
+for result facts. Late identity, work and payload failures publish no partial result.
 
-Inspection confirms that call-entry authority excludes argument data dependencies.
-Original `Effect::Call` arguments and scheduled expression snapshots provide the
-required history; the final mutable frontend maps cannot substitute for them. Scalar
-reference/opaque arguments without expression facts remain conservative. Result-only
-observations must not create a call operation or recover missing storage.
+| Commit | Reviewable slice |
+| --- | --- |
+| `291a3c81` | Qualify independent result observations and entry control |
+| `77df0c02` | Capture declared domains with saved argument dependencies and fresh origins |
+| `480cbb78` | Verify historical/nested dependencies, missing inputs and exact limits |
 
-`291a3c81` qualifies original signatures, scalar shapes, returned edges and entry ancestry
-independently of operation observation. Borrowed source records retain original arguments.
-Scheduled result consumption now joins saved argument data/control dependencies with that
-entry control. Known dependency dominates unknown input; missing independence evidence
-keeps values unavailable. Null, boolean and integer results use full declared domains and
-fresh expression origins; copies retain identity, separate calls never acquire correlation.
-Unknown storage remains unavailable, and bottom remains distinct. Reference/opaque inputs,
-float/string results and non-scalar result shapes retain conservative fallback.
+All 15 new structural tests and all 236 scalar-fact tests pass. Four result regressions
+first reproduced absent facts. Guards, Bind/Write copies, coercion forwarding, stopped calls
+and normally typed aborting bodies retain their boundaries. The original 1000-matcher test,
+formatting and all-target Clippy pass without relaxing limits or changing dependencies.
 
-All five observation tests, five result tests and 231 scalar-fact tests pass. Four result
-regressions first reproduced absent call facts. Recursive and constant/aborting bodies do
-not narrow declared domains; later guards preserve argument and entry dependencies.
-Logs: `/tmp/meowy-call-results-observations.log`,
+Focused logs: `/tmp/meowy-call-results-observations.log`,
 `/tmp/meowy-call-results-facts-prerequisite.log`, `/tmp/meowy-call-results-before.log`,
-`/tmp/meowy-call-results-values-facts.log`. Formatting and all-target Clippy pass
-(`/tmp/meowy-call-results-clippy.log`). `77df0c02` commits the declared-domain consumer
-with its focused regressions. All five consumer boundary tests now pass: stale/missing
-histories, later argument mutation, result-only storage, nested-call dependencies and exact
-work/payload/argument limits publish no partial facts. The nested-call fixture qualifies its
-original forwarding coercion before replay. The original 1000-matcher test passes unchanged.
-Logs: `/tmp/meowy-call-results-boundaries.log`, `/tmp/meowy-call-results-matchers.log`.
-Next: complete gate, structural evidence links and final handoff (plan item 4).
+`/tmp/meowy-call-results-values-facts.log`, `/tmp/meowy-call-results-values-final.log`,
+`/tmp/meowy-call-results-boundaries.log`, `/tmp/meowy-call-results-matchers.log`,
+`/tmp/meowy-call-results-clippy.log`. Three new test files are linked as structural evidence.
+No proof query executes, so this adds no observable conformance claim or capability waiver.
 
-The checkout moved during this continuation to `/nvme/Projects/work/didcat/repos/meowy`.
-The same Git history and pending slice were verified there; user-owned example files remain
-excluded. Commands before relocation name the previous `/personal/didcat/` path in logs.
+Baseline: `e881f2e7`; `/tmp/meowy-call-results-baseline.json` protects 592 tracked reference,
+source expectation, proof-obligation and capability-pin files. The audit preserves all 37
+reference hashes/gaps/prior evidence and records user-owned `docs/programs/hey/` separately.
+The checkout moved during this continuation to `/nvme/Projects/work/didcat/repos/meowy`;
+the same Git history and pending slice were verified there. Earlier logs name the old
+`/personal/didcat/` path. The audit records build-artifact changes under the user-owned
+example folder during this work; that folder is excluded and none of this work edits it.
+Preservation log: `/tmp/meowy-call-results-preservation.log`.
 
-Baseline: `e881f2e7`; `/tmp/meowy-call-results-baseline.json` protects reference sources,
-conformance expectations, proof obligations and capability pins. User-owned
-`docs/programs/hey/` is recorded separately and excluded. The full gate remains pending;
-the previous gate is recorded in the boolean-literal handoff below.
+All 14 `make test` groups pass: 3599 library, 924 native, 86 Python and 498 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Runtime
+debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
+subprocess probes, outside sandbox ptrace supervision. Summary:
+`/tmp/meowy-call-results-gate.log`; details: `build/verification-call-results`.
+Strict mode exits 1 only for the exact 19 pinned names/reasons
+(`/tmp/meowy-call-results-strict.log`); the preservation audit confirms them.
+No reference contract, source expectation, proof obligation or capability pin changed.
+All four final documentation/tooling checks pass (`/tmp/meowy-call-results-docs.log`).
+No known failures remain. Proof outcomes and full release qualification remain incomplete.
+Nothing was pushed.
+
+1. Qualify scope/block scalar result source and control histories in the forward facts
+   pipeline before transferring emissions/completion values. Preserve emission-not-return,
+   tail effects, independent observations, missing/stopped predecessors and declared shape
+   boundaries. Verify source order, historical copies and exact budgets with the full gate.
+2. Keep broader reference/alias/emission precision, restart resets, arithmetic and wider
+   guards separate. Preserve Path/Indirect/alias fallback until complete overlap/backing
+   evidence supports precise transfer. Unsupported scalar inputs/result shapes stay explicit.
+3. Complete transitive query/E225 qualification and per-query logical charging before proof
+   outcomes. Preserve source expectations, capability pins and the original 1000-matcher case.
 
 ### Boolean literal escapes
 
@@ -5682,8 +5630,8 @@ Strict mode exits 1 only for the exact 19 pinned names/reasons
 (`/tmp/meowy-boolean-literal-strict.log`); the preservation audit confirms them.
 All four final documentation/tooling checks pass
 (`/tmp/meowy-boolean-literal-final-docs.log`). No known failures remain. Nothing was pushed.
-The next compiler continuation remains call-result dependency qualification in the
-[scheduled call handoff](#scheduled-scalar-call-invalidation).
+The [call-result handoff](#scheduled-scalar-call-results) records the current compiler
+continuation and its ordered next steps.
 
 The Makefile is complete; the root tracker records release build and staged installation
 validation. Reference formatting and reference-bearing lists remain separate B001

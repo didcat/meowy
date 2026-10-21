@@ -2328,9 +2328,9 @@ snapshots and expression records preserve earlier copied values across writes an
 Expression records, wrapper associations, declared domains and snapshot rows share the
 bounded allowance. Exact payload/work exhaustion, stale versions, wrong types, missing
 rows and duplicate publication reject without changing prior records. These are structural
-analysis facts; no proof query executes. Call-result values, scope/result transfers,
-broader alias/emission handling, restart resets, arithmetic/guards and proof outcomes
-remain separate work. Per-query logical charging is still incomplete.
+analysis facts; no proof query executes. The call-result consumer below adds declared
+scalar domains. Scope/result transfers, broader alias/emission handling, restart resets,
+arithmetic/guards and proof outcomes remain separate. Per-query logical charging is incomplete.
 
 Snapshot capture dispatches expression handling only at result ports and avoids unused
 operation lookups for unavailable or structural states. Definition associations use bounded
@@ -2398,11 +2398,31 @@ Capture, qualification and authority publication share existing work/payload lim
 Late identity, invalid boolean shape, duplicate publication and exact-budget failures
 expose no partial result. Block statement duplicate checks use bounded hash membership
 without changing source order. Structural regressions cover these internal transfers;
-wider guards, broader place qualification, call-result values and executable
-proof queries remain separate. Complete transitive query/E225 qualification and
-per-query logical charging are still unfinished.
+wider guards, broader place qualification and executable proof queries remain separate.
+Complete transitive query/E225 qualification and per-query logical charging are unfinished.
 Isolated list probes box their private checkers to keep recursive temporary stack use
 small as capture metadata grows; existing probe limits and diagnostics are unchanged.
+
+Normally observed scalar calls now retain their original checked signature, argument
+PointIds, exact Returned edge and qualified entry control. These result observations
+remain independent of operation observations and caller mutation inputs. A result-only
+observation cannot create an operation or restore unavailable storage.
+
+At the scheduled Normal port, saved argument expression facts supply data/control
+dependencies independently of call-entry control. Later argument mutation cannot replace
+an earlier argument's history. Known dependency dominates unknown input; missing independence
+evidence keeps the value unavailable. Supported null, boolean and integer results use full
+declared domains with fresh expression origins and no local/version association. Direct
+copies and transparent wrappers preserve those origins; separate calls remain distinct.
+Constant, empty, recursive and normally typed aborting bodies supply no specialization or
+termination evidence. Missing state remains unavailable; known bottom has no origin.
+
+Reference/opaque arguments without scalar facts, float/string domains and non-scalar result
+shapes retain conservative fallback. Owners, normal histories and operation/result agreement
+are checked before atomic publication. Exact work/payload/argument limits and late failures
+leave earlier records untouched. These internal facts do not execute proof queries or close
+the remaining source-conformance gap. Scope/block result transfers and broader alias,
+restart, arithmetic, guard and transitive query/E225 qualification remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

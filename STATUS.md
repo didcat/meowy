@@ -45,26 +45,32 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-`@"core".literal(true)` and `literal(false)` now produce intrinsic booleans even when their
-names are shadowed. Aliases, required evaluation, type queries and contextual lists retain
-ordinary semantics. Numeric literal behavior is preserved; boolean operands remain syntax,
-not evaluated expressions. No parser keyword or runtime call is added.
+Scheduled scalar call results now use full declared null/boolean/integer domains, with
+fresh result identities and saved argument/control dependencies. Copies preserve identity;
+callee bodies and runtime arguments never specialize results. Missing/opaque input evidence,
+unsupported result shapes and unavailable storage remain conservative. Result observations
+stay independent from call mutation operations.
 
-The [boolean-literal handoff](compiler/STATUS.md#boolean-literal-escapes) records three
-implementation/contract commits. Four new checker tests and the numeric/boolean native
-cases pass, along with the related literal, required and list suites. Three new required
-conformance cases pass in debug/release. The three affected references, coverage inventory
-and compiler guides are updated. Vim/Neovim fixtures cover calls, operands and highlighting
-opt-out. All 14 `make test` groups pass: 3584 library, 924 native, 86 Python and 498
-required conformance cases, with 19 unchanged gaps and zero failures. Runtime and sanitizer
-profiles pass (`/tmp/meowy-boolean-literal-gate.log`; `build/verification-boolean-literal`).
-Strict mode exits 1 only for the exact 19 pinned names/reasons
-(`/tmp/meowy-boolean-literal-strict.log`). All four final documentation checks pass
-(`/tmp/meowy-boolean-literal-final-docs.log`). No known failures remain.
+The [call-result handoff](compiler/STATUS.md#scheduled-scalar-call-results) records three
+validated implementation commits and 15 new structural tests. Historical argument mutation,
+nested dependencies, stopped calls, copies, stale metadata and exact work/payload boundaries
+are covered. The original 1000-matcher test passes unchanged. All 14 `make test` groups
+pass: 3599 library, 924 native, 86 Python and 498 required conformance cases, with 19 unchanged
+gaps and zero failures in debug/release. Runtime/sanitizer profiles, formatting and Clippy
+pass (`/tmp/meowy-call-results-gate.log`; `build/verification-call-results`). Strict mode
+exits 1 only for the exact 19 pins (`/tmp/meowy-call-results-strict.log`). The audit preserves
+592 protected files and all 37 reference hashes/gaps/prior evidence. No known failures remain.
 
-The [scheduled call handoff](compiler/STATUS.md#scheduled-scalar-call-invalidation) remains
-the next compiler continuation. Proof outcomes and release qualification remain incomplete.
-Existing source expectations, capability pins and user-owned `docs/programs/hey/` are preserved.
+[Boolean literal escapes](compiler/STATUS.md#boolean-literal-escapes), editor support and
+the three required cases remain intact.
+Reference contracts, source expectations and capability pins are unchanged; structural
+coverage links are updated. Proof outcomes and full release qualification remain incomplete.
+Next: qualify scope/block scalar result histories before adding emission/completion transfers.
+
+The checkout moved to `/nvme/Projects/work/didcat/repos/meowy` during this work. User-owned
+`docs/programs/hey/` stays excluded; the audit records build-artifact changes observed during
+the turn. All four final documentation/tooling checks pass
+(`/tmp/meowy-call-results-docs.log`).
 Nothing was pushed.
 
 ## Build and test commands
@@ -78,15 +84,15 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: 3584 library, 924 native and 86 Python tests (41 tooling,
+All 14 `make test` groups pass: 3599 library, 924 native and 86 Python tests (41 tooling,
 15 runtime, 30 compiler), plus 498 required conformance cases with 19 unchanged gaps
 and zero debug/release failures. Both editors, all documentation/schema checks and
 runtime debug/release/sanitized profiles pass. Each runtime profile runs 100 regular
 cases across nine suites, plus subprocess probes. The gate ran outside sandbox ptrace
-supervision with sanitizers enabled. Summary: `/tmp/meowy-boolean-literal-gate.log`;
-individual logs: `build/verification-boolean-literal`. All 18 reporting tests pass
-within the tooling suite. Three boolean-literal cases were added; all 514 existing case
-records and capability pins are unchanged.
+supervision with sanitizers enabled. Summary: `/tmp/meowy-call-results-gate.log`;
+individual logs: `build/verification-call-results`. All 18 reporting tests pass
+within the tooling suite. All 517 current conformance case records and capability pins
+are unchanged by the call-result series.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.
