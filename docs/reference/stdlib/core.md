@@ -23,6 +23,28 @@ exclusive, and consuming calls of a concrete environment with signature `S`.
 compiler-checked capabilities, not keywords, runtime interfaces, or opt-in flags.
 See [callable environments](../types.md#callable-environments) for source examples.
 
+## Literal operand contract
+
+`core.literal` bypasses lexical lookup for the complete set of shadowable primitive
+value spellings. It accepts exactly one syntax operand from this table:
+
+| Operand | Result |
+| --- | --- |
+| Integer token, optionally directly preceded by `-` | Ordinary contextual integer literal |
+| Floating-point token, optionally directly preceded by `-` | Ordinary contextual floating-point literal |
+| `true` or `false` | Intrinsic `boolean` value |
+| `null` | Intrinsic `null` value |
+
+The operand is neither looked up nor evaluated. Strings, interpolated strings, lists,
+blocks, type expressions and other expressions are outside this contract (`E207`). Their
+syntax already distinguishes them from names. Grouping is also rejected; only numeric
+operands permit unary `-`. Missing or extra arguments are `E212`. `<never>` has no values
+and therefore no literal operand.
+
+The callable itself follows ordinary lexical resolution, including immutable aliases.
+The following sections define each accepted category; adding a new type or library
+constant does not implicitly extend this closed operand set.
+
 ## Intrinsic numeric literals
 
 `core.literal(number)` constructs the intrinsic number even when its spelling
@@ -31,7 +53,8 @@ numeric members such as `core.1`. Unbound undotted numbers and decimals with
 unbound numeric roots already construct intrinsic values; no prelude declarations
 are needed. With `10` bound, `core.literal(10.4)` bypasses member lookup and still
 constructs the decimal. Dotted spellings cannot be declaration names.
-The same intrinsic also accepts [boolean spellings](#intrinsic-boolean-literals).
+The same intrinsic also accepts [boolean spellings](#intrinsic-boolean-literals)
+and [`null`](#intrinsic-null-literal).
 
 ```meowy
 core : @"core"
@@ -92,6 +115,31 @@ ordinary type checking, required evaluation and contextual list inference. Requi
 evaluation charges ordinary boolean-literal work, including short-circuit skipping, without
 reading a shadowing binding. There is no runtime call or allocation. The intrinsic does
 not convert booleans to numbers or make boolean values valid list capacities.
+
+## Intrinsic null literal
+
+`core.literal(null)` constructs the intrinsic null value with type `<null>`, even when
+`null` names another value, a mutable binding or a function parameter. It has the same
+value as `core.null`. The operand must be the exact, unparenthesized spelling `null`.
+`literal((null))`, `literal(-null)`, `literal(core.null)` and `literal("null")` are `E207`.
+
+```meowy
+literal : @"core".literal
+null := 7
+
+absent <int32><null> : literal(null)
+<T> : literal(null)<>
+value <T> : literal(null)
+@"debug".print(absent)
+@"debug".print(value)
+```
+
+Both calls print `null`. Immutable intrinsic aliases retain syntax-only operands;
+unrelated functions named `literal` evaluate ordinary arguments. Type queries and
+contextual list inference retain the null type. Null follows ordinary union and type
+rules; it cannot initialize a non-null integer/boolean binding or serve as a list capacity.
+No shadowing binding is read, and no runtime call or allocation is introduced.
+Required evaluation retains its ordinary eligibility and work rules.
 
 ## Output and text
 

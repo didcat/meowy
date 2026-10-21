@@ -1,0 +1,25 @@
+debug : @"debug"
+literal : @"core".literal
+null := 7
+
+debug.print(@"core".literal(null))
+<T> : literal(null)<>
+value <T> : literal(null)
+debug.print(value)
+absent <int32><null> : literal(null)
+debug.print(absent <null>)
+values <null[2]><int32[2]> : [literal(null), literal(null)]
+| values <null[2]> | {
+    debug.print(values[1])
+    debug.print(values[2])
+}
+empty <null> : (null <int32>) { -> @"core".literal(null) }
+debug.print(empty(null))
+{
+    literal <int32> : (value <int32>) { -> value }
+    debug.print(literal(null))
+}
+{
+    null : @"core".literal
+    debug.print(null(null))
+}

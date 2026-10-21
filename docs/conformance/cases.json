@@ -5478,6 +5478,36 @@
         "code": "E207"
       },
       "reference": "../reference/stdlib/core.md#intrinsic-boolean-literals"
+    },
+    {
+      "id": "null_literal_values",
+      "phase": "run",
+      "source": "sources/null_literal_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "null\nnull\ntrue\nnull\nnull\nnull\n7\nnull\n"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-null-literal"
+    },
+    {
+      "id": "null_literal_group",
+      "phase": "check",
+      "source": "sources/null_literal_group.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-null-literal"
+    },
+    {
+      "id": "null_literal_negative",
+      "phase": "check",
+      "source": "sources/null_literal_negative.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-null-literal"
     }
   ]
 }

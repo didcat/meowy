@@ -7,15 +7,15 @@ records the plan. Keep this handoff current; Git holds history. Do not recreate 
 
 ## Null literal escape
 
-Investigation confirms `core.literal` accepts numeric syntax and boolean names but rejects
-`null`. Its complete lookup-escape domain is numbers plus the three predefined values
+`core.literal` now accepts null syntax. Its complete lookup-escape domain is numbers
+plus the three predefined values
 `true`, `false` and `null`; strings, lists, blocks, types and arbitrary expressions remain
 outside this syntax-only intrinsic. Reuse core constant expansion and lexical callee identity.
 Existing proof/scalar work and user-owned `docs/programs/hey/` remain separate.
 
 Dependency-ordered commits:
 
-1. Add null expansion and constant-kind context integration with checker/native/editor tests.
+1. `0b4bbd6a`: null expansion and constant-kind context integration with checker/native/editor tests.
 2. Specify the complete operand contract with required source cases and reviewed coverage.
 3. Align compiler/syntax/required guides; run the complete verification gate.
 
@@ -27,7 +27,12 @@ nullable/list values, skipped invalid operands and the existing numeric/boolean 
 All three native literal tests pass in debug/release, and all six documentation/editor
 checks pass. Logs: `/tmp/meowy-null-literal-checker.log`,
 `/tmp/meowy-null-literal-native.log`, `/tmp/meowy-null-literal-editor.log`.
-Source contract/evidence updates and the complete final gate remain pending.
+The complete core operand contract and three required source cases pass debug/release
+(`/tmp/meowy-null-literal-cases.log`). Core evidence/gaps were reviewed and its hash and
+coverage report updated; proof obligations and prior expectations remain unchanged.
+All four contract checks pass (`/tmp/meowy-null-literal-contract-docs.log`).
+Clippy passes with warnings denied
+(`/tmp/meowy-null-literal-clippy.log`). The guide updates and complete final gate remain.
 The checkout moved to `/nvme/Projects/work/didcat/repos/meowy`; the session's writable root
 still names the old path, so applying edits requires filesystem approval.
 
