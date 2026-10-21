@@ -186,6 +186,10 @@ call s:At('boolean_true_intrinsic : @"core".literal(true)', 'literal', 'meowyCal
 call s:At('boolean_true_intrinsic : @"core".literal(true)', 'true)', 'meowyBuiltinValue')
 call s:At('boolean_false_alias : literal(false)', 'literal', 'meowyCall')
 call s:At('boolean_false_alias : literal(false)', 'false)', 'meowyBuiltinValue')
+call s:At('null_intrinsic : @"core".literal(null)', 'literal', 'meowyCall')
+call s:At('null_intrinsic : @"core".literal(null)', 'null)', 'meowyBuiltinValue')
+call s:At('null_alias : literal(null)', 'literal', 'meowyCall')
+call s:At('null_alias : literal(null)', 'null)', 'meowyBuiltinValue')
 call s:At('rows <uint8[16]> : []', '16', 'meowyNumber')
 call s:At('view <uint8[]> : rows.slice()', '[]', 'meowyTypeDelimiter')
 call s:At('<Theme> : <"dark"><"light">', 'dark', 'meowyString')
@@ -425,6 +429,8 @@ runtime syntax/meowy.vim
 call s:At('enabled : true', 'true', 'meowyIdentifier')
 call s:At('boolean_true_intrinsic : @"core".literal(true)', 'true)', 'meowyIdentifier')
 call s:At('boolean_false_alias : literal(false)', 'false)', 'meowyIdentifier')
+call s:At('null_intrinsic : @"core".literal(null)', 'null)', 'meowyIdentifier')
+call s:At('null_alias : literal(null)', 'null)', 'meowyIdentifier')
 unlet g:meowy_highlight_builtin_values
 
 " Reloads must not duplicate autocmds or append settings repeatedly.

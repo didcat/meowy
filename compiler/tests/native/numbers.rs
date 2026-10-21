@@ -182,3 +182,27 @@ d.print(20.2[2])
     )
     .runs(b"11\n12\n11\n13\n9\n5\n");
 }
+
+#[test]
+pub(crate) fn core_literal_null_bypasses_names_in_runtime_queries_and_list_contexts() {
+    Case::new(
+        r#"
+d:@"debug"
+literal:@"core".literal
+null:=7
+d.print(@"core".literal(null))
+<T>:literal(null)<>
+x<T>:literal(null)
+d.print(x)
+value<int32><null>:literal(null)
+d.print(value<null>)
+values<null[2]><int32[2]>:[literal(null),literal(null)]
+|values<null[2]>|{d.print(values[1]);d.print(values[2])}
+f<null>:(null<int32>){->@"core".literal(null)}
+d.print(f(null))
+{literal<int32>:(value<int32>){->value};d.print(literal(null))}
+{null:@"core".literal;d.print(null(null))}
+"#,
+    )
+    .runs(b"null\nnull\ntrue\nnull\nnull\nnull\n7\nnull\n");
+}

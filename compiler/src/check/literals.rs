@@ -32,7 +32,9 @@ impl Checker {
             _ => (arg, false),
         };
         let mut leaf = match &leaf.kind {
-            ExprKind::Name(name) if !negative && matches!(name.as_str(), "true" | "false") => {
+            ExprKind::Name(name)
+                if !negative && matches!(name.as_str(), "true" | "false" | "null") =>
+            {
                 Expr {
                     kind: ExprKind::Field {
                         value: Box::new(Expr {
@@ -59,7 +61,7 @@ impl Checker {
             _ => {
                 return Err(Self::error(
                     "E207",
-                    "core.literal requires `true`, `false`, or a numeric token optionally preceded by `-`",
+                    "core.literal requires `true`, `false`, `null`, or a numeric token optionally preceded by `-`",
                     arg.span,
                 ));
             }
@@ -205,7 +207,6 @@ mod booleans {
             "true&&false",
             "flag",
             "True",
-            "null",
             "\"true\"",
         ] {
             let source = format!(r#"flag:true;x:@"core".literal({arg})"#);
@@ -251,6 +252,72 @@ mod booleans {
                 })
                 .unwrap();
             assert!(checker.body_inputs.is_empty());
+        }
+    }
+}
+
+#[cfg(test)]
+mod nulls {
+    #[test]
+    pub(crate) fn null_literal_escape_bypasses_shadowing_and_preserves_callable_identity() {
+        for source in [
+            r#"x<null>:@"core".literal(null)"#,
+            r#"null:"shadowed";x<null>:@"core".literal(null)"#,
+            r#"core:@"core";literal:core.literal;null:=7;x<null>:literal(null)"#,
+            r#"null:@"core".literal;x<null>:null(null)"#,
+            r#"literal<int32>:(value<int32>){->value};null:7;x<int32>:literal(null)"#,
+            r#"f<null>:(null<int32>){->@"core".literal(null)};x<null>:f(7)"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+    }
+
+    #[test]
+    pub(crate) fn null_literal_escape_keeps_queries_nullable_values_and_list_contexts() {
+        for source in [
+            r#"null:7;<T>:@"core".literal(null)<>;x<T>:@"core".literal(null)"#,
+            r#"lit:@"core".literal;null:7;<T>:{->lit(null)<>};x<T>:lit(null)"#,
+            r#"f<null>:(null<int32>){<T>:@"core".literal(null)<>;x<T>:@"core".literal(null);->x}"#,
+            r#"lit:@"core".literal;null:7;x<int32><null>:lit(null)"#,
+            r#"lit:@"core".literal;null:7;v:[lit(null),lit(null)];x<null>:v[1]"#,
+            r#"lit:@"core".literal;null:7;v<null[1]><int32[1]>:[lit(null)]"#,
+            r#"lit:@"core".literal;null:7;<Element>:<int32><null>;v<Element[2]>:[lit(null),7]"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+    }
+
+    #[test]
+    pub(crate) fn null_literal_escape_keeps_syntax_type_and_arity_boundaries() {
+        for arg in [
+            "(null)",
+            "-null",
+            "!null",
+            "null==null",
+            "Null",
+            "never",
+            "@\"core\".null",
+            "\"null\"",
+            "[null]",
+            "{->null}",
+            "<null>",
+        ] {
+            let source = format!(r#"x:@"core".literal({arg})"#);
+            let errors = crate::compile(&source).unwrap_err();
+            assert_eq!(errors[0].code, "E207", "{source}: {errors:?}");
+        }
+        for (source, code) in [
+            (r#"x<int32>:@"core".literal(null)"#, "E207"),
+            (r#"x<boolean>:@"core".literal(null)"#, "E207"),
+            (r#"x<int32[@"core".literal(null)]>:[]"#, "E104"),
+            (r#"x:@"core".literal(null,null)"#, "E212"),
+            (
+                r#"<T>:{flag:false&&@"core".literal(null);->flag<>}"#,
+                "E222",
+            ),
+        ] {
+            let errors = crate::compile(source).unwrap_err();
+            assert_eq!(errors[0].code, code, "{source}: {errors:?}");
         }
     }
 }

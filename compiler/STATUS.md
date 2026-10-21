@@ -1,9 +1,35 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Boolean literal escapes pass all 14 verification groups.
+Updated: 2026-10-20. Null literal escape implementation is under focused verification.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
+
+## Null literal escape
+
+Investigation confirms `core.literal` accepts numeric syntax and boolean names but rejects
+`null`. Its complete lookup-escape domain is numbers plus the three predefined values
+`true`, `false` and `null`; strings, lists, blocks, types and arbitrary expressions remain
+outside this syntax-only intrinsic. Reuse core constant expansion and lexical callee identity.
+Existing proof/scalar work and user-owned `docs/programs/hey/` remain separate.
+
+Dependency-ordered commits:
+
+1. Add null expansion and constant-kind context integration with checker/native/editor tests.
+2. Specify the complete operand contract with required source cases and reviewed coverage.
+3. Align compiler/syntax/required guides; run the complete verification gate.
+
+All three new checker tests reproduced E207 rejection before implementation
+(`/tmp/meowy-null-literal-before.log`). Null now uses the existing core constant expansion.
+Type hints, required boolean forms and contextual list probes now reuse the resolved
+constant type instead of assuming booleans. All 12 literal tests pass, including queries,
+nullable/list values, skipped invalid operands and the existing numeric/boolean cases.
+All three native literal tests pass in debug/release, and all six documentation/editor
+checks pass. Logs: `/tmp/meowy-null-literal-checker.log`,
+`/tmp/meowy-null-literal-native.log`, `/tmp/meowy-null-literal-editor.log`.
+Source contract/evidence updates and the complete final gate remain pending.
+The checkout moved to `/nvme/Projects/work/didcat/repos/meowy`; the session's writable root
+still names the old path, so applying edits requires filesystem approval.
 
 ## Numeric shadowing implementation
 

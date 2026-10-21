@@ -1,5 +1,5 @@
 use crate::ast::{self, ExprKind, StmtKind};
-use crate::check::{Checker, Constant, Result, Scope, Value};
+use crate::check::{Checker, Result, Scope, Value};
 use crate::diagnostic::Diagnostic;
 use crate::flow::Guard;
 use crate::hir::Type;
@@ -231,12 +231,10 @@ impl Checker {
             ));
         }
         if matches!(&value.kind, ExprKind::Field { .. })
-            && matches!(
-                self.hint_symbol(value),
-                Some(Value::Constant(Constant::Bool(_)))
-            )
+            && let Some(Value::Constant(constant)) = self.hint_symbol(value)
         {
-            return Ok(if expected.accepts(&Type::Bool) {
+            let ty = Self::constant_expr(constant, value.span).ty;
+            return Ok(if expected.accepts(&ty) {
                 Fit::Yes
             } else {
                 Fit::No

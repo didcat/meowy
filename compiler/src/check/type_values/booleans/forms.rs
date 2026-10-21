@@ -1,6 +1,6 @@
 use crate::ast::{self, ExprKind};
 use crate::check::{
-    Checker, Constant, Result, Value,
+    Checker, Result, Value,
     type_values::{MAX_DEPTH, MAX_WORK, Work},
 };
 use crate::diagnostic::Diagnostic;
@@ -43,11 +43,8 @@ impl Checker {
                     )
                 }),
             ExprKind::Field { .. } => {
-                if matches!(
-                    self.hint_symbol(expr),
-                    Some(Value::Constant(Constant::Bool(_)))
-                ) {
-                    Ok(Type::Bool)
+                if let Some(Value::Constant(value)) = self.hint_symbol(expr) {
+                    Ok(Self::constant_expr(value, expr.span).ty)
                 } else {
                     self.required_path(expr).map(|(_, ty, _)| ty)
                 }
