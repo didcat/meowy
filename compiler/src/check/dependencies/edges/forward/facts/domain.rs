@@ -1,9 +1,7 @@
 use super::*;
-#[cfg(test)]
 use crate::check::dependencies::ScalarKind;
 use crate::check::dependencies::ScalarLiteral;
 use crate::flow::Flow;
-#[cfg(test)]
 use crate::hir::Type;
 use integers::Integers;
 
@@ -23,7 +21,6 @@ pub(super) struct Domain {
 }
 
 impl Domain {
-    #[cfg(test)]
     pub(super) fn scalar(kind: ScalarKind, flow: &mut Flow, span: Span) -> Result<Option<Self>> {
         let ty = match kind {
             ScalarKind::Null => Type::Null,

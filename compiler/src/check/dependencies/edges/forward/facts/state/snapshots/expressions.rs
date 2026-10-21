@@ -1,6 +1,7 @@
 use super::super::super::super::effects::Effect;
 use super::*;
 
+mod calls;
 mod forwarded;
 mod logical;
 mod reads;
@@ -66,8 +67,15 @@ impl Snapshots {
             return Err(budget(span));
         }
         let (owner, effect) = *source;
+        if matches!(effect, Effect::Call { .. }) {
+            let control = observations
+                .call_controls
+                .get(&port)
+                .ok_or_else(|| invalid(span))?;
+            return self.call_expression(point, source, *control, flow, span);
+        }
         let (normal, control) = match effect {
-            Effect::Borrow(_) | Effect::Call { .. } => return Ok(()),
+            Effect::Borrow(_) => return Ok(()),
             Effect::Scalar(observed) => (observed.result, observed.control),
             Effect::Read {
                 normal, control, ..

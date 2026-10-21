@@ -31,11 +31,14 @@ pub(crate) fn scalar_guard_authority_uses_historical_reads_and_copies() {
 
 #[test]
 pub(crate) fn scalar_guard_authority_keeps_unknown_bottom_and_stopped_inputs_distinct() {
-    for source in ["f<boolean>:(){->true};|f()|1", "|1==1|1"] {
+    for (source, expected) in [
+        ("f<boolean>:(){->true};|f()|1", Authority::Boolean(3)),
+        ("|1==1|1", Authority::Unknown),
+    ] {
         let (_, _, _, snapshots) = capture(source);
         assert_eq!(
             snapshots.guards.values().next().unwrap().authority,
-            Authority::Unknown
+            expected
         );
     }
     let (_, _, _, snapshots) = capture("f:(n<never>){|true|1}");

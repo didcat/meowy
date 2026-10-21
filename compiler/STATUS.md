@@ -5605,14 +5605,27 @@ required history; the final mutable frontend maps cannot substitute for them. Sc
 reference/opaque arguments without expression facts remain conservative. Result-only
 observations must not create a call operation or recover missing storage.
 
-Result-port qualification is complete: original signatures, scalar shapes, returned edges
-and entry ancestry are checked independently of operation observation. Borrowed source
-records and qualified entry control are retained; scalar result values remain unavailable.
-All five new observation tests and 226 scalar-fact tests pass, including exact observation
-work/payload boundaries, missing ancestry, recursion and normally typed calls whose bodies
-stop. Logs: `/tmp/meowy-call-results-observations.log` and
-`/tmp/meowy-call-results-facts-prerequisite.log`. Next: argument-time dependency consumption
-and full declared result facts (plan item 2).
+`291a3c81` qualifies original signatures, scalar shapes, returned edges and entry ancestry
+independently of operation observation. Borrowed source records retain original arguments.
+Scheduled result consumption now joins saved argument data/control dependencies with that
+entry control. Known dependency dominates unknown input; missing independence evidence
+keeps values unavailable. Null, boolean and integer results use full declared domains and
+fresh expression origins; copies retain identity, separate calls never acquire correlation.
+Unknown storage remains unavailable, and bottom remains distinct. Reference/opaque inputs,
+float/string results and non-scalar result shapes retain conservative fallback.
+
+All five observation tests, five result tests and 231 scalar-fact tests pass. Four result
+regressions first reproduced absent call facts. Recursive and constant/aborting bodies do
+not narrow declared domains; later guards preserve argument and entry dependencies.
+Logs: `/tmp/meowy-call-results-observations.log`,
+`/tmp/meowy-call-results-facts-prerequisite.log`, `/tmp/meowy-call-results-before.log`,
+`/tmp/meowy-call-results-values-facts.log`. Formatting and all-target Clippy pass
+(`/tmp/meowy-call-results-clippy.log`). Next: malformed/late histories, argument-time
+mutation and exact consumer limits (plan item 3), then the complete gate/evidence update.
+
+The checkout moved during this continuation to `/nvme/Projects/work/didcat/repos/meowy`.
+The same Git history and pending slice were verified there; user-owned example files remain
+excluded. Commands before relocation name the previous `/personal/didcat/` path in logs.
 
 Baseline: `e881f2e7`; `/tmp/meowy-call-results-baseline.json` protects reference sources,
 conformance expectations, proof obligations and capability pins. User-owned

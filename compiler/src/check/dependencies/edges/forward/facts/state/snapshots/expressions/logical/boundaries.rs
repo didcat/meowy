@@ -38,7 +38,6 @@ pub(crate) fn scalar_logical_boundaries_keep_skipped_unknowns_stopped_inputs_and
         ("true&&(1==1)", None),
         ("false||(1==1)", None),
         ("f<boolean>:(){->true};true||f()", Some(true)),
-        ("f<boolean>:(){->true};false||f()", None),
         (
             "d:@\"debug\";stop<never>:(){d.panic(\"stop\")};false&&stop()",
             None,
@@ -59,6 +58,18 @@ pub(crate) fn scalar_logical_boundaries_keep_skipped_unknowns_stopped_inputs_and
             "{source}"
         );
     }
+    let (mut checker, _, _, snapshots) = capture("f<boolean>:(){->true};false||f()");
+    let point = *checker.branch_inputs.keys().next().unwrap();
+    assert_eq!(
+        snapshots.expressions[&point].value.as_ref().unwrap().domain,
+        Domain::scalar(
+            crate::check::dependencies::ScalarKind::Bool,
+            &mut checker.flow,
+            Span::default()
+        )
+        .unwrap()
+        .unwrap()
+    );
     let (checker, _, _, snapshots) = capture("f:(n<never>){true&&false}");
     let point = *checker.branch_inputs.keys().next().unwrap();
     let value = snapshots.expressions[&point].value.as_ref().unwrap();
