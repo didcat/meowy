@@ -114,6 +114,81 @@ pub(super) fn publish(checker: &mut Checker, snapshots: &mut Snapshots, port: Po
 }
 
 #[test]
+pub(crate) fn scalar_completion_incoming_keeps_missing_inputs_and_exact_limits() {
+    let mut edges = edges();
+    let leave = Port::Leave(0);
+    edges.push((Family::Endpoint, Edge::new(leave, END, Route::Join)));
+    let graph = graph(&edges);
+    let (mut checker, mut snapshots) = setup(&graph);
+    let seed = Value::Known(snapshots.seeds[&START]);
+    publish(&mut checker, &mut snapshots, LEFT, seed);
+    publish(&mut checker, &mut snapshots, RIGHT, Value::Missing);
+    let mut absent = HashMap::from([(leave, 0)]);
+    assert_eq!(
+        snapshots
+            .incoming_with(
+                &graph,
+                END,
+                Some(&absent),
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap(),
+        Value::Missing
+    );
+    snapshots.rows.get_mut(&RIGHT).unwrap().after = seed;
+    assert_eq!(
+        snapshots
+            .incoming(&graph, END, &mut checker.flow, Span::default())
+            .unwrap(),
+        Value::Missing
+    );
+    absent.insert(leave, 1);
+    assert!(
+        snapshots
+            .incoming_with(
+                &graph,
+                END,
+                Some(&absent),
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    absent.insert(leave, 0);
+    let start = checker.flow.work;
+    assert_eq!(
+        snapshots
+            .incoming_with(
+                &graph,
+                END,
+                Some(&absent),
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap(),
+        seed
+    );
+    let cost = checker.flow.work - start;
+    let saved = format!("{snapshots:?}");
+    for (extra, pass) in [(1, false), (0, true)] {
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
+        checker.flow.full = false;
+        let result = snapshots.incoming_with(
+            &graph,
+            END,
+            Some(&absent),
+            &mut checker.flow,
+            Span::default(),
+        );
+        assert_eq!(result.is_ok(), pass);
+        assert_eq!(format!("{snapshots:?}"), saved);
+    }
+}
+
+#[test]
 pub(crate) fn scalar_incoming_reuses_identical_snapshots_and_joins_distinct_histories() {
     for number in [7, 9] {
         let edges = edges();

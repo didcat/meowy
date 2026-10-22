@@ -5680,8 +5680,8 @@ Dependency-ordered commit plan:
    source and nested-body coverage boundaries.
 2. Qualify absent leave routes and observed leave controls (`b144487f`, validated).
    Non-fallthrough transparent branch regions are validated in `df9a553f`.
-3. Integrate those completion routes with scheduled immutable storage snapshots; preserve
-   stopped predecessors, guarded leaves, unknown controls and restart boundaries.
+3. Integrate completion routes with immutable storage snapshots (`347cc21f`, validated);
+   preserve stopped predecessors, guarded leaves, unknown controls and restart boundaries.
 4. Verify exact budgets and conservative boundaries, update structural evidence/handoffs,
    and run the full gate plus preservation audit. Split each slice again if needed.
 
@@ -5708,8 +5708,11 @@ storage tests and all 3632 library tests now pass (`/tmp/meowy-completion-storag
 including the unchanged matcher case. Qualified absent predecessors can be omitted;
 other missing/backedge inputs remain unavailable. Constant guards preserve historical
 copies; unknown effects, dead tails, wider shapes and nested exits retain conservative
-boundaries. No block expression value is published. Next: exact authority/transport
-budget, unknown-control and malformed-history regressions, then the final gate.
+boundaries. No block expression value is published. Exact authority/transport work and
+payload limits, unknown controls, missing inputs and stale owners/observations pass within
+all 270 scalar-fact tests (`/tmp/meowy-completion-boundaries.log`). All 17 new regressions
+pass. All-target Clippy passes (`/tmp/meowy-completion-clippy.log`). Next: structural
+evidence, full gate and preservation audit.
 
 1. Qualify absent exits and block completion authority in the forward scalar pipeline.
    Retain missing/stopped predecessors, emission-not-return, tail effects and independent

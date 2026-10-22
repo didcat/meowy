@@ -74,3 +74,99 @@ pub(crate) fn scalar_completion_storage_keeps_unknown_effects_dead_tails_and_res
         assert!(snapshots.expressions[&point].value.is_none(), "{source}");
     }
 }
+
+#[test]
+pub(crate) fn scalar_completion_storage_requires_known_control_and_original_owner_observations() {
+    let (mut checker, program, reports, snapshots) = capture("x:=1;'out{x=2;'out.leave()};x");
+    let (_, _, entries, parts) = checker
+        .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
+        .unwrap();
+    let (ports, parts) = checker
+        .scalar_ports(&reports, &entries, Span::default(), parts)
+        .unwrap();
+    let (graph, parts) = checker
+        .scalar_graph(&reports, ports, Span::default(), parts)
+        .unwrap();
+    let definitions = definitions::Definitions::default();
+    let (observations, parts) = checker
+        .scalar_scope_observations(
+            &reports,
+            &graph,
+            observations::Observations::new(&definitions),
+            Span::default(),
+            parts,
+        )
+        .unwrap();
+    let (mut observations, _) = checker
+        .scalar_completion_observations(&reports, &graph, observations, Span::default(), parts)
+        .unwrap();
+    let Port::Leave(block) = checker.scope_exits.values().next().unwrap().edge.to else {
+        panic!()
+    };
+    let before = snapshots.rows[&Port::BlockNormal(block)].before;
+    let saved = format!("{snapshots:?}");
+    for control in [Some(false), Some(true), None] {
+        observations.scopes.get_mut(&block).unwrap().control = control;
+        observations.completion.leaves.insert(block, control);
+        for port in [
+            Port::Leave(block),
+            Port::BlockNormal(block),
+            Port::BlockResult(block),
+        ] {
+            assert_eq!(
+                snapshots
+                    .complete(
+                        port,
+                        before,
+                        &observations,
+                        &mut checker.flow,
+                        Span::default()
+                    )
+                    .unwrap(),
+                control.map_or(Value::Missing, |_| before)
+            );
+            assert_eq!(
+                snapshots
+                    .complete(
+                        port,
+                        Value::Missing,
+                        &observations,
+                        &mut checker.flow,
+                        Span::default()
+                    )
+                    .unwrap(),
+                Value::Missing
+            );
+        }
+    }
+    observations.scopes.get_mut(&block).unwrap().owner += 1;
+    assert!(
+        snapshots
+            .complete(
+                Port::BlockNormal(block),
+                before,
+                &observations,
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    observations.scopes.get_mut(&block).unwrap().owner -= 1;
+    observations.scopes.get_mut(&block).unwrap().result = false;
+    assert!(
+        snapshots
+            .complete(
+                Port::BlockResult(block),
+                before,
+                &observations,
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(format!("{snapshots:?}"), saved);
+}
