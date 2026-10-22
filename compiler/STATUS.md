@@ -5678,8 +5678,8 @@ Dependency-ordered commit plan:
 
 1. Qualify original leave sources (`a3ecfd72`, validated), including synthetic/missing
    source and nested-body coverage boundaries.
-2. Qualify absent leave routes and observed leave controls against original graph edges.
-   Then separately qualify non-fallthrough transparent branch regions.
+2. Qualify absent leave routes and observed leave controls (`b144487f`, validated).
+   Qualify non-fallthrough transparent branch regions as a separate slice.
 3. Integrate those completion routes with scheduled immutable storage snapshots; preserve
    stopped predecessors, guarded leaves, unknown controls and restart boundaries.
 4. Verify exact budgets and conservative boundaries, update structural evidence/handoffs,
@@ -5697,7 +5697,11 @@ Leave-edge and absent-route qualification passes three focused tests, all 259 sc
 tests and the original matcher case (`/tmp/meowy-completion-authority.log`,
 `/tmp/meowy-completion-authority-facts.log`, `/tmp/meowy-completion-authority-matchers.log`).
 Unobserved explicit leaves remain present/missing; incomplete sources cannot establish absence.
-Next: qualify transparent branch regions that end at a validated leave.
+Transparent direct-leave branch regions now pass three focused tests, all 262 scalar-fact
+tests and the unchanged matcher case (`/tmp/meowy-completion-regions.log`,
+`/tmp/meowy-completion-region-facts.log`, `/tmp/meowy-completion-region-matchers.log`).
+Nested body completion and missing region links remain conservative. Next: integrate
+qualified absence and completion into snapshot joins without creating block result values.
 
 1. Qualify absent exits and block completion authority in the forward scalar pipeline.
    Retain missing/stopped predecessors, emission-not-return, tail effects and independent

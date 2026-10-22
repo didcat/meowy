@@ -1,5 +1,7 @@
 use super::*;
 
+mod regions;
+
 #[derive(Debug, Default, PartialEq, Eq)]
 pub(in super::super) struct Completion {
     pub(in super::super) absent: HashMap<Port, usize>,
@@ -30,6 +32,19 @@ impl Checker {
             }
             parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
             observations.completion.absent.insert(port, leave.owner);
+            if let Some(region) =
+                self.scalar_stopped_region(reports, graph, point, leave.owner, span)?
+            {
+                parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
+                if observations
+                    .completion
+                    .absent
+                    .insert(Port::Normal(region), leave.owner)
+                    .is_some()
+                {
+                    return Err(invalid(span));
+                }
+            }
             let control = super::super::super::controls::dependency(
                 point,
                 leave.owner,
