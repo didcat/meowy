@@ -5628,7 +5628,7 @@ Dependency-ordered commit plan:
 
 1. Qualify bounded scalar block histories and control identities (`dbbc5e1a`, validated).
 2. Qualify direct primary emission inputs (`03f84a7e`, validated).
-3. Capture emission-time scalar values with historical identity and stopped-path tests.
+3. Capture emission-time scalar values (`7397a00c`, validated).
 4. Verify conservative shape/control boundaries and exact work/payload limits; update
    structural evidence and handoffs, then run the full gate and preservation audit.
 
@@ -5653,7 +5653,10 @@ first reproduced absent facts (`/tmp/meowy-emission-values-before.log`) and now 
 the other two focused regressions (`/tmp/meowy-emission-values.log`). All 245 scalar-fact
 tests, the original matcher case and all-target Clippy pass
 (`/tmp/meowy-emission-value-facts.log`, `/tmp/meowy-emission-value-matchers.log`,
-`/tmp/meowy-scope-clippy.log`). Next: control, stale-history and exact-budget boundaries.
+`/tmp/meowy-scope-clippy.log`). Control ancestry, missing source/storage, stale histories,
+duplicate publication, known bottom and exact work/payload boundaries pass within all
+253 scalar-fact tests (`/tmp/meowy-scope-boundaries.log`). All 17 new structural tests pass.
+Next: update structural evidence and run the full repository gate and preservation audit.
 
 1. Qualify scope/block scalar result source and control histories in the forward facts
    pipeline before transferring emissions/completion values. Preserve emission-not-return,
