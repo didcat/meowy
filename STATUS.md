@@ -63,21 +63,20 @@ Existing proof/scalar continuation remains next. Nothing was pushed.
 
 ## Current compiler and coverage handoff
 
-Scalar block and direct primary emission histories now retain original owners, source
-points, result shapes and control ancestry. Emission-time snapshots preserve domains,
-versions and origins across later writes. Known scalar copies preserve storage for tail
-effects; missing/unsupported inputs stay unavailable and stopped blocks publish no value.
+Scalar completion now distinguishes qualified absent routes from missing evidence. Original
+leave sources, target owners and exact branch-region edges support storage propagation
+through empty scopes, tail writes and direct guarded leaves. Joins preserve historical
+copies and merge distinct cell versions; unsupported effects, shapes, control and restart
+boundaries remain conservative.
 
-The [scope-history handoff](compiler/STATUS.md#scalar-scope-result-histories) records four
-validated commits and 17 new structural tests. All 253 scalar-fact tests pass, along with
-the unchanged 1000-matcher regression. Full validation is recorded below. Reference
-contracts, source expectations, proof obligations and capability pins are unchanged;
-five test files add structural evidence to four owning reference records. The audit
-preserves 609 protected files, including all 10 user-owned files under `docs/programs/hey/`.
+The [completion handoff](compiler/STATUS.md#scalar-completion-authority) records five validated
+commits and 17 new structural regressions. All 270 scalar-fact tests, the original 1000-matcher
+case and all-target Clippy pass. All 14 verification groups and the preservation audit pass.
+Five new test files extend structural evidence; reference contracts, source expectations,
+proof obligations and capability pins are unchanged.
 
-In progress: [scalar completion authority](compiler/STATUS.md#scalar-completion-authority).
-Qualify absent exits and completion routes before transferring completed scalar block
-results. Broader aliases/composition, restart resets and proof outcomes remain gated.
+Next: retain per-path result-slot initialization, then publish completed scalar block values
+with their completion dependencies. Block expression values and proof outcomes remain gated.
 The full documented release remains incomplete. User-owned `docs/programs/hey/` stays
 excluded. Nothing was pushed.
 
@@ -92,16 +91,16 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-The latest `make test` run passes 13 groups: 3619 library, 925 native and 86 Python tests,
+The latest `make test` run passes all 14 groups: 3636 library, 925 native and 86 Python tests,
 plus 501 required conformance cases with 19 unchanged gaps and zero debug/release failures.
-Formatting, Clippy, both editors and documentation/schema checks pass. The runtime group
-hit LeakSanitizer's sandbox ptrace restriction; its complete rerun outside the sandbox
-passes debug/release/sanitized profiles, each with 100 regular cases across nine suites
-plus subprocess probes. All 14 groups are therefore validated, with the initial environment
-failure retained in `/tmp/meowy-scope-histories-gate.log` and
-`build/verification-scope-histories`. Runtime rerun: `/tmp/meowy-scope-runtime-unsandboxed.log`.
-All 520 conformance records and capability pins are unchanged. The preservation audit
-passes (`/tmp/meowy-scope-histories-preservation.log`).
+Formatting, Clippy, both editors and documentation/schema checks pass. Runtime
+debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
+subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
+Summary: `/tmp/meowy-completion-gate.log`; details: `build/verification-completion`.
+The audit preserves 609 protected files, all 520 conformance records, exact capability pins,
+all 37 reference hashes/gaps/prior evidence and all 10 user-owned files under
+`docs/programs/hey/` (`/tmp/meowy-completion-preservation.log`). The two intentional coverage
+metadata/report edits add 20 structural links without changing reference contracts.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.
@@ -1101,7 +1100,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-Resume the ordered [compiler handoff](compiler/STATUS.md#scalar-scope-result-histories)
+Resume the ordered [compiler handoff](compiler/STATUS.md#scalar-completion-authority)
 before the broader proof milestones below.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes

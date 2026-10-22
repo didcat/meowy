@@ -2440,12 +2440,27 @@ and unsupported values remain unavailable. Known bottom stays distinct. Named al
 and composed emissions retain their existing conservative fallback.
 
 Emission histories do not publish completed block values or select result candidates.
-The synthetic Leave-to-BlockNormal predecessor remains unavailable when unobserved;
-qualifying absent exits and completion authority is still required before result transfer.
-Stopped tails therefore cannot publish a value. Exact shared work/payload limits, stale
-histories and duplicate publication reject without changing earlier records. These are
-structural analysis facts; source conformance expectations and proof-outcome gates are
-unchanged.
+Completed values still require path-specific result-slot initialization and accumulated
+completion dependencies. Exact shared work/payload limits, stale histories and duplicate
+publication reject without changing earlier records. Source conformance expectations and
+proof-outcome gates are unchanged.
+
+Completion route qualification inventories original body leave facts, source points and
+target owners. Missing/synthetic sources or missing nested bodies cannot establish an
+absent leave route. Known sources must agree with captured scope exits and original graph
+edges. An unobserved explicit leave remains a missing input; it does not become absent.
+Only a validated leave and its exact transparent branch-region links establish that the
+statement or region cannot fall through. Nested body exits and broader stopped-route
+propagation remain separate.
+
+Scheduled storage joins may omit those qualified absent predecessors. Other missing
+inputs and restart backedges remain unavailable. Observed leave, block-normal and block-result
+ports preserve ordinary storage only with qualified scope identities and known control
+authority. Existing boolean guards select available paths; dependent controls never gain
+constant authority. Empty scopes, tail writes and direct guarded leaves preserve or join
+historical cell versions without producing block expression facts. Unknown effects, dead
+tails after an exit, unsupported shapes and incomplete control remain conservative. These
+facts do not establish termination, per-query E225 availability or a completed scalar value.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

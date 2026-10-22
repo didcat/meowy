@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-22. Scalar block/emission histories are qualified; validation is recorded below.
+Updated: 2026-10-22. Scalar completion routes and storage joins are qualified; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: resume absent-exit and completion authority from the
-[scope-history handoff](#scalar-scope-result-histories); proof evaluation stays gated.
+Next: resume result-slot initialization from the
+[completion handoff](#scalar-completion-authority); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5625,10 +5625,10 @@ capture saves the source domain, local/version identity, origin and controls at 
 time; known scalar copies preserve storage for tail writes. Later mutations never replace
 saved values. Missing/unsupported sources and storage remain unavailable; bottom is distinct.
 
-Completion values remain unavailable. The synthetic Leave-to-BlockNormal edge still has
-an unavailable predecessor when no leave is observed. Absent-exit/completion authority must
-be qualified before consuming emissions as completed block results. Candidate inventories
-cannot select values. Named aliases, composed emissions, broader shapes, dispatch and
+Completion values remain unavailable. The completion handoff below now qualifies absent
+leave routes and supported storage joins. Per-path result-slot initialization is still
+required before consuming emissions as completed block values. Candidate inventories cannot
+select values. Named aliases, composed emissions, broader shapes, dispatch and
 restart resets remain separate; no proof query executes or gains a capability waiver.
 
 | Commit | Reviewable slice |
@@ -5668,60 +5668,69 @@ No known product failures remain. Nothing was pushed.
 
 ### Scalar completion authority
 
-Current continuation baseline: `d22b3128`; preserve all prior commits and user-owned
-`docs/programs/hey/`. Scope histories and emission-time values are qualified, but the
-synthetic Leave-to-BlockNormal edge still poisons completion when no leave is observed.
-Missing graph observations cannot establish absence: qualify original captured exit
-sources and incomplete/synthetic source boundaries before admitting any completion route.
+Original body leave facts now qualify source points, target ownership and complete/incomplete
+coverage. Missing or synthetic sources and missing nested bodies cannot establish absence.
+Original scope-exit edges retain observed/unobserved distinctions and independent/dependent/
+unknown control. Exact transparent branch regions ending in a leave qualify non-fallthrough
+routes; a nested body or missing region remains conservative.
 
-Dependency-ordered commit plan:
+Scheduled joins omit only qualified absent predecessors. Observed scalar scope completion
+ports preserve ordinary storage with known authority, supporting empty scopes, tail writes,
+direct leaves and guarded leave/fallthrough joins. Existing boolean facts select paths;
+raw guards never authorize pruning. Missing state, unknown effects/control, explicit
+unobserved leaves, dead tails, broader result shapes and restart backedges remain unavailable.
+Earlier copies/emitted values retain their original versions and origins.
 
-1. Qualify original leave sources (`a3ecfd72`, validated), including synthetic/missing
-   source and nested-body coverage boundaries.
-2. Qualify absent leave routes and observed leave controls (`b144487f`, validated).
-   Non-fallthrough transparent branch regions are validated in `df9a553f`.
-3. Integrate completion routes with immutable storage snapshots (`347cc21f`, validated);
-   preserve stopped predecessors, guarded leaves, unknown controls and restart boundaries.
-4. Verify exact budgets and conservative boundaries, update structural evidence/handoffs,
-   and run the full gate plus preservation audit. Split each slice again if needed.
+Block expression values are still unavailable. Publishing them needs per-path result-slot
+initialization and accumulated completion dependencies; candidate inventories or the last
+emission cannot select a result. Broader nested-body non-fallthrough propagation, alias/
+composition precision, restart resets, termination and proof/query E225 remain separate.
 
-Guarded leaves also leave an unobserved branch-normal predecessor. Only a checked scope
-exit and its exact transparent region links can prove that route cannot fall through.
-This continuation completes route authority and storage joins. Publishing scalar block
-values then needs separate path-specific slot initialization; a candidate list or the
-last emitted value cannot establish it. The original leave-source inventory and three
-focused tests pass (`/tmp/meowy-completion-sources.log`), covering aliases, nested targets,
-owner isolation, missing/synthetic sources and stale records. All 3622 library tests pass,
-including the unchanged 1000-matcher case (`/tmp/meowy-completion-sources-library.log`).
-Leave-edge and absent-route qualification passes three focused tests, all 259 scalar-fact
-tests and the original matcher case (`/tmp/meowy-completion-authority.log`,
-`/tmp/meowy-completion-authority-facts.log`, `/tmp/meowy-completion-authority-matchers.log`).
-Unobserved explicit leaves remain present/missing; incomplete sources cannot establish absence.
-Transparent direct-leave branch regions now pass three focused tests, all 262 scalar-fact
-tests and the unchanged matcher case (`/tmp/meowy-completion-regions.log`,
-`/tmp/meowy-completion-region-facts.log`, `/tmp/meowy-completion-region-matchers.log`).
-Nested body completion and missing region links remain conservative. Next: integrate
-qualified absence and completion into snapshot joins without creating block result values.
-Two focused storage regressions first reproduced missing facts after empty/direct-leave
-scopes and guarded leave joins (`/tmp/meowy-completion-storage-before.log`). All four new
-storage tests and all 3632 library tests now pass (`/tmp/meowy-completion-storage-library.log`),
-including the unchanged matcher case. Qualified absent predecessors can be omitted;
-other missing/backedge inputs remain unavailable. Constant guards preserve historical
-copies; unknown effects, dead tails, wider shapes and nested exits retain conservative
-boundaries. No block expression value is published. Exact authority/transport work and
-payload limits, unknown controls, missing inputs and stale owners/observations pass within
-all 270 scalar-fact tests (`/tmp/meowy-completion-boundaries.log`). All 17 new regressions
-pass. All-target Clippy passes (`/tmp/meowy-completion-clippy.log`). Next: structural
-evidence, full gate and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `a3ecfd72` | Qualify original leave-source coverage and identity |
+| `b144487f` | Qualify absent routes and observed leave authority |
+| `df9a553f` | Qualify transparent non-fallthrough leave regions |
+| `347cc21f` | Transport storage through qualified completion routes |
+| `3484120b` | Verify control, missing history and exact budget boundaries |
 
-1. Qualify absent exits and block completion authority in the forward scalar pipeline.
-   Retain missing/stopped predecessors, emission-not-return, tail effects and independent
-   observations; then consume saved emission histories for supported scalar block results.
-   Verify empty blocks, guarded leaves, historical copies and exact budgets with the full gate.
-2. Keep broader alias/composition precision, restart resets, arithmetic and wider guards
-   separate. Preserve Path/Indirect/alias fallback until complete overlap/backing evidence
-   supports precise transfer. Unsupported scalar inputs/result shapes stay explicit.
-3. Complete transitive query/E225 qualification and per-query logical charging before proof
+All 17 new structural regressions and 270 scalar-fact tests pass. Two storage tests first
+reproduced missing facts and now preserve empty/direct-leave completion and guarded joins.
+The full gate has passed all 3636 library and 925 native tests, including the original
+1000-matcher case; no budget was relaxed. Formatting and all-target Clippy pass.
+Focused logs: `/tmp/meowy-completion-sources.log`, `/tmp/meowy-completion-sources-library.log`,
+`/tmp/meowy-completion-authority.log`, `/tmp/meowy-completion-region-facts.log`,
+`/tmp/meowy-completion-region-matchers.log`, `/tmp/meowy-completion-storage-before.log`,
+`/tmp/meowy-completion-storage-library.log`, `/tmp/meowy-completion-boundaries.log`,
+`/tmp/meowy-completion-clippy.log`.
+
+Five new test files add structural evidence to the existing reference inventory; the
+existing snapshot-input evidence remains linked. Reference contracts, source expectations,
+proof obligations and capability pins are unchanged. Baseline `d22b3128` protects 611 files
+in `/tmp/meowy-completion-baseline.json`, including user-owned `docs/programs/hey/`.
+The audit preserves 609 files byte-for-byte, all 520 conformance expectations, exact pins,
+all 37 reference hashes/gaps/prior evidence and all 10 user-owned files. The two intentional
+coverage metadata/report edits add 20 structural links and are reviewed separately
+(`/tmp/meowy-completion-preservation.log`).
+
+All 14 `make test` groups pass: 3636 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-completion-gate.log`; details: `build/verification-completion`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-completion-docs.log`).
+No known failures remain. Nothing was pushed.
+
+1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
+   emission-time copies, target identity and branch joins. Keep it separate from publication.
+   Verify uninitialized/partial slots, duplicate/emitted branches, nested targets and budgets.
+2. Publish qualified completed scalar block values using those slot states, declared shapes,
+   completion dependencies and independent observations. Verify empty/null results, guarded
+   leaves, stopped tails and historical copies; do not select from candidate inventories.
+3. Keep nested-body/dead-tail absence precision, aliases/composition, restart resets, arithmetic
+   and wider guards separate. Preserve Path/Indirect/alias fallback until complete evidence.
+4. Complete transitive query/E225 qualification and per-query logical charging before proof
    outcomes. Preserve source expectations, capability pins and the original 1000-matcher case.
 
 ### Boolean literal escapes
@@ -7353,8 +7362,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scalar scope result histories](#scalar-scope-result-histories):
-qualify absent exits and completion authority before publishing scalar block result facts.
+Resume the ordered actions in [Scalar completion authority](#scalar-completion-authority):
+retain per-path result-slot initialization before publishing completed scalar block values.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7400,8 +7409,8 @@ expression values, Bind/Write transfers and condition-authority metadata are com
 Scheduled boolean edge restriction supports qualified current locals, including merged
 versions. Short-circuit boolean result facts now feed guards and storage transfers.
 Call entry authority and conservative direct-target invalidation are integrated.
-Call-result facts and direct primary emission histories are implemented; absent-exit and
-block completion authority are next.
+Call-result facts, emission histories and qualified completion storage joins are implemented.
+Per-path result-slot initialization is next; completed block values remain unavailable.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
