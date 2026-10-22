@@ -4,10 +4,12 @@ use super::*;
 mod borrows;
 mod call_results;
 mod calls;
+mod emissions;
 mod logical;
 mod reads;
 mod scopes;
 mod wrappers;
+pub(super) use emissions::Emission;
 pub(super) use logical::Logical;
 pub(super) use wrappers::Forward;
 
@@ -22,6 +24,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) calls: Option<&'d super::super::arguments::Mutations>,
     pub(super) call_controls: HashMap<Port, Option<bool>>,
     pub(super) scopes: HashMap<hir::BlockId, scopes::Scope>,
+    pub(super) emissions: HashMap<hir::EmitId, Emission>,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -36,6 +39,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             calls: None,
             call_controls: HashMap::new(),
             scopes: HashMap::new(),
+            emissions: HashMap::new(),
         }
     }
 }

@@ -47,6 +47,8 @@ impl Checker {
             self.scalar_call_result_observations(reports, &graph, observations, span, parts)?;
         let (observations, parts) =
             self.scalar_scope_observations(reports, &graph, observations, span, parts)?;
+        let (observations, parts) =
+            self.scalar_emission_observations(reports, &graph, observations, span, parts)?;
         self.scalar_snapshots(&graph, &orders, &entries, &observations, span, parts)?;
         Ok(())
     }

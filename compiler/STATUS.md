@@ -5626,11 +5626,10 @@ Baseline: `a2484428`; user-owned `docs/programs/hey/` is untracked and excluded.
 
 Dependency-ordered commit plan:
 
-1. Qualify bounded scalar block result/emission histories and source/control identities,
-   with focused metadata and stale-identity regressions.
-2. Qualify scalar emission inputs and capture their saved value/control histories, with
-   focused tests for source order, copies, tail effects and stopped paths.
-3. Verify conservative shape/control boundaries and exact work/payload limits; update
+1. Qualify bounded scalar block histories and control identities (`dbbc5e1a`, validated).
+2. Qualify direct primary emission inputs and independent source/control observations.
+3. Capture emission-time scalar values with historical identity and stopped-path tests.
+4. Verify conservative shape/control boundaries and exact work/payload limits; update
    structural evidence and handoffs, then run the full gate and preservation audit.
 
 The graph retains a synthetic Leave-to-BlockNormal edge even without an observed leave.
@@ -5640,8 +5639,13 @@ interpret candidate inventories as selected values. This continuation completes 
 history prerequisite only. Scope observation qualification and all three focused tests
 pass (`/tmp/meowy-scope-observations.log`). Bounded header/endpoint checks avoid repeating
 whole-block validation. All 3605 library tests pass, including the unchanged 1000-matcher
-case (`/tmp/meowy-scope-prerequisite-library.log`). No budget was relaxed. Next: qualify
-direct primary emission inputs and retain their independent source/control histories.
+case (`/tmp/meowy-scope-prerequisite-library.log`). No budget was relaxed. Direct primary
+emission qualification now preserves source/target identity and independent initialization
+and statement observations. Three focused tests, all 242 scalar-fact tests and the original
+matcher case pass (`/tmp/meowy-emission-observations.log`,
+`/tmp/meowy-emission-facts-prerequisite.log`, `/tmp/meowy-emission-matchers.log`). Next:
+capture emission-time facts and preserve storage through qualified scalar copies, retaining
+tail effects while completion values remain unavailable.
 
 1. Qualify scope/block scalar result source and control histories in the forward facts
    pipeline before transferring emissions/completion values. Preserve emission-not-return,
