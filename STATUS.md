@@ -75,8 +75,9 @@ contracts, source expectations, proof obligations and capability pins are unchan
 five test files add structural evidence to four owning reference records. The audit
 preserves 609 protected files, including all 10 user-owned files under `docs/programs/hey/`.
 
-Next: qualify absent exits and completion authority before transferring completed scalar
-block results. Broader aliases/composition, restart resets and proof outcomes remain gated.
+In progress: [scalar completion authority](compiler/STATUS.md#scalar-completion-authority).
+Qualify absent exits and completion routes before transferring completed scalar block
+results. Broader aliases/composition, restart resets and proof outcomes remain gated.
 The full documented release remains incomplete. User-owned `docs/programs/hey/` stays
 excluded. Nothing was pushed.
 

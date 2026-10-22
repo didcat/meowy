@@ -5666,6 +5666,35 @@ and `build/verification-scope-histories`. Successful runtime rerun:
 checks pass (`/tmp/meowy-scope-histories-docs.log`).
 No known product failures remain. Nothing was pushed.
 
+### Scalar completion authority
+
+Current continuation baseline: `d22b3128`; preserve all prior commits and user-owned
+`docs/programs/hey/`. Scope histories and emission-time values are qualified, but the
+synthetic Leave-to-BlockNormal edge still poisons completion when no leave is observed.
+Missing graph observations cannot establish absence: qualify original captured exit
+sources and incomplete/synthetic source boundaries before admitting any completion route.
+
+Dependency-ordered commit plan:
+
+1. Qualify a bounded original leave-source inventory, including synthetic/missing source
+   and nested-body coverage boundaries.
+2. Qualify absent leave routes, non-fallthrough branch regions and observed leave controls
+   against the existing graph, with source/owner/stale identity regressions.
+3. Integrate those completion routes with scheduled immutable storage snapshots; preserve
+   stopped predecessors, guarded leaves, unknown controls and restart boundaries.
+4. Verify exact budgets and conservative boundaries, update structural evidence/handoffs,
+   and run the full gate plus preservation audit. Split each slice again if needed.
+
+Guarded leaves also leave an unobserved branch-normal predecessor. Only a checked scope
+exit and its exact transparent region links can prove that route cannot fall through.
+This continuation completes route authority and storage joins. Publishing scalar block
+values then needs separate path-specific slot initialization; a candidate list or the
+last emitted value cannot establish it. The original leave-source inventory and three
+focused tests pass (`/tmp/meowy-completion-sources.log`), covering aliases, nested targets,
+owner isolation, missing/synthetic sources and stale records. All 3622 library tests pass,
+including the unchanged 1000-matcher case (`/tmp/meowy-completion-sources-library.log`).
+Next: qualify original leave edges and independently absent normal routes against the graph.
+
 1. Qualify absent exits and block completion authority in the forward scalar pipeline.
    Retain missing/stopped predecessors, emission-not-return, tail effects and independent
    observations; then consume saved emission histories for supported scalar block results.
