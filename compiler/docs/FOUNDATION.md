@@ -2424,6 +2424,29 @@ leave earlier records untouched. These internal facts do not execute proof queri
 the remaining source-conformance gap. Scope/block result transfers and broader alias,
 restart, arithmetic, guard and transitive query/E225 qualification remain separate.
 
+Ordinary scalar block histories now retain exact owners, result shapes, parent consumers
+and independently observed normal/result ports. Bounded header and endpoint checks use the
+validated predecessor graph without repeating whole-block statement scans. Enclosing
+branch ancestry retains independent, dependent or unknown control; a result-only
+observation cannot restore a missing completion predecessor. Float, string, aggregate,
+reference and dispatch result transfers remain separate.
+
+Direct primary emissions retain original source points, target blocks, control ancestry
+and independent initialization/statement observations. Scheduled capture saves the source
+domain, local/version identity, origin and accumulated controls at the emission port.
+Known scalar copies preserve ordinary storage so tail statements can continue updating it;
+later writes never replace the saved emitted value. Missing sources, unavailable storage
+and unsupported values remain unavailable. Known bottom stays distinct. Named aliases
+and composed emissions retain their existing conservative fallback.
+
+Emission histories do not publish completed block values or select result candidates.
+The synthetic Leave-to-BlockNormal predecessor remains unavailable when unobserved;
+qualifying absent exits and completion authority is still required before result transfer.
+Stopped tails therefore cannot publish a value. Exact shared work/payload limits, stale
+histories and duplicate publication reject without changing earlier records. These are
+structural analysis facts; source conformance expectations and proof-outcome gates are
+unchanged.
+
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region

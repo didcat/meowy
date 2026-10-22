@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-21. Null literal escapes pass all 14 verification groups.
+Updated: 2026-10-22. Scalar block/emission histories are qualified; validation is recorded below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: resume scope/block scalar result histories from the
-[call-result handoff](#scheduled-scalar-call-results); proof evaluation stays gated.
+Next: resume absent-exit and completion authority from the
+[scope-history handoff](#scalar-scope-result-histories); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5618,53 +5618,61 @@ Nothing was pushed.
 
 ### Scalar scope result histories
 
-Current continuation: the scalar pipeline has saved expression/call histories but no
-qualified block emission/completion inputs. Reuse checked block/result reports and
-the predecessor schedule; preserve emission-not-return, tail effects, independent
-observations and unavailable predecessors. Proof outcomes and restart resets stay gated.
-Baseline: `a2484428`; user-owned `docs/programs/hey/` is untracked and excluded.
+Ordinary scalar block histories now qualify exact owner/shape/parent identities and
+independent normal/result observations. Direct primary emissions retain original source
+and target identities plus independent/dependent/unknown control ancestry. Scheduled
+capture saves the source domain, local/version identity, origin and controls at emission
+time; known scalar copies preserve storage for tail writes. Later mutations never replace
+saved values. Missing/unsupported sources and storage remain unavailable; bottom is distinct.
 
-Dependency-ordered commit plan:
+Completion values remain unavailable. The synthetic Leave-to-BlockNormal edge still has
+an unavailable predecessor when no leave is observed. Absent-exit/completion authority must
+be qualified before consuming emissions as completed block results. Candidate inventories
+cannot select values. Named aliases, composed emissions, broader shapes, dispatch and
+restart resets remain separate; no proof query executes or gains a capability waiver.
 
-1. Qualify bounded scalar block histories and control identities (`dbbc5e1a`, validated).
-2. Qualify direct primary emission inputs (`03f84a7e`, validated).
-3. Capture emission-time scalar values (`7397a00c`, validated).
-4. Verify conservative shape/control boundaries and exact work/payload limits; update
-   structural evidence and handoffs, then run the full gate and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `dbbc5e1a` | Qualify scalar block completion histories |
+| `03f84a7e` | Qualify direct primary emission sources and observations |
+| `7397a00c` | Capture emission-time values and preserve storage for tail writes |
+| `5cb125af` | Verify control, missing/stale history and exact budget boundaries |
 
-The graph retains a synthetic Leave-to-BlockNormal edge even without an observed leave.
-`snapshots/inputs.rs` deliberately makes such predecessors unavailable. Completion
-transfers therefore need separate exit/absence authority; do not bypass that rule or
-interpret candidate inventories as selected values. This continuation completes the
-history prerequisite only. Scope observation qualification and all three focused tests
-pass (`/tmp/meowy-scope-observations.log`). Bounded header/endpoint checks avoid repeating
-whole-block validation. All 3605 library tests pass, including the unchanged 1000-matcher
-case (`/tmp/meowy-scope-prerequisite-library.log`). No budget was relaxed. Direct primary
-emission qualification now preserves source/target identity and independent initialization
-and statement observations. Three focused tests, all 242 scalar-fact tests and the original
-matcher case pass (`/tmp/meowy-emission-observations.log`,
-`/tmp/meowy-emission-facts-prerequisite.log`, `/tmp/meowy-emission-matchers.log`). Next:
-capture emission-time facts and preserve storage through qualified scalar copies, retaining
-tail effects while completion values remain unavailable.
-Emission-time capture now preserves immutable source domains, versions, origins and controls;
-known scalar copies preserve ordinary storage for tail writes. Missing/unsupported inputs
-remain unavailable, and stopped blocks publish no completed value. The tail-write test
-first reproduced absent facts (`/tmp/meowy-emission-values-before.log`) and now passes with
-the other two focused regressions (`/tmp/meowy-emission-values.log`). All 245 scalar-fact
-tests, the original matcher case and all-target Clippy pass
-(`/tmp/meowy-emission-value-facts.log`, `/tmp/meowy-emission-value-matchers.log`,
-`/tmp/meowy-scope-clippy.log`). Control ancestry, missing source/storage, stale histories,
-duplicate publication, known bottom and exact work/payload boundaries pass within all
-253 scalar-fact tests (`/tmp/meowy-scope-boundaries.log`). All 17 new structural tests pass.
-Next: update structural evidence and run the full repository gate and preservation audit.
+All 17 new structural tests and all 253 scalar-fact tests pass. The tail-write regression
+first reproduced absent facts and now preserves the old emitted value alongside the new
+tail value. Bounded endpoint validation avoids repeating whole-block scans; the original
+1000-matcher regression passes without relaxing budgets. Formatting and all-target Clippy
+pass. Focused logs: `/tmp/meowy-scope-observations.log`,
+`/tmp/meowy-emission-observations.log`, `/tmp/meowy-emission-values-before.log`,
+`/tmp/meowy-emission-values.log`, `/tmp/meowy-scope-boundaries.log`,
+`/tmp/meowy-emission-value-matchers.log`, `/tmp/meowy-scope-clippy.log`.
 
-1. Qualify scope/block scalar result source and control histories in the forward facts
-   pipeline before transferring emissions/completion values. Preserve emission-not-return,
-   tail effects, independent observations, missing/stopped predecessors and declared shape
-   boundaries. Verify source order, historical copies and exact budgets with the full gate.
-2. Keep broader reference/alias/emission precision, restart resets, arithmetic and wider
-   guards separate. Preserve Path/Indirect/alias fallback until complete overlap/backing
-   evidence supports precise transfer. Unsupported scalar inputs/result shapes stay explicit.
+Five test files add 20 structural evidence links across four reference records. Baseline
+`a2484428` protects 611 files in `/tmp/meowy-scope-histories-baseline.json`; 609 are byte
+unchanged and the two intentional coverage metadata/report edits are reviewed separately.
+The audit preserves all 37 reference hashes/gaps/prior evidence, all 520 source expectations,
+proof obligations, exact capability pins and all 10 user-owned `docs/programs/hey/` files
+(`/tmp/meowy-scope-histories-preservation.log`).
+
+The full `make test` run passes 13 groups: 3619 library, 925 native, 86 Python and 501
+required conformance cases, with 19 unchanged gaps and zero debug/release failures.
+Formatting, Clippy, both editors and documentation/schema checks pass. Its runtime group
+hit LeakSanitizer's sandbox ptrace restriction; the complete unchanged runtime check passes
+outside the sandbox with sanitizers enabled. Each debug/release/sanitized profile passes
+100 regular cases across nine suites plus subprocess probes. All 14 groups are validated;
+the original environment failure remains recorded in `/tmp/meowy-scope-histories-gate.log`
+and `build/verification-scope-histories`. Successful runtime rerun:
+`/tmp/meowy-scope-runtime-unsandboxed.log`. All four final handoff documentation/tooling
+checks pass (`/tmp/meowy-scope-histories-docs.log`).
+No known product failures remain. Nothing was pushed.
+
+1. Qualify absent exits and block completion authority in the forward scalar pipeline.
+   Retain missing/stopped predecessors, emission-not-return, tail effects and independent
+   observations; then consume saved emission histories for supported scalar block results.
+   Verify empty blocks, guarded leaves, historical copies and exact budgets with the full gate.
+2. Keep broader alias/composition precision, restart resets, arithmetic and wider guards
+   separate. Preserve Path/Indirect/alias fallback until complete overlap/backing evidence
+   supports precise transfer. Unsupported scalar inputs/result shapes stay explicit.
 3. Complete transitive query/E225 qualification and per-query logical charging before proof
    outcomes. Preserve source expectations, capability pins and the original 1000-matcher case.
 
@@ -7297,8 +7305,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scheduled scalar call results](#scheduled-scalar-call-results):
-qualify scope/block scalar source and control histories before emission/completion transfers.
+Resume the ordered actions in [Scalar scope result histories](#scalar-scope-result-histories):
+qualify absent exits and completion authority before publishing scalar block result facts.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7344,7 +7352,8 @@ expression values, Bind/Write transfers and condition-authority metadata are com
 Scheduled boolean edge restriction supports qualified current locals, including merged
 versions. Short-circuit boolean result facts now feed guards and storage transfers.
 Call entry authority and conservative direct-target invalidation are integrated.
-Call-result dependency qualification and declared-domain result facts are next.
+Call-result facts and direct primary emission histories are implemented; absent-exit and
+block completion authority are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
