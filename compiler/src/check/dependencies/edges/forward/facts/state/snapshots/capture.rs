@@ -17,6 +17,21 @@ impl Checker {
         if orders.len() != entries.len() {
             return Err(invalid(span));
         }
+        let absent = &observations.completion.absent;
+        if absent.len() > MAX_EDGES || !self.flow.spend(absent.len() * 3 + 1) {
+            return Err(budget(span));
+        }
+        for (&port, &owner) in absent {
+            if !matches!(port, Port::Normal(_) | Port::Leave(_))
+                || graph.nodes.contains_key(&port)
+                || graph
+                    .external
+                    .get(&port)
+                    .is_some_and(|site| site.owner != owner)
+            {
+                return Err(invalid(span));
+            }
+        }
         let mut snapshots = self.scalar_entry_snapshots(graph, entries, span, parts)?;
         for (&owner, order) in orders {
             if order.len() > MAX_EDGES
@@ -41,7 +56,8 @@ impl Checker {
                 if position == 0 {
                     continue;
                 }
-                let before = snapshots.incoming(graph, port, &mut self.flow, span)?;
+                let before =
+                    snapshots.incoming_with(graph, port, Some(absent), &mut self.flow, span)?;
                 let bottom = match before {
                     Value::Known(id) => snapshots.states[id].reach == FALSE,
                     Value::Missing => false,
@@ -59,6 +75,11 @@ impl Checker {
                     || matches!(port, Port::Entry(_) | Port::Normal(_) | Port::BlockEntry(_))
                 {
                     before
+                } else if matches!(
+                    port,
+                    Port::Leave(_) | Port::BlockNormal(_) | Port::BlockResult(_)
+                ) {
+                    snapshots.complete(port, before, observations, &mut self.flow, span)?
                 } else {
                     if !self.flow.spend(1) {
                         return Err(budget(span));

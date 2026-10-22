@@ -3,6 +3,7 @@ use super::*;
 mod branches;
 mod calls;
 mod capture;
+mod completion;
 mod emissions;
 mod expressions;
 mod guards;

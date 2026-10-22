@@ -36,10 +36,10 @@ pub(crate) fn scalar_emission_values_preserve_tail_writes_without_publishing_the
         snapshots.rows[&Port::Emission(id)].before,
         snapshots.rows[&Port::Emission(id)].after
     );
-    assert_eq!(
+    assert!(matches!(
         snapshots.after(Port::BlockResult(target)),
-        Some(View::Missing)
-    );
+        Some(View::Known(_))
+    ));
     let parent = checker.bodies[&target].parent.unwrap();
     assert!(!snapshots.expressions.contains_key(&parent));
 }

@@ -66,6 +66,9 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
     let (observations, parts) = checker
         .scalar_emission_observations(&reports, &graph, observations, Span::default(), parts)
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_completion_observations(&reports, &graph, observations, Span::default(), parts)
+        .unwrap();
     let snapshots = checker
         .scalar_snapshots(
             &graph,
@@ -177,14 +180,9 @@ pub(crate) fn scalar_capture_preserves_empty_never_and_restart_entry_boundaries(
         snapshots.before(Port::BlockEntry(block)),
         Some(View::Known(_))
     ));
-    assert_eq!(
-        snapshots.before(Port::BlockNormal(block)),
-        Some(View::Missing)
-    );
-    assert_eq!(
-        snapshots.after(Port::BlockResult(block)),
-        Some(View::Missing)
-    );
+    let entry = snapshots.before(Port::BlockEntry(block));
+    assert_eq!(snapshots.before(Port::BlockNormal(block)), entry);
+    assert_eq!(snapshots.after(Port::BlockResult(block)), entry);
     let (_, _, _, snapshots) = capture("impossible<never>:(n<never>){->n}");
     for row in snapshots.rows.values().filter(|row| row.owner == 1) {
         for value in [row.before, row.after] {

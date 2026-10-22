@@ -8,6 +8,17 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Value> {
+        self.incoming_with(graph, port, None, flow, span)
+    }
+
+    pub(super) fn incoming_with(
+        &mut self,
+        graph: &graph::Graph<'_>,
+        port: Port,
+        absent: Option<&HashMap<Port, usize>>,
+        flow: &mut Flow,
+        span: Span,
+    ) -> Result<Value> {
         if !flow.spend(3) {
             return Err(budget(span));
         }
@@ -44,8 +55,18 @@ impl Snapshots {
                 return Err(invalid(span));
             }
             prior = Some(key);
-            if !input.reached || edge.route == Route::Backedge {
+            if edge.route == Route::Backedge {
                 missing = true;
+                continue;
+            }
+            if !input.reached {
+                if let Some(owner) = absent.and_then(|absent| absent.get(&edge.from)) {
+                    if *owner != node.site.owner {
+                        return Err(invalid(span));
+                    }
+                } else {
+                    missing = true;
+                }
                 continue;
             }
             let row = self.rows.get(&edge.from).ok_or_else(|| invalid(span))?;
@@ -83,6 +104,9 @@ impl Snapshots {
         for input in &node.incoming {
             if !flow.spend(3) {
                 return Err(budget(span));
+            }
+            if !input.reached {
+                continue;
             }
             let edge = graph.edges.get(input.edge).ok_or_else(|| invalid(span))?.1;
             let Value::Known(next) = self

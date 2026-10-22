@@ -5679,7 +5679,7 @@ Dependency-ordered commit plan:
 1. Qualify original leave sources (`a3ecfd72`, validated), including synthetic/missing
    source and nested-body coverage boundaries.
 2. Qualify absent leave routes and observed leave controls (`b144487f`, validated).
-   Qualify non-fallthrough transparent branch regions as a separate slice.
+   Non-fallthrough transparent branch regions are validated in `df9a553f`.
 3. Integrate those completion routes with scheduled immutable storage snapshots; preserve
    stopped predecessors, guarded leaves, unknown controls and restart boundaries.
 4. Verify exact budgets and conservative boundaries, update structural evidence/handoffs,
@@ -5702,6 +5702,14 @@ tests and the unchanged matcher case (`/tmp/meowy-completion-regions.log`,
 `/tmp/meowy-completion-region-facts.log`, `/tmp/meowy-completion-region-matchers.log`).
 Nested body completion and missing region links remain conservative. Next: integrate
 qualified absence and completion into snapshot joins without creating block result values.
+Two focused storage regressions first reproduced missing facts after empty/direct-leave
+scopes and guarded leave joins (`/tmp/meowy-completion-storage-before.log`). All four new
+storage tests and all 3632 library tests now pass (`/tmp/meowy-completion-storage-library.log`),
+including the unchanged matcher case. Qualified absent predecessors can be omitted;
+other missing/backedge inputs remain unavailable. Constant guards preserve historical
+copies; unknown effects, dead tails, wider shapes and nested exits retain conservative
+boundaries. No block expression value is published. Next: exact authority/transport
+budget, unknown-control and malformed-history regressions, then the final gate.
 
 1. Qualify absent exits and block completion authority in the forward scalar pipeline.
    Retain missing/stopped predecessors, emission-not-return, tail effects and independent
