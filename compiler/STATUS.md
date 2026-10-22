@@ -5616,6 +5616,33 @@ All four final documentation/tooling checks pass (`/tmp/meowy-call-results-docs.
 No known failures remain. Proof outcomes and full release qualification remain incomplete.
 Nothing was pushed.
 
+### Scalar scope result histories
+
+Current continuation: the scalar pipeline has saved expression/call histories but no
+qualified block emission/completion inputs. Reuse checked block/result reports and
+the predecessor schedule; preserve emission-not-return, tail effects, independent
+observations and unavailable predecessors. Proof outcomes and restart resets stay gated.
+Baseline: `a2484428`; user-owned `docs/programs/hey/` is untracked and excluded.
+
+Dependency-ordered commit plan:
+
+1. Qualify bounded scalar block result/emission histories and source/control identities,
+   with focused metadata and stale-identity regressions.
+2. Qualify scalar emission inputs and capture their saved value/control histories, with
+   focused tests for source order, copies, tail effects and stopped paths.
+3. Verify conservative shape/control boundaries and exact work/payload limits; update
+   structural evidence and handoffs, then run the full gate and preservation audit.
+
+The graph retains a synthetic Leave-to-BlockNormal edge even without an observed leave.
+`snapshots/inputs.rs` deliberately makes such predecessors unavailable. Completion
+transfers therefore need separate exit/absence authority; do not bypass that rule or
+interpret candidate inventories as selected values. This continuation completes the
+history prerequisite only. Scope observation qualification and all three focused tests
+pass (`/tmp/meowy-scope-observations.log`). Bounded header/endpoint checks avoid repeating
+whole-block validation. All 3605 library tests pass, including the unchanged 1000-matcher
+case (`/tmp/meowy-scope-prerequisite-library.log`). No budget was relaxed. Next: qualify
+direct primary emission inputs and retain their independent source/control histories.
+
 1. Qualify scope/block scalar result source and control histories in the forward facts
    pipeline before transferring emissions/completion values. Preserve emission-not-return,
    tail effects, independent observations, missing/stopped predecessors and declared shape

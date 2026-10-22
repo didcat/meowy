@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-21. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-22. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -83,7 +83,9 @@ exits 1 only for the exact 19 pins (`/tmp/meowy-call-results-strict.log`). The a
 the three required cases remain intact.
 Reference contracts, source expectations and capability pins are unchanged; structural
 coverage links are updated. Proof outcomes and full release qualification remain incomplete.
-Next: qualify scope/block scalar result histories before adding emission/completion transfers.
+In progress: [scalar scope result histories](compiler/STATUS.md#scalar-scope-result-histories).
+Qualify saved emission/completion inputs before transferring scalar results; the
+dependency-ordered commit plan is in the compiler handoff. No new validation claim yet.
 
 The checkout moved to `/nvme/Projects/work/didcat/repos/meowy` during this work. User-owned
 `docs/programs/hey/` stays excluded; the audit records build-artifact changes observed during

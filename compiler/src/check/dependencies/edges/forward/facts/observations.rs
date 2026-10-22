@@ -6,6 +6,7 @@ mod call_results;
 mod calls;
 mod logical;
 mod reads;
+mod scopes;
 mod wrappers;
 pub(super) use logical::Logical;
 pub(super) use wrappers::Forward;
@@ -20,6 +21,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) logical: HashMap<Port, Logical>,
     pub(super) calls: Option<&'d super::super::arguments::Mutations>,
     pub(super) call_controls: HashMap<Port, Option<bool>>,
+    pub(super) scopes: HashMap<hir::BlockId, scopes::Scope>,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -33,6 +35,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             logical: HashMap::new(),
             calls: None,
             call_controls: HashMap::new(),
+            scopes: HashMap::new(),
         }
     }
 }
