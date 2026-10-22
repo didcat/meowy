@@ -5627,7 +5627,7 @@ Baseline: `a2484428`; user-owned `docs/programs/hey/` is untracked and excluded.
 Dependency-ordered commit plan:
 
 1. Qualify bounded scalar block histories and control identities (`dbbc5e1a`, validated).
-2. Qualify direct primary emission inputs and independent source/control observations.
+2. Qualify direct primary emission inputs (`03f84a7e`, validated).
 3. Capture emission-time scalar values with historical identity and stopped-path tests.
 4. Verify conservative shape/control boundaries and exact work/payload limits; update
    structural evidence and handoffs, then run the full gate and preservation audit.
@@ -5646,6 +5646,14 @@ matcher case pass (`/tmp/meowy-emission-observations.log`,
 `/tmp/meowy-emission-facts-prerequisite.log`, `/tmp/meowy-emission-matchers.log`). Next:
 capture emission-time facts and preserve storage through qualified scalar copies, retaining
 tail effects while completion values remain unavailable.
+Emission-time capture now preserves immutable source domains, versions, origins and controls;
+known scalar copies preserve ordinary storage for tail writes. Missing/unsupported inputs
+remain unavailable, and stopped blocks publish no completed value. The tail-write test
+first reproduced absent facts (`/tmp/meowy-emission-values-before.log`) and now passes with
+the other two focused regressions (`/tmp/meowy-emission-values.log`). All 245 scalar-fact
+tests, the original matcher case and all-target Clippy pass
+(`/tmp/meowy-emission-value-facts.log`, `/tmp/meowy-emission-value-matchers.log`,
+`/tmp/meowy-scope-clippy.log`). Next: control, stale-history and exact-budget boundaries.
 
 1. Qualify scope/block scalar result source and control histories in the forward facts
    pipeline before transferring emissions/completion values. Preserve emission-not-return,

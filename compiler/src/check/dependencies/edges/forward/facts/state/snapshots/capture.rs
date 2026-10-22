@@ -46,7 +46,15 @@ impl Checker {
                     Value::Known(id) => snapshots.states[id].reach == FALSE,
                     Value::Missing => false,
                 };
-                let after = if before == Value::Missing
+                let after = if let Port::Emission(id) = port {
+                    if let Some(input) = observations.emissions.get(&id) {
+                        snapshots.emit(id, before, input, &mut self.flow, span)?
+                    } else if bottom {
+                        before
+                    } else {
+                        Value::Missing
+                    }
+                } else if before == Value::Missing
                     || bottom
                     || matches!(port, Port::Entry(_) | Port::Normal(_) | Port::BlockEntry(_))
                 {
@@ -120,6 +128,7 @@ impl Checker {
         }
         if snapshots.rows.len() != graph.nodes.len()
             || snapshots.guards.len() != observations.guards.len()
+            || snapshots.emissions.len() != observations.emissions.len()
         {
             return Err(invalid(span));
         }

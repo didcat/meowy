@@ -60,6 +60,12 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
     let (observations, parts) = checker
         .scalar_call_result_observations(&reports, &graph, observations, Span::default(), parts)
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_scope_observations(&reports, &graph, observations, Span::default(), parts)
+        .unwrap();
+    let (observations, parts) = checker
+        .scalar_emission_observations(&reports, &graph, observations, Span::default(), parts)
+        .unwrap();
     let snapshots = checker
         .scalar_snapshots(
             &graph,
