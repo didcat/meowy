@@ -4,6 +4,7 @@ use super::*;
 mod borrows;
 mod call_results;
 mod calls;
+mod completion;
 mod emissions;
 mod logical;
 mod reads;
@@ -25,6 +26,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) call_controls: HashMap<Port, Option<bool>>,
     pub(super) scopes: HashMap<hir::BlockId, scopes::Scope>,
     pub(super) emissions: HashMap<hir::EmitId, Emission>,
+    pub(super) completion: completion::Completion,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -40,6 +42,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             call_controls: HashMap::new(),
             scopes: HashMap::new(),
             emissions: HashMap::new(),
+            completion: completion::Completion::default(),
         }
     }
 }

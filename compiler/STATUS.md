@@ -5676,10 +5676,10 @@ sources and incomplete/synthetic source boundaries before admitting any completi
 
 Dependency-ordered commit plan:
 
-1. Qualify a bounded original leave-source inventory, including synthetic/missing source
-   and nested-body coverage boundaries.
-2. Qualify absent leave routes, non-fallthrough branch regions and observed leave controls
-   against the existing graph, with source/owner/stale identity regressions.
+1. Qualify original leave sources (`a3ecfd72`, validated), including synthetic/missing
+   source and nested-body coverage boundaries.
+2. Qualify absent leave routes and observed leave controls against original graph edges.
+   Then separately qualify non-fallthrough transparent branch regions.
 3. Integrate those completion routes with scheduled immutable storage snapshots; preserve
    stopped predecessors, guarded leaves, unknown controls and restart boundaries.
 4. Verify exact budgets and conservative boundaries, update structural evidence/handoffs,
@@ -5693,7 +5693,11 @@ last emitted value cannot establish it. The original leave-source inventory and 
 focused tests pass (`/tmp/meowy-completion-sources.log`), covering aliases, nested targets,
 owner isolation, missing/synthetic sources and stale records. All 3622 library tests pass,
 including the unchanged 1000-matcher case (`/tmp/meowy-completion-sources-library.log`).
-Next: qualify original leave edges and independently absent normal routes against the graph.
+Leave-edge and absent-route qualification passes three focused tests, all 259 scalar-fact
+tests and the original matcher case (`/tmp/meowy-completion-authority.log`,
+`/tmp/meowy-completion-authority-facts.log`, `/tmp/meowy-completion-authority-matchers.log`).
+Unobserved explicit leaves remain present/missing; incomplete sources cannot establish absence.
+Next: qualify transparent branch regions that end at a validated leave.
 
 1. Qualify absent exits and block completion authority in the forward scalar pipeline.
    Retain missing/stopped predecessors, emission-not-return, tail effects and independent
