@@ -5894,6 +5894,13 @@ unavailable. Null arguments, direct copies and nested guards consume the publish
 without callee specialization. All 3678 library tests pass, including 312 scalar-fact tests
 and the original 1000-matcher case (`/tmp/meowy-block-nulls-library.log`).
 Next: missing-state, identity and exact-budget publication boundaries.
+The boundary regressions pass, including exact budgets, duplicate publication, missing
+headers/state, partial slots and stale identity. The corrected bottom test distinguishes an
+observed block under a `never` parameter seed from an unobserved skipped body; neither
+absence precision nor resource limits were widened. All 318 scalar-fact tests and all-target
+Clippy pass (`/tmp/meowy-block-boundaries.log`, `/tmp/meowy-block-values-clippy.log`).
+The four feature/boundary slices add 15 structural regressions. Null commit: `eadbc7d9`.
+Next: documentation, coverage inventory, full verification and preservation audit.
 
 Next steps:
 

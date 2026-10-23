@@ -107,3 +107,60 @@ pub(crate) fn scalar_block_values_retain_tail_control_separately_from_emission_c
         );
     }
 }
+
+#[test]
+pub(crate) fn scalar_block_values_keep_guarded_leaves_and_partial_initialization_distinct() {
+    for (flag, expected) in [("true", Some(1)), ("false", Some(2)), ("param", None)] {
+        let prefix = if flag == "param" {
+            "f:(flag<boolean>)".to_owned()
+        } else {
+            format!("flag:{flag};")
+        };
+        let source = format!("{prefix}{{v:'out{{|flag|'out->1;|flag|'out.leave();'out->2}};v}}");
+        let (mut checker, _, _, snapshots) = capture(&source);
+        let op = checker.emissions.values().next().unwrap();
+        let parent = checker.bodies[&op.targets[0].block].parent.unwrap();
+        let actual = snapshots.expressions[&parent]
+            .value
+            .as_ref()
+            .map(|value| value.domain.clone());
+        assert_eq!(
+            actual,
+            expected.map(|n| Domain::integer(n, &mut checker.flow, Span::default()).unwrap())
+        );
+    }
+}
+
+#[test]
+pub(crate) fn scalar_block_values_distinguish_bottom_from_unsupported_shapes() {
+    let (checker, _, _, snapshots) = capture("f:(n<never>){v:{->7}}");
+    let body = checker
+        .bodies
+        .values()
+        .find(|body| body.parent.is_some())
+        .unwrap();
+    let value = snapshots.expressions[&body.parent.unwrap()]
+        .value
+        .as_ref()
+        .unwrap();
+    assert_eq!(value.domain, Domain::BOTTOM);
+    assert_eq!(value.origin, None);
+    for source in [
+        "false&&{->true}",
+        "v:{->\"cat\"}",
+        "v:{->1.5}",
+        "v:{->field:1}",
+        "x:1;v:{->&x}",
+    ] {
+        let (checker, _, _, snapshots) = capture(source);
+        let body = checker
+            .bodies
+            .values()
+            .find(|body| body.parent.is_some())
+            .unwrap();
+        assert!(
+            !snapshots.expressions.contains_key(&body.parent.unwrap()),
+            "{source}"
+        );
+    }
+}
