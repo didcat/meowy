@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Nested/stopped scalar paths are qualified; validation is below.
+Updated: 2026-10-23. Partial result-slot joins are in progress; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5900,6 +5900,41 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
 No known failures remain. Nothing was pushed.
 
+### Partial scalar result slots
+
+The current join collapses initialized/uninitialized result alternatives to `Partial`,
+discarding emitted domains and origins. Completion cannot safely recover those values.
+Retain a separate conditional value only for fully known slot alternatives; preserve
+ordinary local joins, missing/opaque markers, must-initialization and control dependence.
+Only completed null slots can currently combine an emission with an omitted primary;
+nullable scalar headers and broader transfers remain separate.
+
+Dependency-ordered commit plan:
+
+1. Complete: retain conditional slot domains/origins in bounded cell/tree joins, with
+   focused algebra, payload comparison and local-namespace regressions. Publication
+   remains unavailable until the second slice.
+2. Publish completed guarded null results using retained alternatives and complete
+   scope/history evidence; test emission origins, copies, control and incomplete inputs.
+3. Qualify exact work/payload limits, stale inputs, reentry and unknown boundaries;
+   rerun the scalar suite and the original 1000-matcher case without budget changes.
+4. Update foundation/structural evidence and both handoffs; run the complete gate and
+   audit preserved contracts, conformance expectations, capability pins and user files.
+
+Baseline: `4f7d097a`, clean tracked tree; `docs/programs/hey/` is user-owned and excluded.
+`/tmp/meowy-partial-slots-baseline.json` records 611 protected files. Investigation follows
+the result-slot contract in `values-and-blocks.md` and profile-1 joins in `stdlib/proof.md`.
+All 333 scalar-fact tests pass, including two new slot-join regressions. Conditional joins
+are associative, preserve only agreed emitted origins, retain control and absorb unknown
+inputs. Ordinary local joins still produce `Partial`; the existing uncertain-emission case
+still refuses to overwrite a possibly initialized slot. The original 1000-matcher test
+passes without budget changes. Logs: `/tmp/meowy-partial-slots-joins.log` and
+`/tmp/meowy-partial-slots-matchers.log`. All-target Clippy passes
+(`/tmp/meowy-partial-slots-joins-clippy.log`). The prior full gate below remains the baseline.
+
+Next: publish fully qualified conditional null slots in `state/snapshots/expressions/blocks.rs`
+with guarded source cases, origin/copy checks and missing-history/control boundaries.
+
 ### Nested and stopped scalar paths
 
 Scalar analysis now extends qualified absence from explicit leaves through nested bodies and
@@ -7597,8 +7632,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Nested and stopped scalar paths](#nested-and-stopped-scalar-paths):
-qualify partial result-slot joins without recovering unknown histories.
+Resume the ordered actions in [Partial scalar result slots](#partial-scalar-result-slots):
+retain known slot alternatives before publishing path-dependent implicit null.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are

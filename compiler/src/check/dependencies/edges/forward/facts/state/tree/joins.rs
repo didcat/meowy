@@ -1,7 +1,7 @@
 use super::*;
 
 impl Tree {
-    pub(in super::super) fn joined(
+    pub(in super::super) fn joined<const SLOTS: bool>(
         &self,
         other: &Self,
         flow: &mut Flow,
@@ -18,7 +18,7 @@ impl Tree {
         other.validate(flow, span)?;
         let limit = limit.min(MAX_EDGES);
         let mut room = limit;
-        let root = Node::joined(
+        let root = Node::joined::<SLOTS>(
             self.root.as_ref(),
             other.root.as_ref(),
             self.owner,
@@ -37,7 +37,7 @@ impl Tree {
 }
 
 impl Node {
-    pub(super) fn joined(
+    pub(super) fn joined<const SLOTS: bool>(
         left: Option<&Arc<Self>>,
         right: Option<&Arc<Self>>,
         owner: usize,
@@ -54,7 +54,7 @@ impl Node {
             }
             match (&left.kind, &right.kind) {
                 (Kind::Leaf(a, x), Kind::Leaf(b, y)) if a == b => {
-                    let cell = Cell::join(Some(x), Some(y), flow, span)?;
+                    let cell = Cell::join::<SLOTS>(Some(x), Some(y), flow, span)?;
                     if cell.same(x, flow, span)? {
                         return Ok(Some(left.clone()));
                     }
@@ -70,9 +70,9 @@ impl Node {
                     return Ok(Some(Arc::new(Self::leaf(*a, cell))));
                 }
                 (Kind::Branch(a, b), Kind::Branch(x, y)) if b.low == y.low => {
-                    let first = Self::joined(Some(a), Some(x), owner, flow, span, room)?
+                    let first = Self::joined::<SLOTS>(Some(a), Some(x), owner, flow, span, room)?
                         .ok_or_else(|| invalid(span))?;
-                    let last = Self::joined(Some(b), Some(y), owner, flow, span, room)?
+                    let last = Self::joined::<SLOTS>(Some(b), Some(y), owner, flow, span, room)?
                         .ok_or_else(|| invalid(span))?;
                     if Arc::ptr_eq(a, &first) && Arc::ptr_eq(b, &last) {
                         return Ok(Some(left.clone()));
@@ -86,10 +86,10 @@ impl Node {
                 _ => {}
             }
         }
-        Self::merged(left, right, owner, flow, span, room)
+        Self::merged::<SLOTS>(left, right, owner, flow, span, room)
     }
 
-    pub(self) fn merged(
+    pub(self) fn merged<const SLOTS: bool>(
         left: Option<&Arc<Self>>,
         right: Option<&Arc<Self>>,
         owner: usize,
@@ -114,7 +114,7 @@ impl Node {
             };
             let x = a.next_if(|(id, _)| **id == local).map(|(_, cell)| cell);
             let y = b.next_if(|(id, _)| **id == local).map(|(_, cell)| cell);
-            let cell = Cell::join(x, y, flow, span)?;
+            let cell = Cell::join::<SLOTS>(x, y, flow, span)?;
             weight = weight
                 .checked_add(1 + cell.weight())
                 .filter(|weight| *weight <= *room)

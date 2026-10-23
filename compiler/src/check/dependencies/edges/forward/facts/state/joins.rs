@@ -55,11 +55,11 @@ impl State {
             .min(MAX_EDGES)
             .checked_sub(1)
             .ok_or_else(|| budget(span))?;
-        let (cells, used) = self.cells.joined(&other.cells, flow, span, room)?;
+        let (cells, used) = self.cells.joined::<false>(&other.cells, flow, span, room)?;
         let (slots, extra) = if self.slots.is_empty() && other.slots.is_empty() {
             (tree::Tree::new(self.owner), 0)
         } else {
-            self.slots.joined(
+            self.slots.joined::<true>(
                 &other.slots,
                 flow,
                 span,
@@ -95,7 +95,7 @@ impl State {
 }
 
 impl Cell {
-    pub(super) fn join(
+    pub(super) fn join<const SLOTS: bool>(
         left: Option<&Self>,
         right: Option<&Self>,
         flow: &mut Flow,
@@ -135,6 +135,12 @@ impl Cell {
                     origin: if domain.is_some() && p == q { *p } else { None },
                     domain,
                 }
+            }
+            (Some(a), Some(b)) if SLOTS => {
+                if !flow.spend(left.unwrap().weight() + right.unwrap().weight()) {
+                    return Err(budget(span));
+                }
+                Data::conditional(a, b, flow, span)?
             }
             _ => Data::Partial,
         };

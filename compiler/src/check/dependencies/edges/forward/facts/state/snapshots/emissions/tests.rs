@@ -188,7 +188,7 @@ pub(crate) fn scalar_slot_emissions_keep_uncertain_initialization_without_overwr
     assert!(snapshots.states.iter().any(|state| {
         state
             .slot(block)
-            .is_some_and(|slot| slot.data == Data::Partial)
+            .is_some_and(|slot| matches!(slot.data, Data::Conditional { .. }))
     }));
     assert_eq!(
         snapshots.after(Port::BlockResult(block)),

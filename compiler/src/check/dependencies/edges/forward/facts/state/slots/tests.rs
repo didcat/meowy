@@ -1,4 +1,5 @@
 use super::*;
+use crate::flow::TRUE;
 
 pub(super) fn value(number: i128, point: usize, flow: &mut Flow) -> Cell {
     Cell {
@@ -111,7 +112,10 @@ pub(crate) fn scalar_slot_states_join_initialized_partial_missing_and_bottom_pat
             .slot(0)
             .unwrap()
             .data,
-        Data::Partial
+        Data::Conditional {
+            domain: Domain::integer(7, &mut flow, Span::default()).unwrap(),
+            origin: Some(Origin::Expression(0, 1)),
+        }
     );
     let absent = State::new(0, crate::flow::TRUE, &mut flow, Span::default()).unwrap();
     assert_eq!(
@@ -252,5 +256,150 @@ pub(crate) fn scalar_slot_states_never_reinitialize_known_or_uncertain_cells() {
                 .is_none()
         );
         assert_eq!(format!("{state:?}"), saved);
+    }
+}
+
+pub(super) fn frame(cell: Option<&Cell>, flow: &mut Flow) -> State {
+    let mut state = State::new(0, TRUE, flow, Span::default()).unwrap();
+    if let Some(cell) = cell {
+        state
+            .put_slot(0, cell, flow, Span::default(), MAX_EDGES)
+            .unwrap();
+    }
+    state
+}
+
+#[test]
+pub(crate) fn scalar_slot_joins_retain_only_initialized_alternatives_and_agreed_origins() {
+    let mut flow = Flow::new();
+    let empty = Cell {
+        data: Data::Uninitialized,
+        control: false,
+    };
+    let first = value(7, 1, &mut flow);
+    let mut second = value(9, 1, &mut flow);
+    second.control = true;
+    let mut a = frame(Some(&first), &mut flow);
+    let mut b = frame(Some(&empty), &mut flow);
+    a.put(0, &first, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    b.put(0, &empty, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    let partial = a.join(&b, &mut flow, Span::default(), MAX_EDGES).unwrap();
+    assert_eq!(partial.get(0).unwrap().data, Data::Partial);
+    assert_eq!(
+        partial.slot(0).unwrap().data,
+        Data::Conditional {
+            domain: Domain::integer(7, &mut flow, Span::default()).unwrap(),
+            origin: Some(Origin::Expression(0, 1)),
+        }
+    );
+    let c = frame(Some(&second), &mut flow);
+    let joined = partial
+        .join(&c, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    let cell = joined.slot(0).unwrap();
+    assert!(cell.control);
+    let expected = Domain::integer(7, &mut flow, Span::default())
+        .unwrap()
+        .join(
+            &Domain::integer(9, &mut flow, Span::default()).unwrap(),
+            &mut flow,
+            Span::default(),
+        )
+        .unwrap();
+    assert_eq!(
+        cell.data,
+        Data::Conditional {
+            domain: expected.clone(),
+            origin: Some(Origin::Expression(0, 1))
+        }
+    );
+    let other = frame(Some(&value(9, 2, &mut flow)), &mut flow);
+    let joined = joined
+        .join(&other, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    assert_eq!(
+        joined.slot(0).unwrap().data,
+        Data::Conditional {
+            domain: expected,
+            origin: None
+        }
+    );
+    assert_eq!(a.slot(0), Some(&first));
+    assert_eq!(b.slot(0), Some(&empty));
+}
+
+#[test]
+pub(crate) fn scalar_slot_joins_preserve_missing_and_opaque_evidence_associatively() {
+    let mut flow = Flow::new();
+    let mut cells = [
+        Cell {
+            data: Data::Unavailable,
+            control: false,
+        },
+        Cell {
+            data: Data::Uninitialized,
+            control: false,
+        },
+        Cell {
+            data: Data::Partial,
+            control: true,
+        },
+        Cell {
+            data: Data::Initialized {
+                version: None,
+                domain: None,
+                origin: None,
+            },
+            control: false,
+        },
+        value(7, 1, &mut flow),
+        value(9, 2, &mut flow),
+        Cell {
+            data: Data::Conditional {
+                domain: Domain::integer(7, &mut flow, Span::default()).unwrap(),
+                origin: Some(Origin::Expression(0, 1)),
+            },
+            control: true,
+        },
+    ];
+    cells[5].control = true;
+    let mut states = cells
+        .iter()
+        .map(|cell| frame(Some(cell), &mut flow))
+        .collect::<Vec<_>>();
+    states.push(frame(None, &mut flow));
+    states.push(State::new(0, FALSE, &mut flow, Span::default()).unwrap());
+    for a in &states {
+        assert_eq!(
+            a.join(a, &mut flow, Span::default(), MAX_EDGES).unwrap(),
+            *a
+        );
+        for b in &states {
+            let ab = a.join(b, &mut flow, Span::default(), MAX_EDGES).unwrap();
+            assert_eq!(
+                ab,
+                b.join(a, &mut flow, Span::default(), MAX_EDGES).unwrap()
+            );
+            for c in &states {
+                let bc = b.join(c, &mut flow, Span::default(), MAX_EDGES).unwrap();
+                assert_eq!(
+                    ab.join(c, &mut flow, Span::default(), MAX_EDGES).unwrap(),
+                    a.join(&bc, &mut flow, Span::default(), MAX_EDGES).unwrap()
+                );
+            }
+        }
+    }
+    for (index, expected) in [
+        (0, Data::Unavailable),
+        (2, Data::Partial),
+        (3, Data::Partial),
+        (7, Data::Unavailable),
+    ] {
+        let joined = states[6]
+            .join(&states[index], &mut flow, Span::default(), MAX_EDGES)
+            .unwrap();
+        assert_eq!(joined.slot(0).unwrap().data, expected);
     }
 }

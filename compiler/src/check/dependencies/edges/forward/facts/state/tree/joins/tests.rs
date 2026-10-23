@@ -17,7 +17,7 @@ pub(crate) fn scalar_cell_joins_reuse_shared_paths_and_preserve_partial_initiali
         .updated(6, &cell, &mut flow, Span::default(), MAX_EDGES)
         .unwrap();
     let (joined, used) = tree
-        .joined(&next, &mut flow, Span::default(), MAX_EDGES)
+        .joined::<false>(&next, &mut flow, Span::default(), MAX_EDGES)
         .unwrap();
     assert_eq!(joined.get(&6).unwrap().data, Data::Partial);
     assert!(joined.get(&6).unwrap().control);
@@ -31,7 +31,7 @@ pub(crate) fn scalar_cell_joins_reuse_shared_paths_and_preserve_partial_initiali
     };
     assert!(Arc::ptr_eq(old, new));
     let (same, used) = next
-        .joined(&next.clone(), &mut flow, Span::default(), 0)
+        .joined::<false>(&next.clone(), &mut flow, Span::default(), 0)
         .unwrap();
     assert_eq!(used, 0);
     assert!(Arc::ptr_eq(
@@ -39,7 +39,7 @@ pub(crate) fn scalar_cell_joins_reuse_shared_paths_and_preserve_partial_initiali
         next.root.as_ref().unwrap()
     ));
     let (missing, _) = tree
-        .joined(&Tree::new(7), &mut flow, Span::default(), MAX_EDGES)
+        .joined::<false>(&Tree::new(7), &mut flow, Span::default(), MAX_EDGES)
         .unwrap();
     assert!(
         missing
@@ -85,7 +85,7 @@ pub(crate) fn scalar_cell_joins_match_conservative_map_joins_across_different_ke
         let left = make(a, false, &mut flow);
         let right = make(b, true, &mut flow);
         let (joined, _) = left
-            .joined(&right, &mut flow, Span::default(), MAX_EDGES)
+            .joined::<false>(&right, &mut flow, Span::default(), MAX_EDGES)
             .unwrap();
         let expected = left
             .keys()
@@ -93,7 +93,7 @@ pub(crate) fn scalar_cell_joins_match_conservative_map_joins_across_different_ke
             .map(|&local| {
                 (
                     local,
-                    Cell::join(
+                    Cell::join::<false>(
                         left.get(&local),
                         right.get(&local),
                         &mut flow,
@@ -113,7 +113,7 @@ pub(crate) fn scalar_cell_joins_match_conservative_map_joins_across_different_ke
         assert_eq!(
             joined,
             right
-                .joined(&left, &mut flow, Span::default(), MAX_EDGES)
+                .joined::<false>(&left, &mut flow, Span::default(), MAX_EDGES)
                 .unwrap()
                 .0
         );
@@ -139,13 +139,13 @@ pub(crate) fn scalar_cell_joins_bound_new_paths_and_reject_foreign_owners_atomic
     let before = format!("{tree:?}{next:?}");
     let start = flow.work;
     let (expected, used) = tree
-        .joined(&next, &mut flow, Span::default(), MAX_EDGES)
+        .joined::<false>(&next, &mut flow, Span::default(), MAX_EDGES)
         .unwrap();
     let cost = flow.work - start;
     for (limit, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {
         flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
         flow.full = false;
-        let result = tree.joined(&next, &mut flow, Span::default(), limit);
+        let result = tree.joined::<false>(&next, &mut flow, Span::default(), limit);
         assert_eq!(result.is_ok(), pass);
         if let Ok((actual, parts)) = result {
             assert_eq!(actual, expected);
@@ -156,7 +156,7 @@ pub(crate) fn scalar_cell_joins_bound_new_paths_and_reject_foreign_owners_atomic
     flow.work = 0;
     flow.full = false;
     assert!(
-        tree.joined(&Tree::new(8), &mut flow, Span::default(), MAX_EDGES)
+        tree.joined::<false>(&Tree::new(8), &mut flow, Span::default(), MAX_EDGES)
             .is_err()
     );
 }

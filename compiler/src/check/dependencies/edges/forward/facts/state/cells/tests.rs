@@ -11,6 +11,14 @@ pub(crate) fn scalar_cell_comparisons_preserve_identity_and_bound_observed_paylo
         Data::Unavailable,
         Data::Uninitialized,
         Data::Partial,
+        Data::Conditional {
+            domain: Domain::NULL,
+            origin: None,
+        },
+        Data::Conditional {
+            domain: Domain::boolean(false),
+            origin: Some(Origin::Expression(0, 2)),
+        },
         Data::Initialized {
             version: None,
             domain: None,
