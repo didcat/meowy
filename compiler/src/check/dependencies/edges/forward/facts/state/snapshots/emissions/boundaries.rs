@@ -47,7 +47,7 @@ pub(crate) fn scalar_emission_boundaries_combine_source_and_entry_control_conser
             .control = dependent;
         let states = format!("{:?}{:?}", snapshots.rows, snapshots.states);
         let after = snapshots
-            .emit(id, before, &input, &mut checker.flow, Span::default())
+            .emit(id, before, &input, None, &mut checker.flow, Span::default())
             .unwrap();
         assert_eq!(
             snapshots.emissions[&id]
@@ -89,7 +89,7 @@ pub(crate) fn scalar_emission_boundaries_do_not_recover_absent_values_or_storage
         }
         assert_eq!(
             snapshots
-                .emit(id, before, &input, &mut checker.flow, Span::default())
+                .emit(id, before, &input, None, &mut checker.flow, Span::default())
                 .unwrap(),
             Value::Missing
         );
@@ -147,7 +147,7 @@ pub(crate) fn scalar_emission_boundaries_reject_stale_histories_without_publicat
         let saved = format!("{snapshots:?}");
         assert!(
             snapshots
-                .emit(id, before, &input, &mut checker.flow, Span::default())
+                .emit(id, before, &input, None, &mut checker.flow, Span::default())
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -161,7 +161,7 @@ pub(crate) fn scalar_emission_boundaries_reserve_exact_budget_and_reject_duplica
     let (mut checker, mut snapshots, id, input, before) = setup();
     let start = checker.flow.work;
     snapshots
-        .emit(id, before, &input, &mut checker.flow, Span::default())
+        .emit(id, before, &input, None, &mut checker.flow, Span::default())
         .unwrap();
     let cost = checker.flow.work - start;
     let fact = snapshots.emissions.remove(&id).unwrap();
@@ -174,7 +174,7 @@ pub(crate) fn scalar_emission_boundaries_reserve_exact_budget_and_reject_duplica
         snapshots.parts = room;
         checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
         checker.flow.full = false;
-        let result = snapshots.emit(id, before, &input, &mut checker.flow, Span::default());
+        let result = snapshots.emit(id, before, &input, None, &mut checker.flow, Span::default());
         assert_eq!(result.is_ok(), pass);
         assert_eq!(snapshots.emissions.get(&id), pass.then_some(&fact));
         assert_eq!(snapshots.parts, if pass { 0 } else { room });
@@ -184,7 +184,7 @@ pub(crate) fn scalar_emission_boundaries_reserve_exact_budget_and_reject_duplica
     let saved = format!("{snapshots:?}");
     assert!(
         snapshots
-            .emit(id, before, &input, &mut checker.flow, Span::default())
+            .emit(id, before, &input, None, &mut checker.flow, Span::default())
             .unwrap_err()
             .message
             .contains("identity")

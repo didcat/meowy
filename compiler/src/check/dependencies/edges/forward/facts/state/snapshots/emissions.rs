@@ -7,6 +7,7 @@ impl Snapshots {
         id: hir::EmitId,
         before: Value,
         input: &observations::Emission,
+        slot: Option<&observations::Slot>,
         flow: &mut Flow,
         span: Span,
     ) -> Result<Value> {
@@ -68,7 +69,7 @@ impl Snapshots {
                 }
             }
         };
-        let after = if value.is_some() {
+        let mut after = if value.is_some() {
             before
         } else {
             Value::Missing
@@ -81,7 +82,34 @@ impl Snapshots {
         if !flow.spend(weight + 2) {
             return Err(budget(span));
         }
-        let parts = self.parts.checked_sub(weight).ok_or_else(|| budget(span))?;
+        let mut parts = self.parts.checked_sub(weight).ok_or_else(|| budget(span))?;
+        let next = match (slot, state, fact.value.as_ref()) {
+            (Some(slot), Some(state), Some(value)) if state.reach != FALSE => {
+                if value.domain.weight() > parts || !flow.spend(value.domain.weight() + 1) {
+                    return Err(budget(span));
+                }
+                let cell = Cell {
+                    data: Data::Initialized {
+                        version: None,
+                        domain: Some(value.domain.clone()),
+                        origin: value.origin,
+                    },
+                    control: value.control,
+                };
+                let next = state.initialize_slot(input.target, slot, cell, flow, span, parts)?;
+                if next.is_none() {
+                    after = Value::Missing;
+                }
+                next
+            }
+            _ => None,
+        };
+        if let Some(next) = next {
+            parts = parts
+                .checked_sub(next.allocation())
+                .ok_or_else(|| budget(span))?;
+            after = self.keep(next, span)?;
+        }
         self.emissions.insert(id, fact);
         self.parts = parts;
         Ok(after)

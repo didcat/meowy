@@ -1,6 +1,41 @@
 use super::*;
 
 impl State {
+    pub(super) fn initialize_slot(
+        &self,
+        block: hir::BlockId,
+        slot: &observations::Slot,
+        mut cell: Cell,
+        flow: &mut Flow,
+        span: Span,
+        limit: usize,
+    ) -> Result<Option<Self>> {
+        if !flow.spend(self.slots.depth() + 4) {
+            return Err(budget(span));
+        }
+        if slot.owner != self.owner || slot.declared == Domain::BOTTOM {
+            return Err(invalid(span));
+        }
+        let Data::Initialized {
+            version: None,
+            domain: Some(domain),
+            ..
+        } = &cell.data
+        else {
+            return Err(invalid(span));
+        };
+        let Some(old) = self.slot(block) else {
+            return Ok(None);
+        };
+        if old.data != Data::Uninitialized || !domain.fits(&slot.declared, flow, span)? {
+            return Ok(None);
+        }
+        cell.control |= old.control || slot.control.unwrap_or(true);
+        let mut next = self.snapshot(flow, span, limit)?;
+        next.put_slot(block, &cell, flow, span, limit)?;
+        Ok(Some(next))
+    }
+
     pub(super) fn enter_slot(
         &self,
         block: hir::BlockId,

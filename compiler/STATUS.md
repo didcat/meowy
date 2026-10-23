@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-22. Scalar completion routes and storage joins are qualified; validation is below.
+Updated: 2026-10-23. Scalar result-slot initialization is in progress; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5733,8 +5733,7 @@ payload/allocation accounting, unknown/partial states and unchanged ordinary sto
 Dependency-ordered commit plan:
 
 1. Add the bounded slot-state carrier and snapshot/join behavior (`7b274573`, validated).
-2. Qualify slot headers (`2562714a`, validated), then initialize owner/nested scope entries
-   separately. Preserve missing histories, shapes and restart boundaries.
+2. Qualify slot headers (`2562714a`) and initialize scope entries (`b172ae4f`); both validated.
 3. Initialize eligible slots from saved emission-time values without overwriting initialized
    or uncertain slots; verify branches, nested targets, tail writes and copies.
 4. Verify remaining identity/control/budget boundaries, update structural evidence and
@@ -5754,6 +5753,13 @@ tests, all 279 scalar-fact tests and the original matcher case pass
 (`/tmp/meowy-slot-entry-facts.log`, `/tmp/meowy-slot-entry-matchers.log`). Missing/restart
 histories remain unavailable, and bottom/unsupported shapes gain no slot. Next: emission
 initialization from saved values; completed block values and proof outcomes remain gated.
+Three emission regressions reproduce uninitialized slots after emissions, including nested
+targets, tail writes and guarded branches (`/tmp/meowy-slot-emissions-before.log`).
+All four emission regressions and all 3649 library tests pass, including the unchanged
+matcher case (`/tmp/meowy-slot-emission-library.log`). Initialized/partial/unavailable slots
+are never overwritten. Discarded values incompatible with the final block shape remain
+accepted and unavailable. Slot updates and emission histories publish under one combined
+allowance. Next: entry/reentry, control and atomic work/payload boundary checks, then the gate.
 
 1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
    emission-time copies, target identity and branch joins. Keep it separate from publication.

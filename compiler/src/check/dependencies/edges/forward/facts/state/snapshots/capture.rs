@@ -70,7 +70,14 @@ impl Checker {
                 };
                 let after = if let Port::Emission(id) = port {
                     if let Some(input) = observations.emissions.get(&id) {
-                        snapshots.emit(id, before, input, &mut self.flow, span)?
+                        snapshots.emit(
+                            id,
+                            before,
+                            input,
+                            observations.slots.get(&input.target),
+                            &mut self.flow,
+                            span,
+                        )?
                     } else if bottom {
                         before
                     } else {
