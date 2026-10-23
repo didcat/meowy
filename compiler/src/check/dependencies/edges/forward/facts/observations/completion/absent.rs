@@ -26,7 +26,7 @@ impl Checker {
             return Ok((observations, parts));
         }
         let count = reports.index.edges.len();
-        if count > MAX_EDGES || !self.flow.spend(count + 2) {
+        if count > MAX_EDGES || !self.flow.spend(count * 2 + 2) {
             return Err(budget(span));
         }
         parts = parts.checked_sub(count).ok_or_else(|| budget(span))?;
@@ -151,3 +151,6 @@ pub(super) fn node<'a>(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod boundaries;

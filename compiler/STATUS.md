@@ -5947,7 +5947,14 @@ distinct. All 3691 library tests pass, including the original 1000-matcher case
 (`/tmp/meowy-stopped-integration-library.log`). All 326 scalar-fact tests also pass, including
 distinct live exit versions across a function owner and unknown call history before a nested
 leave (`/tmp/meowy-stopped-integration.log`). Next: stale/incomplete evidence and exact-budget
-failure boundaries before full verification.
+failure boundaries before full verification. Integration commit: `2ae59295`.
+All 331 scalar-fact tests and all-target Clippy pass. New boundary cases preserve unknown
+leave sources after a dead entry, keep restart cycles unresolved, retain entry dependency
+marks and reject stale inventory/site/owner evidence. Exact nested work/payload limits
+publish no partial result; both full inventory comparisons are charged. The original
+1000-matcher case and formatting pass without changed limits. Logs:
+`/tmp/meowy-stopped-boundaries.log`, `/tmp/meowy-stopped-clippy.log`,
+`/tmp/meowy-stopped-final-matchers.log`. Next: documentation, full gate and preservation audit.
 
 Next steps:
 

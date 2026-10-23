@@ -88,3 +88,39 @@ pub(crate) fn scalar_completion_bodies_keep_missing_sequences_and_incomplete_own
         assert!(!obs.completion.absent.contains_key(&Port::Leave(block)));
     }
 }
+
+#[test]
+pub(crate) fn scalar_completion_bodies_preserve_derived_and_missing_entry_control() {
+    for control in [Some(false), Some(true), None] {
+        let (mut checker, reports, ports) = context("'out{|true|{'out.leave()};1}");
+        let (graph, _) = checker
+            .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
+            .unwrap();
+        if let Some(control) = control {
+            checker.branch_inputs.values_mut().next().unwrap().control = control;
+        } else {
+            checker.branch_inputs.clear();
+        }
+        let definitions = definitions::Definitions::default();
+        let (obs, _) = checker
+            .scalar_completion_observations(
+                &reports,
+                &graph,
+                Observations::new(&definitions),
+                Span::default(),
+                MAX_EDGES,
+            )
+            .unwrap();
+        let (&block, _) = checker
+            .bodies
+            .iter()
+            .find(|(_, body)| !body.completion.normal)
+            .unwrap();
+        assert_eq!(obs.completion.bodies[&block].control, control);
+        assert!(
+            obs.completion
+                .absent
+                .contains_key(&Port::BlockResult(block))
+        );
+    }
+}
