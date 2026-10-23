@@ -10,6 +10,39 @@ pub(super) fn setup() -> (Checker, Snapshots, Port, Input) {
 }
 
 #[test]
+pub(crate) fn scalar_guard_completion_control_is_atomic_with_authority_publication() {
+    for fault in 0..4 {
+        let (mut checker, mut snapshots, port, mut input) = setup();
+        input.control = Some(true);
+        assert_eq!(snapshots.rows[&port].control, Some(false));
+        match fault {
+            0 => snapshots.parts = 0,
+            1 => checker.flow.work = crate::flow::MAX_PROOF_WORK,
+            2 => input.source.owner += 1,
+            3 => {
+                snapshots
+                    .expressions
+                    .get_mut(&input.source.input)
+                    .unwrap()
+                    .value
+                    .as_mut()
+                    .unwrap()
+                    .domain
+                    .null = true
+            }
+            _ => unreachable!(),
+        }
+        let saved = format!("{snapshots:?}");
+        assert!(
+            snapshots
+                .guard(port, &input, &mut checker.flow, Span::default())
+                .is_err()
+        );
+        assert_eq!(format!("{snapshots:?}"), saved);
+    }
+}
+
+#[test]
 pub(crate) fn scalar_guard_authority_uses_historical_reads_and_copies() {
     let (_, _, _, snapshots) = capture("flag:=false;copy:flag;|flag|1;flag=true;|copy|2;|flag|3");
     let mut facts = snapshots.guards.values().collect::<Vec<_>>();

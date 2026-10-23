@@ -27,6 +27,77 @@ pub(super) fn distinct(graph: &graph::Graph<'_>) -> (Checker, Snapshots) {
 }
 
 #[test]
+pub(crate) fn scalar_completion_joins_keep_unknown_and_dependent_histories_distinct() {
+    let edges = edges();
+    let graph = graph(&edges);
+    for (left, right, expected) in [
+        (Some(false), Some(false), Some(false)),
+        (Some(false), None, None),
+        (None, Some(false), None),
+        (Some(true), None, Some(true)),
+        (None, Some(true), Some(true)),
+    ] {
+        let (mut checker, mut snapshots) = distinct(&graph);
+        snapshots.rows.get_mut(&LEFT).unwrap().control = left;
+        snapshots.rows.get_mut(&RIGHT).unwrap().control = right;
+        let saved = format!("{:?}", snapshots.rows);
+        let (value, control) = snapshots
+            .inputs(&graph, END, None, &mut checker.flow, Span::default())
+            .unwrap();
+        assert!(matches!(value, Value::Known(_)));
+        assert_eq!(control, expected);
+        assert_eq!(format!("{:?}", snapshots.rows), saved);
+    }
+}
+
+#[test]
+pub(crate) fn scalar_completion_joins_skip_bottom_without_recovering_missing_state() {
+    let edges = edges();
+    let graph = graph(&edges);
+    for bottom in [false, true] {
+        let (mut checker, mut snapshots) = distinct(&graph);
+        snapshots.rows.get_mut(&LEFT).unwrap().control = Some(false);
+        let value = if bottom {
+            let state = snapshots
+                .seed(START)
+                .unwrap()
+                .restrict(FALSE, &mut checker.flow, Span::default(), snapshots.room())
+                .unwrap();
+            snapshots.keep(state, Span::default()).unwrap()
+        } else {
+            Value::Missing
+        };
+        let right = snapshots.rows.get_mut(&RIGHT).unwrap();
+        right.after = value;
+        right.control = Some(true);
+        let (value, control) = snapshots
+            .inputs(&graph, END, None, &mut checker.flow, Span::default())
+            .unwrap();
+        assert_eq!(matches!(value, Value::Known(_)), bottom);
+        assert_eq!(control, Some(!bottom));
+    }
+}
+
+#[test]
+pub(crate) fn scalar_completion_joins_reject_foreign_histories_before_publication() {
+    let edges = edges();
+    let graph = graph(&edges);
+    let (mut checker, mut snapshots) = distinct(&graph);
+    let row = snapshots.rows.get_mut(&RIGHT).unwrap();
+    row.owner += 1;
+    row.control = Some(true);
+    let saved = format!("{snapshots:?}");
+    assert!(
+        snapshots
+            .inputs(&graph, END, None, &mut checker.flow, Span::default())
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(format!("{snapshots:?}"), saved);
+}
+
+#[test]
 pub(crate) fn scalar_incoming_bounds_exact_join_work_and_shared_payload() {
     let edges = edges();
     let graph = graph(&edges);

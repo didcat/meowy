@@ -5785,66 +5785,58 @@ No known failures remain. Nothing was pushed.
 
 ### Scalar completion dependencies
 
-The current slice qualifies completion history separately from emitted values and ordinary
-storage. The predecessor schedule supplies history; entry ancestry or an initialized slot
-cannot prove that later guards, leaves or calls are independent. Missing histories and
-unsupported effects remain explicit. No block expression or proof result is published.
+Snapshot rows retain independent, dependent or unknown completion control alongside their
+before/after states. The existing predecessor traversal combines those histories without
+another graph scan or per-port map. Entry ancestry and an initialized slot cannot establish
+completion independence. Known bottom inputs contribute no history; missing live inputs,
+unsupported effects, dead tails and restart headers stay unavailable.
 
-Dependency-ordered commit plan:
+Qualified scope entries, emissions and direct leaves retain control. Guard authority and
+its row control publish together; dependent guards keep both successors and unknown guards
+cannot establish independence. Scalar call completion reuses saved argument/entry facts and
+exact result sources. Later mutation cannot replace earlier argument evidence; recursive or
+constant callee bodies do not specialize results or prove return. These are dependencies of
+an observed continuation, not termination proofs or per-query E225 acceptance.
 
-1. Extend existing snapshot rows with an explicit unknown completion-control field and
-   charge its payload. Keep this carrier prerequisite separate from propagation.
-2. Retain bounded completion histories for qualified straight-line paths, scope entries,
-   emissions and leaves. Verify tail ordering, missing effects and owner isolation.
-3. Accumulate qualified guard dependencies across branches and joins; exclude known bottom
-   paths without giving derived guards constant authority. Verify missing/derived evidence.
-4. Qualify call completion from saved argument/result dependencies, without callee-body
-   specialization. Verify earlier histories survive later writes and unknown calls.
-5. Verify exact budgets, identity failures and atomic publication; document the boundary,
-   link structural evidence, run the full gate and audit protected fixtures/user files.
+Ordinary storage, emitted values and completion history stay separate. Tail guards/calls do
+not rewrite earlier emission facts. No completed block expression or implicit null value is
+published; unsupported shapes and incomplete state cannot recover from a known control mark.
 
-Baseline `2082964d` protects 611 files in `/tmp/meowy-completion-history-baseline.json`.
-The working tree initially contains only user-owned `docs/programs/hey/`; it is excluded.
-Investigation confirms that existing completion transfer preserves storage using entry
-control only. Scalar call results already retain historical argument dependencies; those
-facts can qualify call completion without consulting a callee. Measurement found only 1037
-work units left before the added whole-graph history pass in the 1000-matcher case. The
-implementation now extends existing rows and will accumulate history during the existing
-predecessor traversal, avoiding another graph scan or parallel per-port map. Limits stay
-unchanged. The revised row carrier passes all 288 existing scalar-fact tests and the original
-1000-matcher case. Each row reserves its control field with both state references; new
-exact-payload coverage verifies unknown/independent/dependent values and atomic failure.
-Focused logs: `/tmp/meowy-history-carrier.log`, `/tmp/meowy-history-carrier-matchers.log`.
-Carrier commit: `d8178fc0`. Straight-line propagation now combines controls while resolving
-the existing predecessor rows, without an extra graph traversal or per-port map. Qualified
-entries, emissions, direct leaves and tails retain history; unsupported effects, dead tails
-and restart headers stay unknown. Function owners remain separate and no block values are
-published. All 292 scalar-fact tests and the original 1000-matcher case pass
-(`/tmp/meowy-history-paths.log`, `/tmp/meowy-history-path-matchers.log`).
-Straight-line commit: `95e7fae2`. Guard qualification now updates completion control with its
-authority under the same reservation. A vacant map entry removes the redundant guard probe,
-paying for the row update without another traversal. Branches retain dependent successors;
-joins omit known bottom history and keep unknown live effects. Seeded tests distinguish
-missing and derived evidence; source captures cover guarded leaves, short circuits and
-historical copies. All 295 scalar-fact tests and the original 1000-matcher case pass
-(`/tmp/meowy-history-guards.log`, `/tmp/meowy-history-guard-matchers.log`).
-Guard commit: `e3e588f4`. Scalar call completion now reuses the saved argument/entry
-dependency calculation and exact result source. Later mutation cannot replace earlier
-argument evidence; unknown inputs or missing result sources cannot establish independence.
-This is conditional completion history, not termination proof: recursive/constant bodies
-do not specialize results or establish return. Two new regressions first reproduced the
-missing transfer. All 3665 library tests pass, including 299 scalar-fact tests and the
-original 1000-matcher case (`/tmp/meowy-history-call-library.log`).
-Next: verify atomic control publication and join boundaries, then run the full gate/audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `d8178fc0` | Reserve explicit completion control in existing snapshot rows |
+| `95e7fae2` | Accumulate straight-line and scope history through predecessors |
+| `e3e588f4` | Retain guard dependencies through branches and joins |
+| `34a0ddfd` | Qualify call completion from saved arguments and result sources |
+
+All 15 new structural regressions and 303 scalar-fact tests pass. Coverage distinguishes
+missing/dependent controls, ordinary guard paths, bottom/unknown joins, foreign owners,
+historical arguments, unsupported tails, missing call sources and atomic work/payload
+failures. The preceding full library run passed 3665 tests, including the original
+1000-matcher case; the four final boundary tests are included in the 303 focused passes.
+No budget was relaxed. History uses the existing row/edge lookups; the guard update replaces
+a redundant map probe. Call-only lookups and the extra retained row field are charged.
+
+Focused logs: `/tmp/meowy-history-carrier.log`, `/tmp/meowy-history-row.log`,
+`/tmp/meowy-history-paths.log`, `/tmp/meowy-history-path-matchers.log`,
+`/tmp/meowy-history-guards.log`, `/tmp/meowy-history-guard-matchers.log`,
+`/tmp/meowy-history-calls-before.log`, `/tmp/meowy-history-call-library.log`,
+`/tmp/meowy-history-boundaries.log`. Formatting and all-target Clippy pass
+(`/tmp/meowy-history-clippy.log`).
+
+Baseline `2082964d` protects 611 files in `/tmp/meowy-completion-history-baseline.json`,
+including all user-owned `docs/programs/hey/` files. Reference contracts, source expectations,
+proof obligations and capability pins are unchanged. Remaining planned validation: link
+structural evidence, run the full gate and audit the protected files. Nothing was pushed.
 
 Next steps:
 
-1. Implement and validate the completion-history slices above. Keep missing control/history
-   explicit and test derived/unknown boundaries with the original 1000-matcher budget.
+1. Finish completion-history documentation, full validation and preservation audit.
 2. Publish completed scalar block facts from qualified completion rows and their slot states,
-   retaining declared shapes, origins and original consumer PointIds. Handle implicit null
-   only after qualified completion; do not recover missing/partial evidence or select from
-   candidates. Verify empty/null blocks, stopped tails, guarded leaves and historical copies.
+   combining `Row.control` with slot dependencies while retaining declared shapes, origins
+   and original consumer PointIds. Handle implicit null only after qualified completion;
+   never recover missing/partial evidence or select from candidates. Verify empty/null
+   blocks, stopped tails, guarded leaves, derived/unknown controls and historical copies.
 3. Keep nested-body/dead-tail absence precision, path correlations, aliases/composition,
    restart resets, arithmetic and wider guards separate until their evidence is complete.
 4. Complete transitive query/E225 qualification and per-query logical charging before proof
