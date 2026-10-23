@@ -94,7 +94,14 @@ impl Checker {
                             snapshots.enter_slot(block, before, slot, &mut self.flow, span)?
                         }
                         None => {
-                            control = history::combine(control, None);
+                            if !self.flow.spend(1) {
+                                return Err(budget(span));
+                            }
+                            let body = observations.completion.bodies.get(&block);
+                            if body.is_some_and(|body| body.owner != owner) {
+                                return Err(invalid(span));
+                            }
+                            control = history::combine(control, body.and_then(|body| body.control));
                             before
                         }
                     }

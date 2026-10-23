@@ -5902,10 +5902,40 @@ No known failures remain. Nothing was pushed.
 
 Next steps:
 
-1. Qualify nested-body and dead-tail non-fallthrough in `facts/observations/completion` and
-   `facts/exits.rs` using original body/sequence/scope-exit edges. Keep missing histories
-   explicit; test inner leaves to outer blocks and tails after a leave, plus exact budgets
-   and the original 1000-matcher case. Do not infer absence from result types alone.
+### Nested and stopped scalar paths
+
+Current work extends qualified absence from explicit leaves through nested bodies and
+later statements. A missing observation or `never` result is not sufficient evidence.
+Original body facts and sequence/region/endpoint edges must establish every omitted path;
+unknown histories, restart cycles and unresolved sources remain conservative.
+
+Dependency-ordered commit plan:
+
+1. Qualify stopped-body endpoint prerequisites, including absent own-leave routes and the
+   normal/result relationship, without inferring non-fallthrough from result types.
+2. Build bounded absence propagation over original continuation edges, seeded only by
+   qualified exit evidence. Preserve joins with any unresolved predecessor and block backedges.
+3. Integrate nested/dead-tail evidence into scalar joins and value publication. Verify inner
+   leaves to outer blocks, statements after leaves, value/control history and owner isolation.
+4. Verify missing metadata, malformed edges, exact work/payload limits and atomic failures;
+   update structural evidence and documentation, run the full gate and preservation audit.
+
+Baseline `2ab971b4` protects 611 files in `/tmp/meowy-stopped-paths-baseline.json`.
+The only initial dirty path is user-owned `docs/programs/hey/`; it stays excluded.
+Investigation confirms current absence stops at a direct leave's Normal port and a single
+transparent branch region. Nested `never` bodies omit the normal-to-result edge, so an
+explicitly qualified endpoint relationship is needed after proving their normal exit absent.
+The original 1000-matcher budget must remain unchanged; avoid a new graph pass for owners
+without exit seeds. Qualified body headers now retain original endpoint relationships,
+complete sequence evidence and entry control, including bodies without scalar result slots.
+Bodies with missing sequence items or incomplete owners remain unqualified. Headers alone
+do not mark normal/result ports absent. All 320 scalar-fact tests pass
+(`/tmp/meowy-stopped-headers.log`); the original 1000-matcher case and formatting pass
+(`/tmp/meowy-stopped-header-matchers.log`). Next: bounded propagation of qualified absence.
+
+Next steps:
+
+1. Complete and validate the nested/stopped-path slices above using original source evidence.
 2. Keep partial-path initialization, aliases/composition, restart resets, arithmetic and
    wider guards separate until their evidence is complete; preserve profile precision.
 3. Complete transitive query/E225 qualification and per-query logical charging before proof

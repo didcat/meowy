@@ -1,11 +1,13 @@
 use super::*;
 
+mod bodies;
 mod regions;
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub(in super::super) struct Completion {
     pub(in super::super) absent: HashMap<Port, usize>,
     pub(in super::super) leaves: HashMap<hir::BlockId, Option<bool>>,
+    pub(in super::super) bodies: HashMap<hir::BlockId, bodies::Body>,
 }
 
 impl Checker {
@@ -141,7 +143,7 @@ impl Checker {
             parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
             observations.completion.absent.insert(port, scope.owner);
         }
-        Ok((observations, parts))
+        self.scalar_completion_bodies(reports, graph, &sources, observations, span, parts)
     }
 
     pub(super) fn scalar_completion_edge(
