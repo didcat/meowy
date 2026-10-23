@@ -238,7 +238,7 @@ pub(crate) fn scalar_call_value_boundaries_preserve_transitive_argument_dependen
                     arg,
                     &observations::Forward {
                         owner: 0,
-                        input: inner,
+                        input: Port::Normal(inner),
                         control: false,
                     },
                     &mut checker.flow,

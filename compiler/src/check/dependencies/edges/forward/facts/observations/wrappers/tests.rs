@@ -19,7 +19,7 @@ pub(crate) fn scalar_group_observations_retain_reached_results_and_original_inpu
             observed.forwarded.get(&port),
             graph.nodes.contains_key(&port).then_some(&Forward {
                 owner: group.owner,
-                input: group.input,
+                input: Port::Normal(group.input),
                 control: false,
             })
         );

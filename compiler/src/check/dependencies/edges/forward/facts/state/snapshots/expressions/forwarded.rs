@@ -12,15 +12,18 @@ impl Snapshots {
         if !flow.spend(5) {
             return Err(budget(span));
         }
+        let Port::Normal(input) = forward.input else {
+            return Err(invalid(span));
+        };
         let row = self
             .rows
             .get(&Port::Normal(point))
             .ok_or_else(|| invalid(span))?;
-        if row.owner != forward.owner || row.before != row.after || point == forward.input {
+        if row.owner != forward.owner || row.before != row.after || point == input {
             return Err(invalid(span));
         }
-        let source = self.rows.get(&Port::Normal(forward.input));
-        let fact = self.expressions.get(&forward.input);
+        let source = self.rows.get(&forward.input);
+        let fact = self.expressions.get(&input);
         if source.is_some_and(|source| {
             source.owner != forward.owner
                 || matches!(row.before, Value::Known(_)) && source.after != row.before

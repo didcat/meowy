@@ -19,7 +19,7 @@ pub(crate) fn scalar_narrowing_observations_preserve_unchanged_inputs_and_exclud
             observed.forwarded.get(&Port::Normal(point)),
             eligible.then_some(&Forward {
                 owner: op.owner,
-                input: op.input,
+                input: Port::Normal(op.input),
                 control: op.control
             })
         );

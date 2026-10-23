@@ -24,7 +24,7 @@ pub(crate) fn scalar_forward_coercions_preserve_exact_roots_and_exclude_conversi
             observed.forwarded.get(&Port::Normal(point)),
             eligible.then_some(&Forward {
                 owner: op.owner,
-                input: op.input,
+                input: Port::Normal(op.input),
                 control: op.control
             })
         );

@@ -4,7 +4,7 @@ use crate::check::dependencies::grouped::MAX_GROUPS;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) struct Forward {
     pub(in super::super) owner: usize,
-    pub(in super::super) input: PointId,
+    pub(in super::super) input: Port,
     pub(in super::super) control: bool,
 }
 
@@ -54,7 +54,7 @@ impl Checker {
                 (Family::Region, port),
                 Forward {
                     owner: group.owner,
-                    input,
+                    input: Port::Normal(input),
                     control: false,
                 },
                 span,
@@ -119,7 +119,7 @@ impl Checker {
                             (Family::Typed, Port::Operation(point)),
                             Forward {
                                 owner: *owner,
-                                input: op.input,
+                                input: Port::Normal(op.input),
                                 control: op.control,
                             },
                             span,
@@ -137,7 +137,7 @@ impl Checker {
                     (family, Port::Normal(point)),
                     Forward {
                         owner: *owner,
-                        input,
+                        input: Port::Normal(input),
                         control,
                     },
                     span,
@@ -162,7 +162,7 @@ impl Checker {
         }
         let from = match stage {
             (Family::Typed, Port::Normal(point)) => Port::Operation(point),
-            _ => Port::Normal(forward.input),
+            _ => forward.input,
         };
         let edge = (stage.0, Edge::new(from, stage.1, Route::Next));
         let node = graph.nodes.get(&stage.1).ok_or_else(|| invalid(span))?;

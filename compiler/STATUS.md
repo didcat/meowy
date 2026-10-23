@@ -5844,11 +5844,43 @@ All four final handoff documentation/tooling checks pass
 
 Next steps:
 
-1. Publish completed scalar block facts from qualified completion rows and their slot states,
-   combining `Row.control` with slot dependencies while retaining declared shapes, origins
-   and original consumer PointIds. Handle implicit null only after qualified completion;
-   never recover missing/partial evidence or select from candidates. Verify empty/null
-   blocks, stopped tails, guarded leaves, derived/unknown controls and historical copies.
+### Completed scalar block values
+
+Current work publishes scalar block values from qualified completion rows and saved slots.
+The existing forwarding index will retain the original block-result-to-consumer edge.
+`Row.control` must combine with slot dependencies; a known emission or entry alone is
+insufficient. Missing/partial state, unsupported shapes and incomplete completion stay
+unavailable. No candidate selection, callee specialization or proof evaluation is added.
+
+Dependency-ordered commit plan:
+
+1. Generalize forwarding source identity from an expression PointId to a graph Port, while
+   preserving current wrapper behavior and validation. Update producers/fixtures together.
+2. Qualify observed scalar block consumers in the existing forwarding index; preserve
+   owner, scope, endpoint and observation boundaries without publishing values yet.
+3. Publish initialized scalar slots at the original consumer, validating completion state,
+   declared shape, origin and controls. Cover tail writes, leaves and historical copies.
+4. Materialize implicit null only from qualified completed uninitialized null slots;
+   verify nested blocks, calls, guards and missing/partial boundaries.
+5. Verify exact budgets and atomic identity failures, document the transfer, link structural
+   evidence, run the full gate and audit protected fixtures and user files.
+
+Baseline `052b999e` protects 611 files in `/tmp/meowy-block-values-baseline.json`.
+The working tree contains only user-owned `docs/programs/hey/`, which stays excluded.
+Investigation confirms scopes already validate exact result/consumer edges and slots retain
+emission-time values. Reusing the forwarding index avoids a new lookup at every Normal port;
+the original 1000-matcher case must remain within its unchanged work/payload limits.
+The source-identity prerequisite changes two production files and six fixtures plus this
+handoff. Split review: all eight code files construct or read the same `Forward.input` type;
+changing that type and its callers together is required for a buildable intermediate commit.
+The change preserves wrapper behavior and adds no map or lookup. All 303 scalar-fact tests,
+the original 1000-matcher case and formatting pass (`/tmp/meowy-block-forward.log`,
+`/tmp/meowy-block-forward-matchers.log`). Next: qualify exact block-result consumers.
+
+Next steps:
+
+1. Complete and validate the block-value slices above, preserving the explicit unknown and
+   completion boundaries. Keep source expectations and capability pins unchanged.
 2. Keep nested-body/dead-tail absence precision, path correlations, aliases/composition,
    restart resets, arithmetic and wider guards separate until their evidence is complete.
 3. Complete transitive query/E225 qualification and per-query logical charging before proof

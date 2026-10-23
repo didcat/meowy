@@ -69,7 +69,7 @@ pub(crate) fn scalar_read_places_charge_forwarded_identity_without_changing_hist
     let (&point, group) = checker.group_inputs.first_key_value().unwrap();
     let forward = observations::Forward {
         owner: group.owner,
-        input: group.input,
+        input: Port::Normal(group.input),
         control: false,
     };
     let expected = snapshots.expressions.remove(&point).unwrap();

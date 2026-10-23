@@ -39,7 +39,7 @@ pub(crate) fn scalar_group_values_bound_copies_preserve_controls_and_reject_stal
     let (&point, group) = checker.group_inputs.first_key_value().unwrap();
     let mut forward = Forward {
         owner: group.owner,
-        input: group.input,
+        input: Port::Normal(group.input),
         control: true,
     };
     let expected = snapshots.expressions.remove(&point).unwrap();
