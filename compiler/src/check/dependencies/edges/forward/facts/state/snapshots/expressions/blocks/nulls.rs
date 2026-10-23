@@ -70,11 +70,11 @@ pub(crate) fn scalar_block_nulls_feed_call_arguments_without_specializing_callee
 }
 
 #[test]
-pub(crate) fn scalar_block_nulls_do_not_recover_partial_or_unknown_completion() {
+pub(crate) fn scalar_block_nulls_distinguish_known_alternatives_from_unknown_completion() {
     for (source, known) in [
         ("v:{|true|->null}", true),
         ("v:{|false|->null}", true),
-        ("f:(flag<boolean>){v:{|flag|->null};v}", false),
+        ("f:(flag<boolean>){v:{|flag|->null};v}", true),
         ("v:{1+2}", false),
         ("v:'out{'out.leave();1}", true),
     ] {

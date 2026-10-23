@@ -103,6 +103,7 @@ impl Snapshots {
             Data::Uninitialized if slot.declared == Domain::NULL => {
                 (&Domain::NULL, Some(Origin::Expression(row.owner, point)))
             }
+            Data::Conditional { domain, .. } if slot.declared == Domain::NULL => (domain, None),
             Data::Initialized {
                 version: Some(_), ..
             } => return Err(invalid(span)),
@@ -138,3 +139,6 @@ mod nulls;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod conditional;

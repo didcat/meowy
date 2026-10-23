@@ -5902,19 +5902,18 @@ No known failures remain. Nothing was pushed.
 
 ### Partial scalar result slots
 
-The current join collapses initialized/uninitialized result alternatives to `Partial`,
-discarding emitted domains and origins. Completion cannot safely recover those values.
-Retain a separate conditional value only for fully known slot alternatives; preserve
-ordinary local joins, missing/opaque markers, must-initialization and control dependence.
-Only completed null slots can currently combine an emission with an omitted primary;
-nullable scalar headers and broader transfers remain separate.
+Result-slot joins now retain conditional domains and agreed emitted origins separately from
+the opaque `Partial` marker. Completed null blocks combine these known emissions with omitted
+primaries, discarding identity because the implicit-null path has a distinct origin. Saved
+slot histories remain unchanged. Ordinary local joins, missing/opaque markers,
+must-initialization and control dependence retain their boundaries. Nullable scalar headers
+and broader transfers remain separate.
 
 Dependency-ordered commit plan:
 
-1. Complete: retain conditional slot domains/origins in bounded cell/tree joins, with
-   focused algebra, payload comparison and local-namespace regressions. Publication
-   remains unavailable until the second slice.
-2. Publish completed guarded null results using retained alternatives and complete
+1. `a46e403b`: retain conditional slot domains/origins in bounded cell/tree joins, with
+   focused algebra, payload comparison and local-namespace regressions.
+2. Complete: publish guarded null results using retained alternatives and complete
    scope/history evidence; test emission origins, copies, control and incomplete inputs.
 3. Qualify exact work/payload limits, stale inputs, reentry and unknown boundaries;
    rerun the scalar suite and the original 1000-matcher case without budget changes.
@@ -5924,16 +5923,19 @@ Dependency-ordered commit plan:
 Baseline: `4f7d097a`, clean tracked tree; `docs/programs/hey/` is user-owned and excluded.
 `/tmp/meowy-partial-slots-baseline.json` records 611 protected files. Investigation follows
 the result-slot contract in `values-and-blocks.md` and profile-1 joins in `stdlib/proof.md`.
-All 333 scalar-fact tests pass, including two new slot-join regressions. Conditional joins
+All 337 scalar-fact tests pass, including six new join/publication regressions. Conditional joins
 are associative, preserve only agreed emitted origins, retain control and absorb unknown
 inputs. Ordinary local joins still produce `Partial`; the existing uncertain-emission case
 still refuses to overwrite a possibly initialized slot. The original 1000-matcher test
 passes without budget changes. Logs: `/tmp/meowy-partial-slots-joins.log` and
-`/tmp/meowy-partial-slots-matchers.log`. All-target Clippy passes
+`/tmp/meowy-partial-slots-matchers.log`. Four source-driven regressions cover guarded nulls,
+nested leaves, multiple emissions, historical copies, control dependence and missing inputs.
+Unknown tails, restart headers and nullable scalar headers remain unavailable
+(`/tmp/meowy-partial-slots-publication.log`). All-target Clippy passed for the join slice
 (`/tmp/meowy-partial-slots-joins-clippy.log`). The prior full gate below remains the baseline.
 
-Next: publish fully qualified conditional null slots in `state/snapshots/expressions/blocks.rs`
-with guarded source cases, origin/copy checks and missing-history/control boundaries.
+Next: verify exact conditional join/publication limits, invalid retained values, missing
+histories and reentry boundaries, then run the full gate and preservation audit.
 
 ### Nested and stopped scalar paths
 
