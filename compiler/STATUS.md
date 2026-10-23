@@ -5886,7 +5886,14 @@ stays unavailable; known bottom remains distinct. Four new source-based structur
 first reproduced absent facts and now pass. Earlier tests that required no block publication
 were updated to check the retained emitted domain/origin. All 3674 library tests pass,
 including 308 scalar-fact tests and the original 1000-matcher case
-(`/tmp/meowy-block-initialized-library.log`). Next: qualified implicit null and its consumers.
+(`/tmp/meowy-block-initialized-library.log`). Publication commit: `0f144470`.
+Four implicit-null regressions reproduced the missing transfer. A completed, known
+uninitialized null slot now materializes null at its original consumer with a fresh
+expression origin, without writing historical slots. Partial and unknown histories remain
+unavailable. Null arguments, direct copies and nested guards consume the published facts
+without callee specialization. All 3678 library tests pass, including 312 scalar-fact tests
+and the original 1000-matcher case (`/tmp/meowy-block-nulls-library.log`).
+Next: missing-state, identity and exact-budget publication boundaries.
 
 Next steps:
 

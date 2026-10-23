@@ -99,19 +99,19 @@ impl Snapshots {
             return Ok(None);
         };
         cell.validate(row.owner, block, flow, span)?;
-        let Data::Initialized {
-            version,
-            domain,
-            origin,
-        } = &cell.data
-        else {
-            return Ok(None);
-        };
-        if version.is_some() {
-            return Err(invalid(span));
-        }
-        let Some(domain) = domain else {
-            return Ok(None);
+        let (domain, origin) = match &cell.data {
+            Data::Uninitialized if slot.declared == Domain::NULL => {
+                (&Domain::NULL, Some(Origin::Expression(row.owner, point)))
+            }
+            Data::Initialized {
+                version: Some(_), ..
+            } => return Err(invalid(span)),
+            Data::Initialized {
+                domain: Some(domain),
+                origin,
+                ..
+            } => (domain, *origin),
+            _ => return Ok(None),
         };
         if !domain.fits(&slot.declared, flow, span)? {
             return Ok(None);
@@ -124,7 +124,7 @@ impl Snapshots {
             domain: domain.clone(),
             local: None,
             version: None,
-            origin: *origin,
+            origin,
             control: control || entry || cell.control,
         }))
     }
@@ -132,3 +132,6 @@ impl Snapshots {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod nulls;
