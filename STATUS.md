@@ -75,8 +75,9 @@ case and all-target Clippy pass. All 14 verification groups and the preservation
 Five new test files extend structural evidence; reference contracts, source expectations,
 proof obligations and capability pins are unchanged.
 
-Next: retain per-path result-slot initialization, then publish completed scalar block values
-with their completion dependencies. Block expression values and proof outcomes remain gated.
+In progress: [result-slot initialization](compiler/STATUS.md#scalar-result-slot-initialization).
+Retain per-path initialization before publishing completed scalar block values with their
+completion dependencies. Block expression values and proof outcomes remain gated.
 The full documented release remains incomplete. User-owned `docs/programs/hey/` stays
 excluded. Nothing was pushed.
 

@@ -131,7 +131,9 @@ impl Snapshots {
             return Err(budget(span));
         }
         let mut state = state.snapshot(flow, span, self.room())?;
-        state.used = state.weight() + state.cells.len().saturating_sub(1);
+        state.used = state.weight()
+            + state.cells.len().saturating_sub(1)
+            + state.slots.len().saturating_sub(1);
         self.keep(state, span)
     }
 

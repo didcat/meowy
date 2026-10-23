@@ -5722,6 +5722,32 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-completion-docs.log`).
 No known failures remain. Nothing was pushed.
 
+### Scalar result-slot initialization
+
+Current continuation baseline: `176dfacd`; user-owned `docs/programs/hey/` remains excluded.
+Completion routes and ordinary storage joins are qualified. Result slots need their own
+path-specific initialization state; saved emission facts alone cannot select a block value.
+Reuse the immutable cell tree in a separate block-keyed namespace, retaining bounded
+payload/allocation accounting, unknown/partial states and unchanged ordinary storage.
+
+Dependency-ordered commit plan:
+
+1. Add the bounded slot-state carrier and its snapshot/join behavior, with namespace,
+   historical identity, partial/missing/bottom and exact-budget regressions.
+2. Qualify scalar slot headers and establish uninitialized slots at owner/nested scope
+   entries. Preserve missing entry histories, unsupported shapes and restart boundaries.
+3. Initialize eligible slots from saved emission-time values without overwriting initialized
+   or uncertain slots; verify branches, nested targets, tail writes and copies.
+4. Verify remaining identity/control/budget boundaries, update structural evidence and
+   handoffs, then run the full gate and preservation audit. Split slices further as needed.
+
+The separate slot tree shares snapshot/join machinery and combined accounting with ordinary
+cells. All three carrier tests and all 3639 library tests pass, including the unchanged
+1000-matcher case (`/tmp/meowy-slot-carrier-library.log`). Namespace/history, partial/missing/
+bottom, exact budget and invalid identity checks pass. Transfer APIs remain test-only until
+entry integration. Next: qualify declared scalar slot headers before entry initialization;
+completed values, broader alias/composition precision, restarts and proof outcomes stay gated.
+
 1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
    emission-time copies, target identity and branch joins. Keep it separate from publication.
    Verify uninitialized/partial slots, duplicate/emitted branches, nested targets and budgets.

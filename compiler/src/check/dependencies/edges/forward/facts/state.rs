@@ -6,6 +6,8 @@ use versions::{Origin, Version};
 mod cells;
 mod entries;
 mod joins;
+#[cfg(test)]
+mod slots;
 mod snapshots;
 mod tree;
 pub(super) use cells::{Cell, Data};
@@ -16,6 +18,7 @@ pub(super) struct State {
     pub(self) owner: usize,
     pub(self) reach: Guard,
     pub(self) cells: tree::Tree,
+    pub(self) slots: tree::Tree,
     pub(self) parts: usize,
     pub(self) used: usize,
 }
@@ -37,6 +40,7 @@ impl State {
             owner,
             reach,
             cells: tree::Tree::new(owner),
+            slots: tree::Tree::new(owner),
             parts: 1,
             used: 1,
         })
@@ -72,12 +76,17 @@ impl State {
             if cell.bottom() {
                 self.reach = FALSE;
                 self.cells = tree::Tree::new(self.owner);
+                self.slots = tree::Tree::new(self.owner);
                 self.parts = 1;
             }
             return Ok(());
         }
         let (cells, used) = self.cells.updated(local, cell, flow, span, room)?;
-        self.parts = 1 + cells.weight();
+        let parts = 1 + cells.weight() + self.slots.weight();
+        if parts > MAX_EDGES {
+            return Err(budget(span));
+        }
+        self.parts = parts;
         self.cells = cells;
         self.used += used;
         Ok(())
@@ -105,6 +114,11 @@ impl State {
                 tree::Tree::new(self.owner)
             } else {
                 self.cells.clone()
+            },
+            slots: if reach == FALSE {
+                tree::Tree::new(self.owner)
+            } else {
+                self.slots.clone()
             },
             parts: if reach == FALSE { 1 } else { self.parts },
             used: 1,
@@ -140,20 +154,26 @@ impl State {
             } else {
                 cells
             },
+            slots: tree::Tree::new(owner),
             used: used + 1,
         })
     }
 
     pub(self) fn validate(&self, flow: &mut Flow, span: Span) -> Result<()> {
-        if !flow.spend(2) || self.used == 0 || self.used > MAX_EDGES {
+        if !flow.spend(2) || self.used == 0 || self.used > MAX_EDGES || self.parts > MAX_EDGES {
             return Err(budget(span));
         }
         self.cells.validate(flow, span)?;
+        if !self.slots.is_empty() {
+            self.slots.validate(flow, span)?;
+        }
         if self.reach >> 1 >= flow.nodes.len()
             || self.cells.owner() != self.owner
-            || self.parts != 1 + self.cells.weight()
+            || self.slots.owner() != self.owner
+            || self.parts != 1 + self.cells.weight() + self.slots.weight()
             || self.cells.bottom()
-            || self.reach == FALSE && !self.cells.is_empty()
+            || self.slots.bottom()
+            || self.reach == FALSE && (!self.cells.is_empty() || !self.slots.is_empty())
         {
             return Err(invalid(span));
         }
@@ -167,6 +187,7 @@ impl PartialEq for State {
             && self.reach == other.reach
             && self.parts == other.parts
             && self.cells == other.cells
+            && self.slots == other.slots
     }
 }
 

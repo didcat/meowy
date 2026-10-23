@@ -56,17 +56,40 @@ impl State {
             .checked_sub(1)
             .ok_or_else(|| budget(span))?;
         let (cells, used) = self.cells.joined(&other.cells, flow, span, room)?;
-        let bottom = reach == FALSE || cells.bottom();
+        let (slots, extra) = if self.slots.is_empty() && other.slots.is_empty() {
+            (tree::Tree::new(self.owner), 0)
+        } else {
+            self.slots.joined(
+                &other.slots,
+                flow,
+                span,
+                room.checked_sub(used).ok_or_else(|| budget(span))?,
+            )?
+        };
+        let bottom = reach == FALSE || cells.bottom() || slots.bottom();
+        let parts = if bottom {
+            1
+        } else {
+            1 + cells.weight() + slots.weight()
+        };
+        if parts > MAX_EDGES {
+            return Err(budget(span));
+        }
         Ok(Self {
             owner: self.owner,
             reach: if bottom { FALSE } else { reach },
-            parts: if bottom { 1 } else { 1 + cells.weight() },
+            parts,
             cells: if bottom {
                 tree::Tree::new(self.owner)
             } else {
                 cells
             },
-            used: used + 1,
+            slots: if bottom {
+                tree::Tree::new(self.owner)
+            } else {
+                slots
+            },
+            used: used + extra + 1,
         })
     }
 }
