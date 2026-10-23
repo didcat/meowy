@@ -55,6 +55,7 @@ pub(crate) fn scalar_snapshots_keep_seed_and_before_after_histories_independent(
         .record(
             port,
             Row {
+                control: None,
                 owner: 0,
                 before,
                 after,
@@ -86,6 +87,7 @@ pub(crate) fn scalar_snapshots_keep_seed_and_before_after_histories_independent(
             .record(
                 port,
                 Row {
+                    control: None,
                     owner: 0,
                     before: Value::Missing,
                     after: Value::Missing
@@ -131,6 +133,7 @@ pub(crate) fn scalar_snapshots_distinguish_unvisited_missing_bottom_and_foreign_
             .record(
                 port,
                 Row {
+                    control: None,
                     owner: 0,
                     before: foreign,
                     after: foreign
@@ -173,5 +176,35 @@ pub(crate) fn scalar_snapshots_bound_seed_copies_and_row_payload_without_mutatin
             assert_eq!(snapshots.rows, expected.rows);
         }
         assert_eq!(format!("{entries:?}{reports:?}"), before);
+    }
+}
+
+#[test]
+pub(crate) fn scalar_snapshot_rows_reserve_completion_control_with_their_state_references() {
+    let (mut checker, _, _, mut snapshots) = super::capture::tests::capture("{}");
+    let port = Port::Normal(usize::MAX);
+    for control in [None, Some(false), Some(true)] {
+        for (room, pass) in [(2, false), (3, true)] {
+            snapshots.parts = room;
+            let saved = format!("{snapshots:?}");
+            let result = snapshots.record(
+                port,
+                Row {
+                    owner: 0,
+                    before: Value::Missing,
+                    after: Value::Missing,
+                    control,
+                },
+                &mut checker.flow,
+                Span::default(),
+            );
+            assert_eq!(result.is_ok(), pass);
+            if pass {
+                assert_eq!(snapshots.rows.remove(&port).unwrap().control, control);
+                assert_eq!(snapshots.parts, 0);
+            } else {
+                assert_eq!(format!("{snapshots:?}"), saved);
+            }
+        }
     }
 }

@@ -103,6 +103,7 @@ pub(super) fn publish(checker: &mut Checker, snapshots: &mut Snapshots, port: Po
         .record(
             port,
             Row {
+                control: None,
                 owner: 0,
                 before: value,
                 after: value,

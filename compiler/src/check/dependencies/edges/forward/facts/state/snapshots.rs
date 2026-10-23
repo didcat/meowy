@@ -29,6 +29,7 @@ pub(super) struct Row {
     pub(self) owner: usize,
     pub(self) before: Value,
     pub(self) after: Value,
+    pub(self) control: Option<bool>,
 }
 
 #[derive(Debug)]
@@ -113,6 +114,7 @@ impl Checker {
             snapshots.record(
                 *port,
                 Row {
+                    control: None,
                     owner,
                     before: value,
                     after: value,
@@ -200,7 +202,7 @@ impl Snapshots {
                 return Err(invalid(span));
             }
         }
-        self.parts = self.parts.checked_sub(2).ok_or_else(|| budget(span))?;
+        self.parts = self.parts.checked_sub(3).ok_or_else(|| budget(span))?;
         self.rows.insert(port, row);
         Ok(())
     }

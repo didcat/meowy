@@ -148,6 +148,7 @@ impl Checker {
                 snapshots.record(
                     port,
                     Row {
+                        control: None,
                         owner,
                         before,
                         after,

@@ -5783,9 +5783,44 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-slot-states-docs.log`).
 No known failures remain. Nothing was pushed.
 
-1. Qualify completion dependencies for block-normal/result observations, including guards,
-   leaves and tail effects. Entry control or a known slot value cannot establish completion
-   independence. Keep missing control/history explicit and test derived/unknown boundaries.
+### Scalar completion dependencies
+
+The current slice qualifies completion history separately from emitted values and ordinary
+storage. The predecessor schedule supplies history; entry ancestry or an initialized slot
+cannot prove that later guards, leaves or calls are independent. Missing histories and
+unsupported effects remain explicit. No block expression or proof result is published.
+
+Dependency-ordered commit plan:
+
+1. Extend existing snapshot rows with an explicit unknown completion-control field and
+   charge its payload. Keep this carrier prerequisite separate from propagation.
+2. Retain bounded completion histories for qualified straight-line paths, scope entries,
+   emissions and leaves. Verify tail ordering, missing effects and owner isolation.
+3. Accumulate qualified guard dependencies across branches and joins; exclude known bottom
+   paths without giving derived guards constant authority. Verify missing/derived evidence.
+4. Qualify call completion from saved argument/result dependencies, without callee-body
+   specialization. Verify earlier histories survive later writes and unknown calls.
+5. Verify exact budgets, identity failures and atomic publication; document the boundary,
+   link structural evidence, run the full gate and audit protected fixtures/user files.
+
+Baseline `2082964d` protects 611 files in `/tmp/meowy-completion-history-baseline.json`.
+The working tree initially contains only user-owned `docs/programs/hey/`; it is excluded.
+Investigation confirms that existing completion transfer preserves storage using entry
+control only. Scalar call results already retain historical argument dependencies; those
+facts can qualify call completion without consulting a callee. Measurement found only 1037
+work units left before the added whole-graph history pass in the 1000-matcher case. The
+implementation now extends existing rows and will accumulate history during the existing
+predecessor traversal, avoiding another graph scan or parallel per-port map. Limits stay
+unchanged. The revised row carrier passes all 288 existing scalar-fact tests and the original
+1000-matcher case. Each row reserves its control field with both state references; new
+exact-payload coverage verifies unknown/independent/dependent values and atomic failure.
+Focused logs: `/tmp/meowy-history-carrier.log`, `/tmp/meowy-history-carrier-matchers.log`.
+Next: accumulate completion control while resolving the already-validated predecessors.
+
+Next steps:
+
+1. Implement and validate the completion-history slices above. Keep missing control/history
+   explicit and test derived/unknown boundaries with the original 1000-matcher budget.
 2. Publish completed scalar block facts from qualified completion rows and their slot states,
    retaining declared shapes, origins and original consumer PointIds. Handle implicit null
    only after qualified completion; do not recover missing/partial evidence or select from

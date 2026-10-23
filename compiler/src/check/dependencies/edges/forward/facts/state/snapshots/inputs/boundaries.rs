@@ -121,6 +121,7 @@ pub(crate) fn scalar_incoming_never_reuses_a_completed_restart_as_header_evidenc
         .record(
             edge.from,
             Row {
+                control: None,
                 owner: 1,
                 before: seed,
                 after: seed,
