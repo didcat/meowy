@@ -42,7 +42,7 @@ pub(super) fn setup(
 
 #[test]
 pub(crate) fn scalar_block_publication_reserves_exact_work_and_payload_atomically() {
-    for source in ["v:{->7}", "v:{}"] {
+    for source in ["v:{->7}", "v:{}", "f:(flag<boolean>){v:{|flag|->null};v}"] {
         setup(source, |checker, snapshots, point, forward, obs| {
             let start = checker.flow.work;
             snapshots

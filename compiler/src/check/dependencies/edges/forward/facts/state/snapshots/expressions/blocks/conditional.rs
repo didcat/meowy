@@ -1,4 +1,5 @@
 use super::super::super::capture::tests::{capture, capture_with};
+use super::boundaries::setup;
 use super::*;
 
 #[test]
@@ -138,4 +139,90 @@ pub(crate) fn scalar_conditional_blocks_keep_unknown_tails_and_nullable_headers_
     let block = checker.emissions.values().next().unwrap().targets[0].block;
     let point = checker.bodies[&block].parent.unwrap();
     assert!(!snapshots.expressions.contains_key(&point));
+}
+
+#[test]
+pub(crate) fn scalar_conditional_blocks_keep_origins_when_only_one_guard_arm_reaches_completion() {
+    for flag in ["true", "false"] {
+        let (checker, _, _, snapshots) = capture(&format!("v:{{|{flag}|->null}}"));
+        let target = &checker.emissions.values().next().unwrap().targets[0];
+        let body = &checker.bodies[&target.block];
+        let point = body.parent.unwrap();
+        let value = snapshots.expressions[&point].value.as_ref().unwrap();
+        let origin = if flag == "true" {
+            snapshots.emissions[&target.id]
+                .value
+                .as_ref()
+                .unwrap()
+                .origin
+        } else {
+            Some(Origin::Expression(body.owner, point))
+        };
+        assert_eq!(value.origin, origin);
+        assert_eq!(value.domain, Domain::NULL);
+        assert!(!value.control);
+    }
+}
+
+#[test]
+pub(crate) fn scalar_conditional_blocks_never_infer_null_from_opaque_or_incomplete_evidence() {
+    for (data, missing) in [
+        (Data::Partial, false),
+        (Data::Unavailable, false),
+        (
+            Data::Initialized {
+                version: None,
+                domain: None,
+                origin: None,
+            },
+            false,
+        ),
+        (
+            Data::Conditional {
+                domain: Domain::boolean(true),
+                origin: None,
+            },
+            false,
+        ),
+        (
+            Data::Conditional {
+                domain: Domain::NULL,
+                origin: None,
+            },
+            true,
+        ),
+    ] {
+        setup(
+            "f:(flag<boolean>){v:{|flag|->null};v}",
+            |checker, snapshots, point, forward, obs| {
+                let Port::BlockResult(block) = forward.input else {
+                    panic!()
+                };
+                let Value::Known(id) = snapshots.rows[&forward.input].after else {
+                    panic!()
+                };
+                snapshots.states[id]
+                    .put_slot(
+                        block,
+                        &Cell {
+                            data,
+                            control: true,
+                        },
+                        &mut checker.flow,
+                        Span::default(),
+                        MAX_EDGES,
+                    )
+                    .unwrap();
+                if missing {
+                    for port in [Port::BlockNormal(block), forward.input, Port::Normal(point)] {
+                        snapshots.rows.get_mut(&port).unwrap().control = None;
+                    }
+                }
+                snapshots
+                    .block_expression(point, &forward, obs, &mut checker.flow, Span::default())
+                    .unwrap();
+                assert!(snapshots.expressions[&point].value.is_none());
+            },
+        );
+    }
 }

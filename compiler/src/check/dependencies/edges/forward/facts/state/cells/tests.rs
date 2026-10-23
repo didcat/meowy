@@ -71,3 +71,31 @@ pub(crate) fn scalar_cell_comparisons_preserve_identity_and_bound_observed_paylo
         }
     }
 }
+
+#[test]
+pub(crate) fn scalar_conditional_cells_reject_empty_invalid_and_foreign_alternatives() {
+    for (domain, origin) in [
+        (Domain::BOTTOM, None),
+        (
+            Domain {
+                values: Some(domain::Values::Bool(0)),
+                null: false,
+            },
+            None,
+        ),
+        (Domain::NULL, Some(Origin::Expression(1, 2))),
+        (Domain::NULL, Some(Origin::Parameter(0, 0))),
+    ] {
+        let cell = Cell {
+            data: Data::Conditional { domain, origin },
+            control: true,
+        };
+        assert!(!cell.bottom());
+        assert!(
+            cell.validate(0, 0, &mut Flow::new(), Span::default())
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+    }
+}

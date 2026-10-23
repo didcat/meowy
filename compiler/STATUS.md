@@ -5913,17 +5913,17 @@ Dependency-ordered commit plan:
 
 1. `a46e403b`: retain conditional slot domains/origins in bounded cell/tree joins, with
    focused algebra, payload comparison and local-namespace regressions.
-2. Complete: publish guarded null results using retained alternatives and complete
+2. `0cf660cf`: publish guarded null results using retained alternatives and complete
    scope/history evidence; test emission origins, copies, control and incomplete inputs.
-3. Qualify exact work/payload limits, stale inputs, reentry and unknown boundaries;
-   rerun the scalar suite and the original 1000-matcher case without budget changes.
+3. Complete: qualify exact work/payload limits, invalid alternatives, reentry and unknown
+   boundaries. All 3707 library tests and all-target Clippy pass.
 4. Update foundation/structural evidence and both handoffs; run the complete gate and
    audit preserved contracts, conformance expectations, capability pins and user files.
 
 Baseline: `4f7d097a`, clean tracked tree; `docs/programs/hey/` is user-owned and excluded.
 `/tmp/meowy-partial-slots-baseline.json` records 611 protected files. Investigation follows
 the result-slot contract in `values-and-blocks.md` and profile-1 joins in `stdlib/proof.md`.
-All 337 scalar-fact tests pass, including six new join/publication regressions. Conditional joins
+All 341 scalar-fact tests pass, including ten new join/publication/boundary regressions. Conditional joins
 are associative, preserve only agreed emitted origins, retain control and absorb unknown
 inputs. Ordinary local joins still produce `Partial`; the existing uncertain-emission case
 still refuses to overwrite a possibly initialized slot. The original 1000-matcher test
@@ -5931,11 +5931,17 @@ passes without budget changes. Logs: `/tmp/meowy-partial-slots-joins.log` and
 `/tmp/meowy-partial-slots-matchers.log`. Four source-driven regressions cover guarded nulls,
 nested leaves, multiple emissions, historical copies, control dependence and missing inputs.
 Unknown tails, restart headers and nullable scalar headers remain unavailable
-(`/tmp/meowy-partial-slots-publication.log`). All-target Clippy passed for the join slice
-(`/tmp/meowy-partial-slots-joins-clippy.log`). The prior full gate below remains the baseline.
+(`/tmp/meowy-partial-slots-publication.log`). Exact work/payload limits pass for conditional
+joins across aligned and differing tree shapes and for completed publication; failures
+preserve prior records. Invalid/empty domains and foreign origins reject, opaque slots
+cannot imply null, local reads still require initialization, and entry/emission cannot reset
+conditional slots (`/tmp/meowy-partial-slots-boundaries.log`). All 3707 library tests,
+including the original 1000-matcher case, and all-target Clippy pass without budget changes
+(`/tmp/meowy-partial-slots-library.log`, `/tmp/meowy-partial-slots-clippy.log`). The prior
+full gate below remains the baseline.
 
-Next: verify exact conditional join/publication limits, invalid retained values, missing
-histories and reentry boundaries, then run the full gate and preservation audit.
+Next: update foundation/coverage and run the full gate and preservation audit. Nullable
+scalar headers remain the next propagation boundary.
 
 ### Nested and stopped scalar paths
 

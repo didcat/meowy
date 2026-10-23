@@ -229,6 +229,10 @@ pub(crate) fn scalar_slot_states_never_reinitialize_known_or_uncertain_cells() {
     for data in [
         None,
         Some(Data::Partial),
+        Some(Data::Conditional {
+            domain: Domain::integer(7, &mut flow, Span::default()).unwrap(),
+            origin: Some(Origin::Expression(0, 1)),
+        }),
         Some(Data::Unavailable),
         Some(old.data.clone()),
     ] {
@@ -255,6 +259,14 @@ pub(crate) fn scalar_slot_states_never_reinitialize_known_or_uncertain_cells() {
                 .unwrap()
                 .is_none()
         );
+        if state.slot(0).is_some() {
+            assert!(
+                state
+                    .enter_slot(0, &slot, &mut flow, Span::default(), MAX_EDGES)
+                    .unwrap()
+                    .is_none()
+            );
+        }
         assert_eq!(format!("{state:?}"), saved);
     }
 }

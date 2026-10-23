@@ -144,6 +144,10 @@ pub(crate) fn scalar_expression_reads_preserve_copies_controls_and_missing_cell_
         Data::Unavailable,
         Data::Uninitialized,
         Data::Partial,
+        Data::Conditional {
+            domain: Domain::integer(7, &mut checker.flow, Span::default()).unwrap(),
+            origin: Some(Origin::Expression(1, 0)),
+        },
         Data::Initialized {
             version: None,
             domain: None,
