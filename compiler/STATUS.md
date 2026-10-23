@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Scalar result-slot initialization is implemented; validation is below.
+Updated: 2026-10-23. Scalar completion dependencies are implemented; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: qualify completion dependencies and block-value publication from the
-[slot handoff](#scalar-result-slot-initialization); proof evaluation stays gated.
+Next: publish completed scalar block values using the
+[completion handoff](#scalar-completion-dependencies); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5808,12 +5808,12 @@ published; unsupported shapes and incomplete state cannot recover from a known c
 | `95e7fae2` | Accumulate straight-line and scope history through predecessors |
 | `e3e588f4` | Retain guard dependencies through branches and joins |
 | `34a0ddfd` | Qualify call completion from saved arguments and result sources |
+| `71e97522` | Verify joins, foreign owners and atomic control publication |
 
 All 15 new structural regressions and 303 scalar-fact tests pass. Coverage distinguishes
 missing/dependent controls, ordinary guard paths, bottom/unknown joins, foreign owners,
 historical arguments, unsupported tails, missing call sources and atomic work/payload
-failures. The preceding full library run passed 3665 tests, including the original
-1000-matcher case; the four final boundary tests are included in the 303 focused passes.
+failures. All 3669 library tests pass, including the original 1000-matcher case.
 No budget was relaxed. History uses the existing row/edge lookups; the guard update replaces
 a redundant map probe. Call-only lookups and the extra retained row field are charged.
 
@@ -5826,20 +5826,32 @@ Focused logs: `/tmp/meowy-history-carrier.log`, `/tmp/meowy-history-row.log`,
 
 Baseline `2082964d` protects 611 files in `/tmp/meowy-completion-history-baseline.json`,
 including all user-owned `docs/programs/hey/` files. Reference contracts, source expectations,
-proof obligations and capability pins are unchanged. Remaining planned validation: link
-structural evidence, run the full gate and audit the protected files. Nothing was pushed.
+proof obligations and capability pins are unchanged. Three new test files add 12 structural
+evidence links across four reference records; existing carrier/guard/join tests remain linked.
+The audit preserves 609 protected files byte-for-byte, all 520 source expectations, exact
+capability pins, proof obligations, all 37 reference hashes/gaps/prior evidence and all 10
+user-owned files. The two coverage metadata/report edits are reviewed separately
+(`/tmp/meowy-completion-history-preservation.log`).
+
+All 14 `make test` groups pass: 3669 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-completion-history-gate.log`; details: `build/verification-completion-history`.
+All four final handoff documentation/tooling checks pass
+(`/tmp/meowy-completion-history-docs.log`). No known failures remain. Nothing was pushed.
 
 Next steps:
 
-1. Finish completion-history documentation, full validation and preservation audit.
-2. Publish completed scalar block facts from qualified completion rows and their slot states,
+1. Publish completed scalar block facts from qualified completion rows and their slot states,
    combining `Row.control` with slot dependencies while retaining declared shapes, origins
    and original consumer PointIds. Handle implicit null only after qualified completion;
    never recover missing/partial evidence or select from candidates. Verify empty/null
    blocks, stopped tails, guarded leaves, derived/unknown controls and historical copies.
-3. Keep nested-body/dead-tail absence precision, path correlations, aliases/composition,
+2. Keep nested-body/dead-tail absence precision, path correlations, aliases/composition,
    restart resets, arithmetic and wider guards separate until their evidence is complete.
-4. Complete transitive query/E225 qualification and per-query logical charging before proof
+3. Complete transitive query/E225 qualification and per-query logical charging before proof
    outcomes. Preserve source expectations, capability pins and the original 1000-matcher case.
 
 ### Boolean literal escapes
@@ -7471,8 +7483,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scalar result-slot initialization](#scalar-result-slot-initialization):
-qualify completion dependencies before publishing completed scalar block values.
+Resume the ordered actions in [Scalar completion dependencies](#scalar-completion-dependencies):
+publish completed scalar block values using slot states and qualified completion control.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7519,8 +7531,8 @@ Scheduled boolean edge restriction supports qualified current locals, including 
 versions. Short-circuit boolean result facts now feed guards and storage transfers.
 Call entry authority and conservative direct-target invalidation are integrated.
 Call-result facts, emission histories and qualified completion storage joins are implemented.
-Per-path result-slot initialization is implemented; completion dependencies and completed
-block-value publication remain next.
+Per-path result-slot initialization and completion dependencies are implemented; completed
+block-value publication remains next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

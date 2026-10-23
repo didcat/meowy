@@ -63,19 +63,19 @@ Existing proof/scalar continuation remains next. Nothing was pushed.
 
 ## Current compiler and coverage handoff
 
-Scalar result slots now retain per-path initialization in a separate immutable tree.
-Qualified scope entries establish uninitialized slots; emissions copy saved values into
-eligible slots. Tail writes preserve emitted values, and joins retain partial/unavailable
-states. Reentry or uncertain initialization cannot reset or overwrite a slot.
+Scalar snapshot rows now retain completion dependencies through scope entries, emissions,
+leaves, guards and scalar calls. The existing predecessor traversal combines history;
+missing inputs remain unknown and known dead paths contribute no completion evidence.
+Tail dependencies preserve earlier emitted values and argument-time facts.
 
-The [slot handoff](compiler/STATUS.md#scalar-result-slot-initialization) records five validated
-commits and 18 new structural regressions. All 288 scalar-fact tests and all-target Clippy
-pass. The unchanged 1000-matcher case passes without budget changes. All 14 verification
+The [completion handoff](compiler/STATUS.md#scalar-completion-dependencies) records five
+validated slices and 15 new structural regressions. All 303 scalar-fact tests and all-target
+Clippy pass. The original 1000-matcher case passes without budget changes. All 14 verification
 groups and the preservation audit pass. Three new test files extend structural
 evidence; reference contracts, source expectations, proof obligations and pins are unchanged.
 
-Next: qualify completion dependencies, then publish completed scalar block values from
-slot states. Implicit null, completion availability and proof outcomes remain gated.
+Next: publish completed scalar block values using both slot states and completion control.
+Implicit null, broader effects and proof outcomes remain gated; history is not termination proof.
 The full documented release remains incomplete. User-owned `docs/programs/hey/` stays
 excluded. Nothing was pushed.
 
@@ -90,15 +90,15 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-The latest `make test` run passes all 14 groups: 3654 library, 925 native and 86 Python tests,
+The latest `make test` run passes all 14 groups: 3669 library, 925 native and 86 Python tests,
 plus 501 required conformance cases with 19 unchanged gaps and zero debug/release failures.
 Formatting, Clippy, both editors and documentation/schema checks pass. Runtime
 debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
 subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
-Summary: `/tmp/meowy-slot-states-gate.log`; details: `build/verification-slot-states`.
+Summary: `/tmp/meowy-completion-history-gate.log`; details: `build/verification-completion-history`.
 The audit preserves 609 protected files, all 520 conformance records, exact capability pins,
 all 37 reference hashes/gaps/prior evidence and all 10 user-owned files under
-`docs/programs/hey/` (`/tmp/meowy-slot-states-preservation.log`). The two intentional coverage
+`docs/programs/hey/` (`/tmp/meowy-completion-history-preservation.log`). The two intentional coverage
 metadata/report edits add 12 structural links without changing reference contracts.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults

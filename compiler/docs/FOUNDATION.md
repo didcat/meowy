@@ -2440,9 +2440,9 @@ and unsupported values remain unavailable. Known bottom stays distinct. Named al
 and composed emissions retain their existing conservative fallback.
 
 Emission histories do not publish completed block values or select result candidates.
-Completed values still require accumulated completion dependencies and a separate result
-publication step. Exact shared work/payload limits, stale histories and duplicate
-publication reject without changing earlier records. Source conformance expectations and
+Completed values must combine accumulated completion dependencies with slot states in a
+separate result publication step. Exact shared work/payload limits, stale histories and
+duplicate publication reject without changing earlier records. Source conformance expectations and
 proof-outcome gates are unchanged.
 
 Completion route qualification inventories original body leave facts, source points and
@@ -2481,7 +2481,22 @@ Initialized, partial, unavailable or missing slots are never overwritten. Incomp
 discarded emissions remain accepted and conservatively unavailable. The emission history
 and new slot state reserve their combined payload before publication; budget or identity
 failures leave earlier records unchanged. Block expression facts and proof outcomes remain
-unavailable until completion dependencies and result publication are qualified.
+unavailable until result publication and query qualification are complete.
+
+Snapshot rows retain independent, dependent or unknown completion control alongside their
+before/after states. The existing predecessor traversal accumulates history through scope
+entries, emissions, direct leaves, guards and scalar calls. Known bottom inputs contribute
+no completion evidence; missing live history remains unknown. An entry control or known
+slot value cannot establish completion independence. Tail dependencies do not rewrite an
+earlier emitted value, and a known dependency cannot restore missing storage.
+
+Guard authority and completion control publish together under the existing reservation;
+dependent guards retain both successors. Calls reuse saved argument and entry dependencies
+with their exact result sources. Later writes cannot replace argument-time evidence, and
+callee bodies never supply specialization or termination proof. This qualifies dependencies
+of observed continuations; it does not establish that execution returns. Exact row payload,
+work and identity failures preserve earlier history. Completed block values, implicit null,
+broader effects and transitive per-query E225 qualification remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
