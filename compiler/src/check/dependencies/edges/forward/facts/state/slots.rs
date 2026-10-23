@@ -1,6 +1,39 @@
 use super::*;
 
 impl State {
+    pub(super) fn enter_slot(
+        &self,
+        block: hir::BlockId,
+        slot: &observations::Slot,
+        flow: &mut Flow,
+        span: Span,
+        limit: usize,
+    ) -> Result<Option<Self>> {
+        if slot.declared.weight() > MAX_EDGES
+            || !flow.spend(self.slots.depth() + slot.declared.weight() + 4)
+        {
+            return Err(budget(span));
+        }
+        if slot.owner != self.owner || !slot.declared.valid() || slot.declared == Domain::BOTTOM {
+            return Err(invalid(span));
+        }
+        if self.slot(block).is_some() {
+            return Ok(None);
+        }
+        let mut next = self.snapshot(flow, span, limit)?;
+        next.put_slot(
+            block,
+            &Cell {
+                data: Data::Uninitialized,
+                control: slot.control.unwrap_or(true),
+            },
+            flow,
+            span,
+            limit,
+        )?;
+        Ok(Some(next))
+    }
+
     pub(super) fn slot(&self, block: hir::BlockId) -> Option<&Cell> {
         self.slots.get(&block)
     }

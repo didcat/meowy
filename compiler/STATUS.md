@@ -5733,8 +5733,8 @@ payload/allocation accounting, unknown/partial states and unchanged ordinary sto
 Dependency-ordered commit plan:
 
 1. Add the bounded slot-state carrier and snapshot/join behavior (`7b274573`, validated).
-2. Qualify scalar slot headers, then establish uninitialized slots at owner/nested scope
-   entries in a separate slice. Preserve missing histories, shapes and restart boundaries.
+2. Qualify slot headers (`2562714a`, validated), then initialize owner/nested scope entries
+   separately. Preserve missing histories, shapes and restart boundaries.
 3. Initialize eligible slots from saved emission-time values without overwriting initialized
    or uncertain slots; verify branches, nested targets, tail writes and copies.
 4. Verify remaining identity/control/budget boundaries, update structural evidence and
@@ -5748,7 +5748,12 @@ entry integration. Declared slot headers now revalidate owners, scalar shapes, l
 observed entries. Their three focused tests, all 276 scalar-fact tests and the original
 matcher case pass (`/tmp/meowy-slot-headers.log`, `/tmp/meowy-slot-header-facts.log`,
 `/tmp/meowy-slot-header-matchers.log`). Missing entries and unsupported shapes gain no slot.
-Next: initialize owner/nested entry slots; completed values and proof outcomes stay gated.
+The entry regression first reproduced absent slots (`/tmp/meowy-slot-entries-before.log`).
+Owner seeds and nested entries now establish separate uninitialized slots; all three entry
+tests, all 279 scalar-fact tests and the original matcher case pass
+(`/tmp/meowy-slot-entry-facts.log`, `/tmp/meowy-slot-entry-matchers.log`). Missing/restart
+histories remain unavailable, and bottom/unsupported shapes gain no slot. Next: emission
+initialization from saved values; completed block values and proof outcomes remain gated.
 
 1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
    emission-time copies, target identity and branch joins. Keep it separate from publication.

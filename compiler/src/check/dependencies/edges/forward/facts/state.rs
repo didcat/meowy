@@ -6,7 +6,6 @@ use versions::{Origin, Version};
 mod cells;
 mod entries;
 mod joins;
-#[cfg(test)]
 mod slots;
 mod snapshots;
 mod tree;

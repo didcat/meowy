@@ -32,7 +32,13 @@ impl Checker {
                 return Err(invalid(span));
             }
         }
-        let mut snapshots = self.scalar_entry_snapshots(graph, entries, span, parts)?;
+        let mut snapshots = self.scalar_entry_snapshots_with(
+            graph,
+            entries,
+            Some(&observations.slots),
+            span,
+            parts,
+        )?;
         for (&owner, order) in orders {
             if order.len() > MAX_EDGES
                 || !self
@@ -70,10 +76,16 @@ impl Checker {
                     } else {
                         Value::Missing
                     }
-                } else if before == Value::Missing
-                    || bottom
-                    || matches!(port, Port::Entry(_) | Port::Normal(_) | Port::BlockEntry(_))
-                {
+                } else if before == Value::Missing || bottom {
+                    before
+                } else if let Port::BlockEntry(block) = port {
+                    match observations.slots.get(&block) {
+                        Some(slot) => {
+                            snapshots.enter_slot(block, before, slot, &mut self.flow, span)?
+                        }
+                        None => before,
+                    }
+                } else if matches!(port, Port::Entry(_) | Port::Normal(_)) {
                     before
                 } else if matches!(
                     port,

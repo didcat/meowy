@@ -8,6 +8,7 @@ mod emissions;
 mod expressions;
 mod guards;
 mod inputs;
+mod slots;
 mod storage;
 
 #[cfg(test)]
@@ -42,10 +43,22 @@ pub(in super::super) struct Snapshots {
 }
 
 impl Checker {
+    #[cfg(test)]
     pub(in super::super) fn scalar_entry_snapshots(
         &mut self,
         graph: &graph::Graph<'_>,
         entries: &Entries,
+        span: Span,
+        parts: usize,
+    ) -> Result<Snapshots> {
+        self.scalar_entry_snapshots_with(graph, entries, None, span, parts)
+    }
+
+    pub(super) fn scalar_entry_snapshots_with(
+        &mut self,
+        graph: &graph::Graph<'_>,
+        entries: &Entries,
+        slots: Option<&HashMap<hir::BlockId, observations::Slot>>,
         span: Span,
         parts: usize,
     ) -> Result<Snapshots> {
@@ -75,7 +88,21 @@ impl Checker {
                 return Err(invalid(span));
             }
             snapshots.parts = snapshots.parts.checked_sub(1).ok_or_else(|| budget(span))?;
-            let value = snapshots.copy(state, &mut self.flow, span)?;
+            let seed = match slots.and_then(|slots| slots.get(&node.site.block)) {
+                Some(slot) if state.reach != FALSE => Some(
+                    state
+                        .enter_slot(
+                            node.site.block,
+                            slot,
+                            &mut self.flow,
+                            span,
+                            snapshots.room(),
+                        )?
+                        .ok_or_else(|| invalid(span))?,
+                ),
+                _ => None,
+            };
+            let value = snapshots.copy(seed.as_ref().unwrap_or(state), &mut self.flow, span)?;
             let Value::Known(id) = value else {
                 return Err(invalid(span));
             };

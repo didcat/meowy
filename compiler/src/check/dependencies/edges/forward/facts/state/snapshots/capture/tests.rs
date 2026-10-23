@@ -64,6 +64,9 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
         .scalar_scope_observations(&reports, &graph, observations, Span::default(), parts)
         .unwrap();
     let (observations, parts) = checker
+        .scalar_slot_observations(&reports, &graph, observations, Span::default(), parts)
+        .unwrap();
+    let (observations, parts) = checker
         .scalar_emission_observations(&reports, &graph, observations, Span::default(), parts)
         .unwrap();
     let (observations, parts) = checker
