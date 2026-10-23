@@ -20,11 +20,22 @@ pub(crate) fn scalar_scopes_qualify_nested_owners_and_preserve_missing_leave_his
         )
         .unwrap();
     assert_eq!(observations.scopes.len(), 4);
-    assert_eq!(MAX_EDGES - left, 4);
+    assert_eq!(observations.forwarded.len(), 2);
+    assert_eq!(MAX_EDGES - left, 4 + observations.forwarded.len());
     for (&id, scope) in &observations.scopes {
         assert_eq!(scope.control, Some(false));
         assert!(scope.normal && scope.result);
         assert_eq!(scope.owner, reports.blocks[&id].0);
+        if let Some(parent) = scope.parent {
+            assert_eq!(
+                observations.forwarded[&Port::Normal(parent)],
+                Forward {
+                    owner: scope.owner,
+                    input: Port::BlockResult(id),
+                    control: false,
+                }
+            );
+        }
         assert!(
             graph.nodes[&Port::BlockNormal(id)]
                 .incoming
@@ -73,6 +84,59 @@ pub(crate) fn scalar_scopes_keep_result_only_observations_without_recovering_nor
     assert!(!observations.scopes[&id].normal);
     assert!(observations.scopes[&id].result);
     assert!(observations.sources.is_empty());
+    let parent = observations.scopes[&id].parent.unwrap();
+    assert_eq!(
+        observations.forwarded[&Port::Normal(parent)].input,
+        Port::BlockResult(id)
+    );
+}
+
+#[test]
+pub(crate) fn scalar_block_consumers_reject_conflicting_and_foreign_routes() {
+    for fault in 0..3 {
+        let (mut checker, reports, ports) = context("v:{->7}");
+        let (mut graph, _) = checker
+            .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
+            .unwrap();
+        let (&block, &(owner, observed)) = reports
+            .blocks
+            .iter()
+            .find(|(_, (_, block))| block.parent.is_some())
+            .unwrap();
+        let port = Port::Normal(observed.parent.unwrap());
+        let definitions = definitions::Definitions::default();
+        let mut observations = Observations::new(&definitions);
+        match fault {
+            0 => {
+                observations.forwarded.insert(
+                    port,
+                    Forward {
+                        owner,
+                        input: Port::BlockResult(block),
+                        control: false,
+                    },
+                );
+            }
+            1 => graph.nodes.get_mut(&port).unwrap().incoming[0].source.owner += 1,
+            2 => graph.nodes.get_mut(&port).unwrap().incoming[0].edge = usize::MAX,
+            _ => unreachable!(),
+        }
+        let saved = format!("{reports:?}{graph:?}");
+        assert!(
+            checker
+                .scalar_scope_observations(
+                    &reports,
+                    &graph,
+                    observations,
+                    Span::default(),
+                    MAX_EDGES
+                )
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+        assert_eq!(format!("{reports:?}{graph:?}"), saved);
+    }
 }
 
 #[test]

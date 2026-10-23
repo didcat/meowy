@@ -123,6 +123,31 @@ impl Checker {
                     return Err(invalid(span));
                 }
                 self.scalar_scope_edges(graph, owner, edge.to, Family::Endpoint, &[edge], span)?;
+                if graph.nodes.contains_key(&edge.to) {
+                    if !self.flow.spend(4) {
+                        return Err(budget(span));
+                    }
+                    if observations.sources.contains_key(&edge.to)
+                        || observations.logical.contains_key(&edge.to)
+                    {
+                        return Err(invalid(span));
+                    }
+                    parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
+                    if observations
+                        .forwarded
+                        .insert(
+                            edge.to,
+                            Forward {
+                                owner,
+                                input: edge.from,
+                                control: false,
+                            },
+                        )
+                        .is_some()
+                    {
+                        return Err(invalid(span));
+                    }
+                }
                 super::super::super::controls::dependency(
                     parent,
                     owner,

@@ -60,6 +60,9 @@ impl Snapshots {
             if observations.sources.contains_key(&port) {
                 return Err(invalid(span));
             }
+            if matches!(forward.input, Port::BlockResult(_)) {
+                return Ok(Some(false));
+            }
             return self
                 .forward_expression(point, forward, flow, span)
                 .map(|()| Some(false));

@@ -5875,7 +5875,12 @@ handoff. Split review: all eight code files construct or read the same `Forward.
 changing that type and its callers together is required for a buildable intermediate commit.
 The change preserves wrapper behavior and adds no map or lookup. All 303 scalar-fact tests,
 the original 1000-matcher case and formatting pass (`/tmp/meowy-block-forward.log`,
-`/tmp/meowy-block-forward-matchers.log`). Next: qualify exact block-result consumers.
+`/tmp/meowy-block-forward-matchers.log`). Refactor commit: `8d0d887b`.
+Observed scalar consumers now retain their exact `BlockResult` source in the forwarding
+index, including result-only observations without normal authority. Conflicting/foreign
+routes reject. All 304 scalar-fact tests and the original 1000-matcher case pass
+(`/tmp/meowy-block-consumers.log`, `/tmp/meowy-block-consumer-matchers.log`).
+No block values are published yet. Next: validate saved completion rows and initialized slots.
 
 Next steps:
 
