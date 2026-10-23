@@ -106,7 +106,7 @@ impl Snapshots {
                         && matches!(edge.route, Route::True | Route::False)
                     {
                         let value = self.branch(edge, row.after, flow, span)?;
-                        return Ok((value, history::combine(control, None)));
+                        return Ok((value, control));
                     }
                     same &= first.is_none_or(|first| first == id);
                     first.get_or_insert(id);

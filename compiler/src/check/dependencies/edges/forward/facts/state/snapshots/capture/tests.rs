@@ -2,6 +2,13 @@ use super::super::super::super::versions::tests::context;
 use super::*;
 
 pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports, Snapshots) {
+    capture_with(source, |_| {})
+}
+
+pub(in super::super) fn capture_with(
+    source: &str,
+    edit: impl FnOnce(&mut observations::Observations<'_, '_>),
+) -> (Checker, hir::Program, Reports, Snapshots) {
     let (mut checker, program, reports) = context(source);
     checker.proofs.conditions = std::mem::take(&mut checker.guards);
     checker.proofs.tags = std::mem::take(&mut checker.tags);
@@ -69,9 +76,10 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
     let (observations, parts) = checker
         .scalar_emission_observations(&reports, &graph, observations, Span::default(), parts)
         .unwrap();
-    let (observations, parts) = checker
+    let (mut observations, parts) = checker
         .scalar_completion_observations(&reports, &graph, observations, Span::default(), parts)
         .unwrap();
+    edit(&mut observations);
     let snapshots = checker
         .scalar_snapshots(
             &graph,

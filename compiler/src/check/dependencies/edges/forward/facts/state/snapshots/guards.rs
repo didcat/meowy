@@ -30,11 +30,13 @@ impl Snapshots {
         let Port::Normal(point) = port else {
             return Err(invalid(span));
         };
+        let std::collections::hash_map::Entry::Vacant(entry) = self.guards.entry(point) else {
+            return Err(invalid(span));
+        };
         let row = self.rows.get(&port).ok_or_else(|| invalid(span))?;
         let source = self.rows.get(&Port::Normal(input.source.input));
         let fact = self.expressions.get(&input.source.input);
-        if self.guards.contains_key(&point)
-            || point == input.point
+        if point == input.point
             || point == input.source.input
             || !input.source.normal
             || input.source.control && input.control != Some(true)
@@ -78,13 +80,17 @@ impl Snapshots {
             values.map_or(Authority::Unknown, Authority::Boolean)
         };
         let parts = self.parts.checked_sub(1).ok_or_else(|| budget(span))?;
-        self.guards.insert(
-            point,
-            Fact {
-                input: *input,
-                authority,
-            },
-        );
+        let row = self.rows.get_mut(&port).ok_or_else(|| invalid(span))?;
+        let control = match authority {
+            Authority::Dependent => Some(true),
+            Authority::Boolean(_) => Some(false),
+            Authority::Unknown | Authority::Bottom => None,
+        };
+        entry.insert(Fact {
+            input: *input,
+            authority,
+        });
+        row.control = history::combine(row.control, control);
         self.parts = parts;
         Ok(())
     }

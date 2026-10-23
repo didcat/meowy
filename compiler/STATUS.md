@@ -5821,7 +5821,14 @@ entries, emissions, direct leaves and tails retain history; unsupported effects,
 and restart headers stay unknown. Function owners remain separate and no block values are
 published. All 292 scalar-fact tests and the original 1000-matcher case pass
 (`/tmp/meowy-history-paths.log`, `/tmp/meowy-history-path-matchers.log`).
-Next: qualify guard dependencies at the existing condition-history boundary.
+Straight-line commit: `95e7fae2`. Guard qualification now updates completion control with its
+authority under the same reservation. A vacant map entry removes the redundant guard probe,
+paying for the row update without another traversal. Branches retain dependent successors;
+joins omit known bottom history and keep unknown live effects. Seeded tests distinguish
+missing and derived evidence; source captures cover guarded leaves, short circuits and
+historical copies. All 295 scalar-fact tests and the original 1000-matcher case pass
+(`/tmp/meowy-history-guards.log`, `/tmp/meowy-history-guard-matchers.log`).
+Next: qualify scalar call completion from saved argument/result dependencies.
 
 Next steps:
 

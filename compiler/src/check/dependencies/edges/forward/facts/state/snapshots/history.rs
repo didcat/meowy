@@ -8,3 +8,6 @@ pub(super) fn combine(left: Option<bool>, right: Option<bool>) -> Option<bool> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod guards;
