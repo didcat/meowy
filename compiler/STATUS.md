@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Completed scalar block values are implemented; validation is below.
+Updated: 2026-10-23. Nested/stopped scalar paths are qualified; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: qualify nested-body and dead-tail completion using the
-[block-value handoff](#completed-scalar-block-values); proof evaluation stays gated.
+Next: qualify partial result-slot joins using the
+[stopped-path handoff](#nested-and-stopped-scalar-paths); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5900,67 +5900,71 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
 No known failures remain. Nothing was pushed.
 
-Next steps:
-
 ### Nested and stopped scalar paths
 
-Current work extends qualified absence from explicit leaves through nested bodies and
-later statements. A missing observation or `never` result is not sufficient evidence.
-Original body facts and sequence/region/endpoint edges must establish every omitted path;
-unknown histories, restart cycles and unresolved sources remain conservative.
+Scalar analysis now extends qualified absence from explicit leaves through nested bodies and
+acyclic continuation edges. Checked body headers retain complete sequence/endpoints, owner
+and entry control, including bodies without scalar result slots. Missing sequences, incomplete
+owners and unresolved leave sources stay unknown. A `never` type alone grants no absence.
 
-Dependency-ordered commit plan:
+The bounded propagator validates the captured inventory against the original stored edges,
+counts every predecessor and follows only proven absence. A qualified normal/result
+relationship propagates absence to a body result only after its normal exit is proved absent.
+Observed ports, unresolved joins and restart backedges cannot be discarded. Snapshot capture
+revalidates each absent port's original owner/site before an incoming join omits it.
 
-1. Qualify stopped-body endpoint prerequisites, including absent own-leave routes and the
-   normal/result relationship, without inferring non-fallthrough from result types.
-2. Build bounded absence propagation over original continuation edges, seeded only by
-   qualified exit evidence. Preserve joins with any unresolved predecessor and block backedges.
-3. Integrate nested/dead-tail evidence into scalar joins and value publication. Verify inner
-   leaves to outer blocks, statements after leaves, value/control history and owner isolation.
-4. Verify missing metadata, malformed edges, exact work/payload limits and atomic failures;
-   update structural evidence and documentation, run the full gate and preservation audit.
+Nested leaves and dead acyclic tails preserve live storage, emitted values, origins and old
+copies. A leave to an inner scope still permits outer continuation; distinct live exits merge
+without inventing version identity. Dependent/unknown guard and call histories remain distinct.
+This is internal scalar propagation, not proof evaluation or termination proof. Missing
+metadata, unproved stopped calls, partial slots and restart cycles retain their boundaries.
 
-Baseline `2ab971b4` protects 611 files in `/tmp/meowy-stopped-paths-baseline.json`.
-The only initial dirty path is user-owned `docs/programs/hey/`; it stays excluded.
-Investigation confirms current absence stops at a direct leave's Normal port and a single
-transparent branch region. Nested `never` bodies omit the normal-to-result edge, so an
-explicitly qualified endpoint relationship is needed after proving their normal exit absent.
-The original 1000-matcher budget must remain unchanged; avoid a new graph pass for owners
-without exit seeds. Qualified body headers now retain original endpoint relationships,
-complete sequence evidence and entry control, including bodies without scalar result slots.
-Bodies with missing sequence items or incomplete owners remain unqualified. Headers alone
-do not mark normal/result ports absent. All 320 scalar-fact tests pass
-(`/tmp/meowy-stopped-headers.log`); the original 1000-matcher case and formatting pass
-(`/tmp/meowy-stopped-header-matchers.log`). Header commit: `4af94c1a`.
-The bounded propagation module now validates the original edge inventory, counts every
-predecessor and processes only qualified absence seeds. Restart backedges, unresolved joins,
-unknown leave sources and incomplete body endpoints cannot create absence. A checked
-normal/result relationship only propagates an already-proven stopped normal exit.
-The module is isolated behind its tests until the next integration slice activates it and
-updates snapshot expectations. All 322 scalar-fact tests pass, including the `never`-only
-negative case (`/tmp/meowy-stopped-propagation.log`). Its initial failure was a test selector
-choosing the root body instead of the nested body; no type-only absence was inferred.
-Propagation commit: `f5653fd3`. The propagator is now active in scalar capture. Qualified
-absent ports validate their original owner/site before joins omit them. Direct/nested exits
-preserve ordinary storage, emitted origins and copies; missing/derived controls remain
-distinct. All 3691 library tests pass, including the original 1000-matcher case
-(`/tmp/meowy-stopped-integration-library.log`). All 326 scalar-fact tests also pass, including
-distinct live exit versions across a function owner and unknown call history before a nested
-leave (`/tmp/meowy-stopped-integration.log`). Next: stale/incomplete evidence and exact-budget
-failure boundaries before full verification. Integration commit: `2ae59295`.
-All 331 scalar-fact tests and all-target Clippy pass. New boundary cases preserve unknown
-leave sources after a dead entry, keep restart cycles unresolved, retain entry dependency
-marks and reject stale inventory/site/owner evidence. Exact nested work/payload limits
-publish no partial result; both full inventory comparisons are charged. The original
-1000-matcher case and formatting pass without changed limits. Logs:
-`/tmp/meowy-stopped-boundaries.log`, `/tmp/meowy-stopped-clippy.log`,
-`/tmp/meowy-stopped-final-matchers.log`. Next: documentation, full gate and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `4af94c1a` | Qualify complete body endpoints and preserve entry control |
+| `f5653fd3` | Derive bounded absence from original continuation edges |
+| `2ae59295` | Integrate nested/stopped evidence into scalar snapshots |
+| `30816630` | Verify unknown sources, restart cycles, identity and exact budgets |
+
+All 13 new structural regressions, 331 scalar-fact tests and 3697 library tests pass.
+Formatting and all-target Clippy pass. The original 1000-matcher case passes without changed
+limits. The extra inventory/index pass is skipped when no qualified body headers exist;
+new absence stays within owners with qualified exit sources. Both inventory comparisons, graph records, queues
+and publications share the existing work/payload bounds. Failed qualification exposes no
+partial completion evidence and preserves source records.
+
+Focused logs: `/tmp/meowy-stopped-headers.log`, `/tmp/meowy-stopped-header-matchers.log`,
+`/tmp/meowy-stopped-propagation.log`, `/tmp/meowy-stopped-integration-library.log`,
+`/tmp/meowy-stopped-integration.log`, `/tmp/meowy-stopped-boundaries.log`,
+`/tmp/meowy-stopped-clippy.log`, `/tmp/meowy-stopped-final-matchers.log`.
+
+Baseline `2ab971b4` protects 611 files in `/tmp/meowy-stopped-paths-baseline.json`, including
+all user-owned `docs/programs/hey/` files. Reference contracts, source expectations, proof
+obligations and capability pins are unchanged. Three new test files add 12 structural links;
+existing completion/value/control evidence remains linked. The audit preserves 609 protected
+files byte-for-byte, all 520 source expectations, exact capability pins, proof obligations,
+all 37 reference hashes/gaps/prior evidence and all 10 user-owned files. The two coverage
+metadata/report edits are reviewed separately (`/tmp/meowy-stopped-paths-preservation.log`).
+
+All 14 `make test` groups pass: 3697 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-stopped-paths-gate.log`; details: `build/verification-stopped-paths`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-stopped-paths-docs.log`).
+No known failures remain.
+No push was performed by this continuation.
 
 Next steps:
 
-1. Complete and validate the nested/stopped-path slices above using original source evidence.
-2. Keep partial-path initialization, aliases/composition, restart resets, arithmetic and
-   wider guards separate until their evidence is complete; preserve profile precision.
+1. Qualify joins of initialized and uninitialized result slots in `facts/state/cells.rs`
+   and `facts/state/snapshots/expressions/blocks.rs`. Retain initialized alternatives and
+   explicit missing/partial/control evidence before allowing path-dependent implicit null.
+   Verify guarded null emissions, origins, incomplete inputs, exact budgets and the original
+   1000-matcher case. Do not recover values from the current undifferentiated Partial marker.
+2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until their
+   evidence is complete; preserve profile precision.
 3. Complete transitive query/E225 qualification and per-query logical charging before proof
    outcomes. Preserve source expectations and capability pins.
 
@@ -7593,8 +7597,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Completed scalar block values](#completed-scalar-block-values):
-qualify nested-body and dead-tail non-fallthrough without recovering unknown histories.
+Resume the ordered actions in [Nested and stopped scalar paths](#nested-and-stopped-scalar-paths):
+qualify partial result-slot joins without recovering unknown histories.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7642,7 +7646,8 @@ versions. Short-circuit boolean result facts now feed guards and storage transfe
 Call entry authority and conservative direct-target invalidation are integrated.
 Call-result facts, emission histories and qualified completion storage joins are implemented.
 Per-path result-slot initialization, completion dependencies and completed scalar block-value
-publication are implemented. Nested-body and dead-tail absence qualification remain next.
+publication are implemented. Nested-body and acyclic dead-tail absence are qualified.
+Partial result-slot joins remain next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

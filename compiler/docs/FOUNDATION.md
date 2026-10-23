@@ -2448,18 +2448,18 @@ and proof-outcome gates are unchanged.
 Completion route qualification inventories original body leave facts, source points and
 target owners. Missing/synthetic sources or missing nested bodies cannot establish an
 absent leave route. Known sources must agree with captured scope exits and original graph
-edges. An unobserved explicit leave remains a missing input; it does not become absent.
-Only a validated leave and its exact transparent branch-region links establish that the
-statement or region cannot fall through. Nested body exits and broader stopped-route
-propagation remain separate.
+edges. An unobserved explicit leave contributes a missing input until its entry is proved
+absent. Validated leaves seed absence; qualified body and continuation edges extend it
+through nested scopes and acyclic tails. Unknown leave sources remain unresolved even when
+an associated entry is known dead.
 
 Scheduled storage joins may omit those qualified absent predecessors. Other missing
 inputs and restart backedges remain unavailable. Observed leave, block-normal and block-result
 ports preserve ordinary storage only with qualified scope identities and known control
 authority. Existing boolean guards select available paths; dependent controls never gain
 constant authority. Empty scopes, tail writes and direct guarded leaves preserve or join
-historical cell versions separately from consumer facts. Unknown effects, dead
-tails after an exit, unsupported shapes and incomplete control remain conservative. These
+historical cell versions separately from consumer facts. Unknown effects, unproved stopped
+routes, unsupported shapes and incomplete control remain conservative. These
 storage joins alone do not establish termination, per-query E225 availability or a completed
 scalar value.
 
@@ -2498,6 +2498,22 @@ callee bodies never supply specialization or termination proof. This qualifies d
 of observed continuations; it does not establish that execution returns. Exact row payload,
 work and identity failures preserve earlier history. Broader effects and transitive per-query
 E225 qualification remain separate.
+
+Completion headers retain complete original body sequences/endpoints and entry dependency
+marks, including nested bodies without scalar result slots. A separate normal/result
+dependency permits a result to be absent only after its normal exit is proved absent;
+the stored runtime edge inventory stays unchanged. Missing sequence items and incomplete
+owners cannot establish that relationship. A `never` result alone supplies no absence.
+
+Bounded absence propagation checks the complete captured edge inventory against the stored
+source edges and requires every predecessor to be proved absent. It skips the additional
+inventory/index pass when no qualified body headers exist. Observed ports, unresolved joins,
+unknown leave sources and restart backedges remain explicit boundaries. Each absent port's
+original owner/site is checked before snapshot joins omit it. Nested exits and acyclic dead
+tails preserve emitted values and historical copies; live exits still join their domains and
+retain identity only on agreement. Dependency marks survive independently of absence evidence.
+Exact work/payload or identity failures expose no partial result. These structural checks do
+not execute proof queries or establish termination.
 
 Observed null/boolean/integer block consumers reuse the forwarding index with their exact
 BlockResult source and original consumer PointId. Publication validates scope/slot owners,
