@@ -1,4 +1,5 @@
 use super::*;
+use crate::check::dependencies::edges::forward::effects::Effect;
 use versions::Definition;
 
 impl Checker {
@@ -130,7 +131,25 @@ impl Checker {
                             if let Some(call) =
                                 observations.calls.and_then(|calls| calls.get(&point))
                             {
-                                control = history::combine(control, None);
+                                if !self.flow.spend(2) {
+                                    return Err(budget(span));
+                                }
+                                let source = observations.sources.get(&Port::Normal(point));
+                                if source.is_some_and(|source| {
+                                    source.0 != owner || !matches!(source.1, Effect::Call { .. })
+                                }) {
+                                    return Err(invalid(span));
+                                }
+                                control = history::combine(
+                                    control,
+                                    source.and_then(|_| {
+                                        observations
+                                            .call_controls
+                                            .get(&Port::Normal(point))
+                                            .copied()
+                                            .flatten()
+                                    }),
+                                );
                                 snapshots.call(
                                     before,
                                     call,
@@ -171,7 +190,11 @@ impl Checker {
                     span,
                 )?;
                 if matches!(port, Port::Normal(_)) {
-                    snapshots.expression(port, observations, &mut self.flow, span)?;
+                    let own = snapshots.expression(port, observations, &mut self.flow, span)?;
+                    if own != Some(false) {
+                        let row = snapshots.rows.get_mut(&port).ok_or_else(|| invalid(span))?;
+                        row.control = history::combine(row.control, own);
+                    }
                     if !self.flow.spend(1) {
                         return Err(budget(span));
                     }

@@ -5828,7 +5828,14 @@ joins omit known bottom history and keep unknown live effects. Seeded tests dist
 missing and derived evidence; source captures cover guarded leaves, short circuits and
 historical copies. All 295 scalar-fact tests and the original 1000-matcher case pass
 (`/tmp/meowy-history-guards.log`, `/tmp/meowy-history-guard-matchers.log`).
-Next: qualify scalar call completion from saved argument/result dependencies.
+Guard commit: `e3e588f4`. Scalar call completion now reuses the saved argument/entry
+dependency calculation and exact result source. Later mutation cannot replace earlier
+argument evidence; unknown inputs or missing result sources cannot establish independence.
+This is conditional completion history, not termination proof: recursive/constant bodies
+do not specialize results or establish return. Two new regressions first reproduced the
+missing transfer. All 3665 library tests pass, including 299 scalar-fact tests and the
+original 1000-matcher case (`/tmp/meowy-history-call-library.log`).
+Next: verify atomic control publication and join boundaries, then run the full gate/audit.
 
 Next steps:
 

@@ -11,3 +11,6 @@ mod tests;
 
 #[cfg(test)]
 mod guards;
+
+#[cfg(test)]
+mod calls;

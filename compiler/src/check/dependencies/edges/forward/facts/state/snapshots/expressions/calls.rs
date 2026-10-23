@@ -9,7 +9,7 @@ impl Snapshots {
         mut control: Option<bool>,
         flow: &mut Flow,
         span: Span,
-    ) -> Result<()> {
+    ) -> Result<Option<bool>> {
         let (
             owner,
             Effect::Call {
@@ -25,7 +25,7 @@ impl Snapshots {
         else {
             return Err(invalid(span));
         };
-        if args.len() > MAX_ITEMS || !flow.spend(args.len() + 8) {
+        if args.len() > MAX_ITEMS || !flow.spend(args.len() + 9) {
             return Err(budget(span));
         }
         let row = self
@@ -121,7 +121,8 @@ impl Snapshots {
             },
             flow,
             span,
-        )
+        )?;
+        Ok(control)
     }
 }
 

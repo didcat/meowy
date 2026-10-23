@@ -176,7 +176,7 @@ pub(crate) fn scalar_call_value_boundaries_keep_argument_facts_before_later_muta
         assert_ne!(snapshots.rows[&Port::Normal(arg)].after, Value::Known(id));
         snapshots.expressions.remove(&point).unwrap();
         let before = format!("{:?}{:?}", snapshots.rows, snapshots.states);
-        snapshots
+        let control = snapshots
             .call_expression(
                 point,
                 &reports.effects[&point],
@@ -185,6 +185,7 @@ pub(crate) fn scalar_call_value_boundaries_keep_argument_facts_before_later_muta
                 Span::default(),
             )
             .unwrap();
+        assert_eq!(control, dependent.then_some(true));
         assert_eq!(
             snapshots.expressions[&point]
                 .value

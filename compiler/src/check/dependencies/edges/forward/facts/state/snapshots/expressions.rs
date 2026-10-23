@@ -39,12 +39,12 @@ impl Snapshots {
         observations: &observations::Observations<'_, '_>,
         flow: &mut Flow,
         span: Span,
-    ) -> Result<()> {
+    ) -> Result<Option<bool>> {
         if !flow.spend(3) {
             return Err(budget(span));
         }
         let Port::Normal(point) = port else {
-            return Ok(());
+            return Ok(Some(false));
         };
         if let Some(logical) = observations.logical.get(&port) {
             if observations.forwarded.contains_key(&port)
@@ -52,16 +52,20 @@ impl Snapshots {
             {
                 return Err(invalid(span));
             }
-            return self.logical_expression(point, logical, flow, span);
+            return self
+                .logical_expression(point, logical, flow, span)
+                .map(|()| Some(false));
         }
         if let Some(forward) = observations.forwarded.get(&port) {
             if observations.sources.contains_key(&port) {
                 return Err(invalid(span));
             }
-            return self.forward_expression(point, forward, flow, span);
+            return self
+                .forward_expression(point, forward, flow, span)
+                .map(|()| Some(false));
         }
         let Some(source) = observations.sources.get(&port) else {
-            return Ok(());
+            return Ok(Some(false));
         };
         if !flow.spend(3) {
             return Err(budget(span));
@@ -75,7 +79,7 @@ impl Snapshots {
             return self.call_expression(point, source, *control, flow, span);
         }
         let (normal, control) = match effect {
-            Effect::Borrow(_) => return Ok(()),
+            Effect::Borrow(_) => return Ok(Some(false)),
             Effect::Scalar(observed) => (observed.result, observed.control),
             Effect::Read {
                 normal, control, ..
@@ -128,6 +132,7 @@ impl Snapshots {
             value,
         };
         self.record_expression(point, fact, flow, span)
+            .map(|()| Some(false))
     }
 
     pub(super) fn record_expression(
