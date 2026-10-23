@@ -20,7 +20,7 @@ pub(crate) fn scalar_histories_follow_straight_line_tails_and_direct_leaves() {
         }
         for body in checker.bodies.values() {
             if let Some(parent) = body.parent {
-                assert!(!snapshots.expressions.contains_key(&parent));
+                assert!(snapshots.expressions.contains_key(&parent));
             }
         }
     }

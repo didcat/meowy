@@ -12,7 +12,7 @@ pub(crate) fn scalar_completion_storage_preserves_empty_scopes_tail_writes_and_d
         );
         for body in checker.bodies.values() {
             if let Some(parent) = body.parent {
-                assert!(!snapshots.expressions.contains_key(&parent));
+                assert!(snapshots.expressions[&parent].value.is_none());
             }
         }
     }

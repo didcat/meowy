@@ -1,6 +1,7 @@
 use super::super::super::super::effects::Effect;
 use super::*;
 
+mod blocks;
 mod calls;
 mod forwarded;
 mod logical;
@@ -61,7 +62,9 @@ impl Snapshots {
                 return Err(invalid(span));
             }
             if matches!(forward.input, Port::BlockResult(_)) {
-                return Ok(Some(false));
+                return self
+                    .block_expression(point, forward, observations, flow, span)
+                    .map(|()| Some(false));
             }
             return self
                 .forward_expression(point, forward, flow, span)

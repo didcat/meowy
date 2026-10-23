@@ -2,7 +2,7 @@ use super::super::capture::tests::capture;
 use super::*;
 
 #[test]
-pub(crate) fn scalar_emission_values_preserve_tail_writes_without_publishing_the_block() {
+pub(crate) fn scalar_emission_values_preserve_tail_writes_until_block_publication() {
     let source = "x:=7;{copy:x;->copy;x=9;x};x";
     let (mut checker, _, _, snapshots) = capture(source);
     let (_, op) = checker.emissions.first_key_value().unwrap();
@@ -44,7 +44,10 @@ pub(crate) fn scalar_emission_values_preserve_tail_writes_without_publishing_the
         Some(View::Known(_))
     ));
     let parent = checker.bodies[&target].parent.unwrap();
-    assert!(!snapshots.expressions.contains_key(&parent));
+    let published = snapshots.expressions[&parent].value.as_ref().unwrap();
+    assert_eq!(published.domain, emitted.domain);
+    assert_eq!(published.origin, emitted.origin);
+    assert_eq!(published.version, None);
 }
 
 #[test]
@@ -115,10 +118,14 @@ pub(crate) fn scalar_slot_emissions_keep_the_emitted_value_after_tail_writes() {
         snapshots.expressions[&point].value.as_ref().unwrap().domain,
         Domain::integer(9, &mut checker.flow, Span::default()).unwrap()
     );
-    assert!(
-        !snapshots
-            .expressions
-            .contains_key(&checker.bodies[&target.block].parent.unwrap())
+    let parent = checker.bodies[&target.block].parent.unwrap();
+    assert_eq!(
+        snapshots.expressions[&parent]
+            .value
+            .as_ref()
+            .unwrap()
+            .domain,
+        *domain
     );
 }
 

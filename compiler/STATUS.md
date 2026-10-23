@@ -5880,7 +5880,13 @@ Observed scalar consumers now retain their exact `BlockResult` source in the for
 index, including result-only observations without normal authority. Conflicting/foreign
 routes reject. All 304 scalar-fact tests and the original 1000-matcher case pass
 (`/tmp/meowy-block-consumers.log`, `/tmp/meowy-block-consumer-matchers.log`).
-No block values are published yet. Next: validate saved completion rows and initialized slots.
+Consumer commit: `6848117b`. Publication now validates the complete normal/result/consumer
+row chain, declared slot shape, saved value/origin and completion controls. Missing history
+stays unavailable; known bottom remains distinct. Four new source-based structural regressions
+first reproduced absent facts and now pass. Earlier tests that required no block publication
+were updated to check the retained emitted domain/origin. All 3674 library tests pass,
+including 308 scalar-fact tests and the original 1000-matcher case
+(`/tmp/meowy-block-initialized-library.log`). Next: qualified implicit null and its consumers.
 
 Next steps:
 
