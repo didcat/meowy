@@ -9,9 +9,11 @@ mod emissions;
 mod logical;
 mod reads;
 mod scopes;
+mod slots;
 mod wrappers;
 pub(super) use emissions::Emission;
 pub(super) use logical::Logical;
+pub(super) use slots::Slot;
 pub(super) use wrappers::Forward;
 
 #[derive(Debug)]
@@ -27,6 +29,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) scopes: HashMap<hir::BlockId, scopes::Scope>,
     pub(super) emissions: HashMap<hir::EmitId, Emission>,
     pub(super) completion: completion::Completion,
+    pub(super) slots: HashMap<hir::BlockId, Slot>,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -43,6 +46,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             scopes: HashMap::new(),
             emissions: HashMap::new(),
             completion: completion::Completion::default(),
+            slots: HashMap::new(),
         }
     }
 }

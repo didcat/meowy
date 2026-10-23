@@ -49,6 +49,8 @@ impl Checker {
         let (observations, parts) =
             self.scalar_scope_observations(reports, &graph, observations, span, parts)?;
         let (observations, parts) =
+            self.scalar_slot_observations(reports, &graph, observations, span, parts)?;
+        let (observations, parts) =
             self.scalar_emission_observations(reports, &graph, observations, span, parts)?;
         let (observations, parts) =
             self.scalar_completion_observations(reports, &graph, observations, span, parts)?;

@@ -5732,10 +5732,9 @@ payload/allocation accounting, unknown/partial states and unchanged ordinary sto
 
 Dependency-ordered commit plan:
 
-1. Add the bounded slot-state carrier and its snapshot/join behavior, with namespace,
-   historical identity, partial/missing/bottom and exact-budget regressions.
-2. Qualify scalar slot headers and establish uninitialized slots at owner/nested scope
-   entries. Preserve missing entry histories, unsupported shapes and restart boundaries.
+1. Add the bounded slot-state carrier and snapshot/join behavior (`7b274573`, validated).
+2. Qualify scalar slot headers, then establish uninitialized slots at owner/nested scope
+   entries in a separate slice. Preserve missing histories, shapes and restart boundaries.
 3. Initialize eligible slots from saved emission-time values without overwriting initialized
    or uncertain slots; verify branches, nested targets, tail writes and copies.
 4. Verify remaining identity/control/budget boundaries, update structural evidence and
@@ -5745,8 +5744,11 @@ The separate slot tree shares snapshot/join machinery and combined accounting wi
 cells. All three carrier tests and all 3639 library tests pass, including the unchanged
 1000-matcher case (`/tmp/meowy-slot-carrier-library.log`). Namespace/history, partial/missing/
 bottom, exact budget and invalid identity checks pass. Transfer APIs remain test-only until
-entry integration. Next: qualify declared scalar slot headers before entry initialization;
-completed values, broader alias/composition precision, restarts and proof outcomes stay gated.
+entry integration. Declared slot headers now revalidate owners, scalar shapes, layout and
+observed entries. Their three focused tests, all 276 scalar-fact tests and the original
+matcher case pass (`/tmp/meowy-slot-headers.log`, `/tmp/meowy-slot-header-facts.log`,
+`/tmp/meowy-slot-header-matchers.log`). Missing entries and unsupported shapes gain no slot.
+Next: initialize owner/nested entry slots; completed values and proof outcomes stay gated.
 
 1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
    emission-time copies, target identity and branch joins. Keep it separate from publication.
