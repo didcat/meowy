@@ -7,6 +7,7 @@ mod completion;
 mod emissions;
 mod expressions;
 mod guards;
+mod history;
 mod inputs;
 mod slots;
 mod storage;
@@ -89,7 +90,8 @@ impl Checker {
                 return Err(invalid(span));
             }
             snapshots.parts = snapshots.parts.checked_sub(1).ok_or_else(|| budget(span))?;
-            let seed = match slots.and_then(|slots| slots.get(&node.site.block)) {
+            let slot = slots.and_then(|slots| slots.get(&node.site.block));
+            let seed = match slot {
                 Some(slot) if state.reach != FALSE => Some(
                     state
                         .enter_slot(
@@ -110,11 +112,17 @@ impl Checker {
             if snapshots.seeds.insert(*port, id).is_some() {
                 return Err(invalid(span));
             }
-            let value = snapshots.incoming(graph, *port, &mut self.flow, span)?;
+            let (value, control) = snapshots.inputs(graph, *port, None, &mut self.flow, span)?;
+            let control = match value {
+                Value::Known(id) if snapshots.states[id].reach != FALSE => {
+                    history::combine(control, slot.and_then(|slot| slot.control))
+                }
+                _ => None,
+            };
             snapshots.record(
                 *port,
                 Row {
-                    control: None,
+                    control,
                     owner,
                     before: value,
                     after: value,

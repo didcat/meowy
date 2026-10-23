@@ -1,6 +1,7 @@
 use super::*;
 
 impl Snapshots {
+    #[cfg(test)]
     pub(super) fn incoming(
         &mut self,
         graph: &graph::Graph<'_>,
@@ -11,6 +12,7 @@ impl Snapshots {
         self.incoming_with(graph, port, None, flow, span)
     }
 
+    #[cfg(test)]
     pub(super) fn incoming_with(
         &mut self,
         graph: &graph::Graph<'_>,
@@ -19,6 +21,18 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Value> {
+        self.inputs(graph, port, absent, flow, span)
+            .map(|(value, _)| value)
+    }
+
+    pub(super) fn inputs(
+        &mut self,
+        graph: &graph::Graph<'_>,
+        port: Port,
+        absent: Option<&HashMap<Port, usize>>,
+        flow: &mut Flow,
+        span: Span,
+    ) -> Result<(Value, Option<bool>)> {
         if !flow.spend(3) {
             return Err(budget(span));
         }
@@ -31,6 +45,7 @@ impl Snapshots {
         let mut same = true;
         let mut missing = false;
         let mut prior = None;
+        let mut control = Some(false);
         for input in &node.incoming {
             if !flow.spend(6) {
                 return Err(budget(span));
@@ -74,20 +89,24 @@ impl Snapshots {
                 return Err(invalid(span));
             }
             match row.after {
-                Value::Missing => missing = true,
+                Value::Missing => {
+                    missing = true;
+                    control = history::combine(control, row.control);
+                }
                 Value::Known(id) => {
-                    if self
-                        .states
-                        .get(id)
-                        .is_none_or(|state| state.owner() != node.site.owner)
-                    {
+                    let state = self.states.get(id).ok_or_else(|| invalid(span))?;
+                    if state.owner() != node.site.owner {
                         return Err(invalid(span));
+                    }
+                    if state.reach != FALSE {
+                        control = history::combine(control, row.control);
                     }
                     if node.incoming.len() == 1
                         && seed.is_none()
                         && matches!(edge.route, Route::True | Route::False)
                     {
-                        return self.branch(edge, row.after, flow, span);
+                        let value = self.branch(edge, row.after, flow, span)?;
+                        return Ok((value, history::combine(control, None)));
                     }
                     same &= first.is_none_or(|first| first == id);
                     first.get_or_insert(id);
@@ -95,10 +114,10 @@ impl Snapshots {
             }
         }
         if missing {
-            return Ok(Value::Missing);
+            return Ok((Value::Missing, history::combine(control, None)));
         }
         if same {
-            return Ok(first.map_or(Value::Missing, Value::Known));
+            return Ok((first.map_or(Value::Missing, Value::Known), control));
         }
         let mut joined = seed;
         for input in &node.incoming {
@@ -130,7 +149,7 @@ impl Snapshots {
             };
             joined = Some(id);
         }
-        Ok(joined.map_or(Value::Missing, Value::Known))
+        Ok((joined.map_or(Value::Missing, Value::Known), control))
     }
 }
 

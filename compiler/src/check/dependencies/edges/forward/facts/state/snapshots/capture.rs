@@ -62,14 +62,15 @@ impl Checker {
                 if position == 0 {
                     continue;
                 }
-                let before =
-                    snapshots.incoming_with(graph, port, Some(absent), &mut self.flow, span)?;
+                let (before, mut control) =
+                    snapshots.inputs(graph, port, Some(absent), &mut self.flow, span)?;
                 let bottom = match before {
                     Value::Known(id) => snapshots.states[id].reach == FALSE,
                     Value::Missing => false,
                 };
                 let after = if let Port::Emission(id) = port {
                     if let Some(input) = observations.emissions.get(&id) {
+                        control = history::combine(control, input.control);
                         snapshots.emit(
                             id,
                             before,
@@ -88,9 +89,13 @@ impl Checker {
                 } else if let Port::BlockEntry(block) = port {
                     match observations.slots.get(&block) {
                         Some(slot) => {
+                            control = history::combine(control, slot.control);
                             snapshots.enter_slot(block, before, slot, &mut self.flow, span)?
                         }
-                        None => before,
+                        None => {
+                            control = history::combine(control, None);
+                            before
+                        }
                     }
                 } else if matches!(port, Port::Entry(_) | Port::Normal(_)) {
                     before
@@ -98,7 +103,10 @@ impl Checker {
                     port,
                     Port::Leave(_) | Port::BlockNormal(_) | Port::BlockResult(_)
                 ) {
-                    snapshots.complete(port, before, observations, &mut self.flow, span)?
+                    let (value, own) =
+                        snapshots.completion(port, before, observations, &mut self.flow, span)?;
+                    control = history::combine(control, own);
+                    value
                 } else {
                     if !self.flow.spend(1) {
                         return Err(budget(span));
@@ -122,6 +130,7 @@ impl Checker {
                             if let Some(call) =
                                 observations.calls.and_then(|calls| calls.get(&point))
                             {
+                                control = history::combine(control, None);
                                 snapshots.call(
                                     before,
                                     call,
@@ -145,10 +154,15 @@ impl Checker {
                         }
                     }
                 };
+                if bottom {
+                    control = None;
+                } else if after == Value::Missing {
+                    control = history::combine(control, None);
+                }
                 snapshots.record(
                     port,
                     Row {
-                        control: None,
+                        control,
                         owner,
                         before,
                         after,

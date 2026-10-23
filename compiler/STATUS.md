@@ -5815,7 +5815,13 @@ unchanged. The revised row carrier passes all 288 existing scalar-fact tests and
 1000-matcher case. Each row reserves its control field with both state references; new
 exact-payload coverage verifies unknown/independent/dependent values and atomic failure.
 Focused logs: `/tmp/meowy-history-carrier.log`, `/tmp/meowy-history-carrier-matchers.log`.
-Next: accumulate completion control while resolving the already-validated predecessors.
+Carrier commit: `d8178fc0`. Straight-line propagation now combines controls while resolving
+the existing predecessor rows, without an extra graph traversal or per-port map. Qualified
+entries, emissions, direct leaves and tails retain history; unsupported effects, dead tails
+and restart headers stay unknown. Function owners remain separate and no block values are
+published. All 292 scalar-fact tests and the original 1000-matcher case pass
+(`/tmp/meowy-history-paths.log`, `/tmp/meowy-history-path-matchers.log`).
+Next: qualify guard dependencies at the existing condition-history boundary.
 
 Next steps:
 

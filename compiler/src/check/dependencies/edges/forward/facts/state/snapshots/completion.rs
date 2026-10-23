@@ -1,6 +1,7 @@
 use super::*;
 
 impl Snapshots {
+    #[cfg(test)]
     pub(super) fn complete(
         &self,
         port: Port,
@@ -9,6 +10,18 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Value> {
+        self.completion(port, before, observations, flow, span)
+            .map(|(value, _)| value)
+    }
+
+    pub(super) fn completion(
+        &self,
+        port: Port,
+        before: Value,
+        observations: &observations::Observations<'_, '_>,
+        flow: &mut Flow,
+        span: Span,
+    ) -> Result<(Value, Option<bool>)> {
         if !flow.spend(5) {
             return Err(budget(span));
         }
@@ -17,7 +30,7 @@ impl Snapshots {
             return Err(invalid(span));
         };
         let Some(scope) = observations.scopes.get(&block) else {
-            return Ok(Value::Missing);
+            return Ok((Value::Missing, None));
         };
         let control = match port {
             Port::Leave(_) => observations
@@ -31,17 +44,18 @@ impl Snapshots {
             _ => return Err(invalid(span)),
         };
         let Value::Known(id) = before else {
-            return Ok(Value::Missing);
+            return Ok((Value::Missing, None));
         };
         let state = self.states.get(id).ok_or_else(|| invalid(span))?;
         if state.owner() != scope.owner {
             return Err(invalid(span));
         }
-        Ok(if control.is_some() {
+        let value = if control.is_some() {
             before
         } else {
             Value::Missing
-        })
+        };
+        Ok((value, control))
     }
 }
 
