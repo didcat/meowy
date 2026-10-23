@@ -2421,8 +2421,8 @@ Reference/opaque arguments without scalar facts, float/string domains and non-sc
 shapes retain conservative fallback. Owners, normal histories and operation/result agreement
 are checked before atomic publication. Exact work/payload/argument limits and late failures
 leave earlier records untouched. These internal facts do not execute proof queries or close
-the remaining source-conformance gap. Scope/block result transfers and broader alias,
-restart, arithmetic, guard and transitive query/E225 qualification remain separate.
+the remaining source-conformance gap. Wider block shapes, alias transfers, restarts,
+arithmetic, guards and transitive query/E225 qualification remain separate.
 
 Ordinary scalar block histories now retain exact owners, result shapes, parent consumers
 and independently observed normal/result ports. Bounded header and endpoint checks use the
@@ -2440,10 +2440,10 @@ and unsupported values remain unavailable. Known bottom stays distinct. Named al
 and composed emissions retain their existing conservative fallback.
 
 Emission histories do not publish completed block values or select result candidates.
-Completed values must combine accumulated completion dependencies with slot states in a
-separate result publication step. Exact shared work/payload limits, stale histories and
-duplicate publication reject without changing earlier records. Source conformance expectations and
-proof-outcome gates are unchanged.
+Completed values combine accumulated completion dependencies with slot states at the
+observed consumer. Exact shared work/payload limits, stale histories and duplicate
+publication reject without changing earlier records. Source conformance expectations
+and proof-outcome gates are unchanged.
 
 Completion route qualification inventories original body leave facts, source points and
 target owners. Missing/synthetic sources or missing nested bodies cannot establish an
@@ -2458,9 +2458,10 @@ inputs and restart backedges remain unavailable. Observed leave, block-normal an
 ports preserve ordinary storage only with qualified scope identities and known control
 authority. Existing boolean guards select available paths; dependent controls never gain
 constant authority. Empty scopes, tail writes and direct guarded leaves preserve or join
-historical cell versions without producing block expression facts. Unknown effects, dead
+historical cell versions separately from consumer facts. Unknown effects, dead
 tails after an exit, unsupported shapes and incomplete control remain conservative. These
-facts do not establish termination, per-query E225 availability or a completed scalar value.
+storage joins alone do not establish termination, per-query E225 availability or a completed
+scalar value.
 
 Scalar result slots now occupy a separate block-keyed immutable cell tree in each state.
 Local storage keys cannot alias slot keys. Snapshot copies share unchanged subtrees; joins
@@ -2472,7 +2473,7 @@ Qualified null/boolean/integer headers retain full declared domains and original
 owners/control. Owner seeds and observed nested entries establish uninitialized slots;
 an absent or repeated entry cannot invent or reset one. Unsupported shapes, missing state
 and restart histories preserve their boundaries. Unknown entry control remains conservative.
-Implicit null is not written at entry; deciding its completed value remains separate.
+Implicit null is not written at entry; it is materialized only at a qualified completed consumer.
 
 Emissions initialize only known uninitialized target slots from saved expression values.
 The copied domain and origin survive tail writes; no local storage version or borrow
@@ -2480,8 +2481,8 @@ authority is attached to the result slot. Controls accumulate from the entry and
 Initialized, partial, unavailable or missing slots are never overwritten. Incompatible
 discarded emissions remain accepted and conservatively unavailable. The emission history
 and new slot state reserve their combined payload before publication; budget or identity
-failures leave earlier records unchanged. Block expression facts and proof outcomes remain
-unavailable until result publication and query qualification are complete.
+failures leave earlier records unchanged. The completed consumer validates its state and
+control history before publishing a block expression fact; proof queries remain unimplemented.
 
 Snapshot rows retain independent, dependent or unknown completion control alongside their
 before/after states. The existing predecessor traversal accumulates history through scope
@@ -2495,8 +2496,23 @@ dependent guards retain both successors. Calls reuse saved argument and entry de
 with their exact result sources. Later writes cannot replace argument-time evidence, and
 callee bodies never supply specialization or termination proof. This qualifies dependencies
 of observed continuations; it does not establish that execution returns. Exact row payload,
-work and identity failures preserve earlier history. Completed block values, implicit null,
-broader effects and transitive per-query E225 qualification remain separate.
+work and identity failures preserve earlier history. Broader effects and transitive per-query
+E225 qualification remain separate.
+
+Observed null/boolean/integer block consumers reuse the forwarding index with their exact
+BlockResult source and original consumer PointId. Publication validates scope/slot owners,
+declared shapes and the normal/result/consumer state and control chain. Initialized slots
+copy saved domains and origins without local/version associations. Entry, value and
+completion controls accumulate; unknown completion cannot be recovered from a known or
+dependent slot. Candidate inventories and final mutable maps supply no replacement value.
+
+A completed uninitialized null slot produces null with a fresh consumer expression origin,
+without changing historical slots. Partial, unavailable, missing and incompatible slots
+remain unavailable. Bottom requires known bottom state; an unobserved skipped body produces
+no fact. These values feed nested blocks, bindings, direct copies, guards and call arguments;
+call results still use declared domains without inspecting callee bodies. Exact work/payload
+reservation and identity checks precede atomic publication. This structural coverage does
+not execute proof queries or close the remaining source-conformance gap.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

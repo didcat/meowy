@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Scalar completion dependencies are implemented; validation is below.
+Updated: 2026-10-23. Completed scalar block values are implemented; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: publish completed scalar block values using the
-[completion handoff](#scalar-completion-dependencies); proof evaluation stays gated.
+Next: qualify nested-body and dead-tail completion using the
+[block-value handoff](#completed-scalar-block-values); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5842,74 +5842,74 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass
 (`/tmp/meowy-completion-history-docs.log`). No known failures remain. Nothing was pushed.
 
-Next steps:
-
 ### Completed scalar block values
 
-Current work publishes scalar block values from qualified completion rows and saved slots.
-The existing forwarding index will retain the original block-result-to-consumer edge.
-`Row.control` must combine with slot dependencies; a known emission or entry alone is
-insufficient. Missing/partial state, unsupported shapes and incomplete completion stay
-unavailable. No candidate selection, callee specialization or proof evaluation is added.
+Observed null/boolean/integer block consumers now reuse the forwarding index with exact
+source Ports. Scope/slot headers, original owner/parent identities, declared shapes and the
+normal/result/consumer row chain are validated before publication. Initialized slots copy
+the saved emitted domain and origin without attaching a local or storage version.
+Completion, entry and value controls accumulate; unknown completion cannot be repaired by a
+known or dependent slot. Tail writes preserve emitted values and historical copies.
 
-Dependency-ordered commit plan:
+A qualified completed uninitialized null slot produces null with a fresh consumer expression
+origin. Publication does not change historical slots. Partial, unavailable, missing and
+incompatible slots remain unavailable. Known bottom comes only from known bottom state;
+unobserved skipped bodies produce no fact. Nested results, bindings, copies, guards and call
+arguments consume these facts. Call results still use declared domains, never callee bodies.
 
-1. Generalize forwarding source identity from an expression PointId to a graph Port, while
-   preserving current wrapper behavior and validation. Update producers/fixtures together.
-2. Qualify observed scalar block consumers in the existing forwarding index; preserve
-   owner, scope, endpoint and observation boundaries without publishing values yet.
-3. Publish initialized scalar slots at the original consumer, validating completion state,
-   declared shape, origin and controls. Cover tail writes, leaves and historical copies.
-4. Materialize implicit null only from qualified completed uninitialized null slots;
-   verify nested blocks, calls, guards and missing/partial boundaries.
-5. Verify exact budgets and atomic identity failures, document the transfer, link structural
-   evidence, run the full gate and audit protected fixtures and user files.
+This is internal scalar propagation, not proof evaluation, termination evidence or complete
+per-query E225 qualification. Wider shapes, nested/dead-tail absence precision, partial-path
+initialization, alias/composition and restart/arithmetic/guard transfers remain separate.
 
-Baseline `052b999e` protects 611 files in `/tmp/meowy-block-values-baseline.json`.
-The working tree contains only user-owned `docs/programs/hey/`, which stays excluded.
-Investigation confirms scopes already validate exact result/consumer edges and slots retain
-emission-time values. Reusing the forwarding index avoids a new lookup at every Normal port;
-the original 1000-matcher case must remain within its unchanged work/payload limits.
-The source-identity prerequisite changes two production files and six fixtures plus this
-handoff. Split review: all eight code files construct or read the same `Forward.input` type;
-changing that type and its callers together is required for a buildable intermediate commit.
-The change preserves wrapper behavior and adds no map or lookup. All 303 scalar-fact tests,
-the original 1000-matcher case and formatting pass (`/tmp/meowy-block-forward.log`,
-`/tmp/meowy-block-forward-matchers.log`). Refactor commit: `8d0d887b`.
-Observed scalar consumers now retain their exact `BlockResult` source in the forwarding
-index, including result-only observations without normal authority. Conflicting/foreign
-routes reject. All 304 scalar-fact tests and the original 1000-matcher case pass
-(`/tmp/meowy-block-consumers.log`, `/tmp/meowy-block-consumer-matchers.log`).
-Consumer commit: `6848117b`. Publication now validates the complete normal/result/consumer
-row chain, declared slot shape, saved value/origin and completion controls. Missing history
-stays unavailable; known bottom remains distinct. Four new source-based structural regressions
-first reproduced absent facts and now pass. Earlier tests that required no block publication
-were updated to check the retained emitted domain/origin. All 3674 library tests pass,
-including 308 scalar-fact tests and the original 1000-matcher case
-(`/tmp/meowy-block-initialized-library.log`). Publication commit: `0f144470`.
-Four implicit-null regressions reproduced the missing transfer. A completed, known
-uninitialized null slot now materializes null at its original consumer with a fresh
-expression origin, without writing historical slots. Partial and unknown histories remain
-unavailable. Null arguments, direct copies and nested guards consume the published facts
-without callee specialization. All 3678 library tests pass, including 312 scalar-fact tests
-and the original 1000-matcher case (`/tmp/meowy-block-nulls-library.log`).
-Next: missing-state, identity and exact-budget publication boundaries.
-The boundary regressions pass, including exact budgets, duplicate publication, missing
-headers/state, partial slots and stale identity. The corrected bottom test distinguishes an
-observed block under a `never` parameter seed from an unobserved skipped body; neither
-absence precision nor resource limits were widened. All 318 scalar-fact tests and all-target
-Clippy pass (`/tmp/meowy-block-boundaries.log`, `/tmp/meowy-block-values-clippy.log`).
-The four feature/boundary slices add 15 structural regressions. Null commit: `eadbc7d9`.
-Next: documentation, coverage inventory, full verification and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `8d0d887b` | Retain graph Ports as forwarding source identities |
+| `6848117b` | Qualify exact scalar block result consumers |
+| `0f144470` | Publish initialized slots with completion checks |
+| `eadbc7d9` | Materialize qualified implicit null and integrate consumers |
+| `c58bf85f` | Verify missing/partial/bottom states, identity and atomic budgets |
+
+All 15 new structural regressions, 318 scalar-fact tests and 3684 library tests pass.
+The initialized/null regressions first reproduced absent facts. The original 1000-matcher
+case passes without budget changes. The forwarding index avoids another lookup at every Normal port; source
+routing, value copies and publication share existing work/payload bounds. The source-type
+refactor changed two production files and six fixtures together to keep its intermediate
+commit buildable; subsequent slices remained below the normal review thresholds.
+Formatting and all-target Clippy pass (`/tmp/meowy-block-values-clippy.log`).
+Focused logs: `/tmp/meowy-block-forward.log`, `/tmp/meowy-block-forward-matchers.log`,
+`/tmp/meowy-block-consumers.log`, `/tmp/meowy-block-consumer-matchers.log`,
+`/tmp/meowy-block-values-before.log`, `/tmp/meowy-block-initialized-library.log`,
+`/tmp/meowy-block-nulls-before.log`, `/tmp/meowy-block-nulls-library.log`,
+`/tmp/meowy-block-boundaries.log`, `/tmp/meowy-block-bottom.log`.
+
+Baseline `052b999e` protects 611 files in `/tmp/meowy-block-values-baseline.json`, including
+all user-owned `docs/programs/hey/` files. Reference contracts, source expectations, proof
+obligations and capability pins are unchanged. Three new test files add 12 structural links;
+existing forwarding, scope, emission and completion evidence remains linked. The audit
+preserves 609 protected files byte-for-byte, all 520 source expectations, exact capability
+pins, proof obligations, all 37 reference hashes/gaps/prior evidence and all 10 user-owned
+files. The two coverage metadata/report edits are reviewed separately
+(`/tmp/meowy-block-values-preservation.log`).
+
+All 14 `make test` groups pass: 3684 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-block-values-gate.log`; details: `build/verification-block-values`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
+No known failures remain. Nothing was pushed.
 
 Next steps:
 
-1. Complete and validate the block-value slices above, preserving the explicit unknown and
-   completion boundaries. Keep source expectations and capability pins unchanged.
-2. Keep nested-body/dead-tail absence precision, path correlations, aliases/composition,
-   restart resets, arithmetic and wider guards separate until their evidence is complete.
+1. Qualify nested-body and dead-tail non-fallthrough in `facts/observations/completion` and
+   `facts/exits.rs` using original body/sequence/scope-exit edges. Keep missing histories
+   explicit; test inner leaves to outer blocks and tails after a leave, plus exact budgets
+   and the original 1000-matcher case. Do not infer absence from result types alone.
+2. Keep partial-path initialization, aliases/composition, restart resets, arithmetic and
+   wider guards separate until their evidence is complete; preserve profile precision.
 3. Complete transitive query/E225 qualification and per-query logical charging before proof
-   outcomes. Preserve source expectations, capability pins and the original 1000-matcher case.
+   outcomes. Preserve source expectations and capability pins.
 
 ### Boolean literal escapes
 
@@ -7540,8 +7540,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scalar completion dependencies](#scalar-completion-dependencies):
-publish completed scalar block values using slot states and qualified completion control.
+Resume the ordered actions in [Completed scalar block values](#completed-scalar-block-values):
+qualify nested-body and dead-tail non-fallthrough without recovering unknown histories.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7588,8 +7588,8 @@ Scheduled boolean edge restriction supports qualified current locals, including 
 versions. Short-circuit boolean result facts now feed guards and storage transfers.
 Call entry authority and conservative direct-target invalidation are integrated.
 Call-result facts, emission histories and qualified completion storage joins are implemented.
-Per-path result-slot initialization and completion dependencies are implemented; completed
-block-value publication remains next.
+Per-path result-slot initialization, completion dependencies and completed scalar block-value
+publication are implemented. Nested-body and dead-tail absence qualification remain next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
