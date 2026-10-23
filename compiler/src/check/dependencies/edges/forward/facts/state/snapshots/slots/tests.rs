@@ -61,3 +61,74 @@ pub(crate) fn scalar_slot_entries_do_not_restore_restart_or_bottom_state() {
     assert_eq!(after.reach, FALSE);
     assert!(after.slot(block).is_none());
 }
+
+#[test]
+pub(crate) fn scalar_slot_entries_bound_publication_and_refuse_reentry() {
+    let (mut checker, _, _, mut snapshots) = capture("{}");
+    let block = *checker
+        .bodies
+        .iter()
+        .find(|(_, body)| body.parent.is_some())
+        .unwrap()
+        .0;
+    let before = snapshots.rows[&Port::BlockEntry(block)].before;
+    let slot = observations::Slot {
+        owner: 0,
+        declared: Domain::NULL,
+        control: None,
+    };
+    let size = snapshots.states.len();
+    let room = snapshots.parts;
+    let start = checker.flow.work;
+    snapshots
+        .enter_slot(block, before, &slot, &mut checker.flow, Span::default())
+        .unwrap();
+    let cost = checker.flow.work - start;
+    let used = room - snapshots.parts;
+    snapshots.states.truncate(size);
+    for (room, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {
+        snapshots.parts = room;
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
+        checker.flow.full = false;
+        let saved = format!("{snapshots:?}");
+        let result = snapshots.enter_slot(block, before, &slot, &mut checker.flow, Span::default());
+        assert_eq!(result.is_ok(), pass);
+        if !pass {
+            assert_eq!(format!("{snapshots:?}"), saved);
+        }
+    }
+    assert_eq!(snapshots.parts, 0);
+    assert!(
+        snapshots
+            .states
+            .last()
+            .unwrap()
+            .slot(block)
+            .unwrap()
+            .control
+    );
+    checker.flow.work = 0;
+    checker.flow.full = false;
+    snapshots.parts = MAX_EDGES;
+    let saved = format!("{snapshots:?}");
+    let entered = Value::Known(snapshots.states.len() - 1);
+    assert_eq!(
+        snapshots
+            .enter_slot(block, entered, &slot, &mut checker.flow, Span::default())
+            .unwrap(),
+        Value::Missing
+    );
+    assert_eq!(
+        snapshots
+            .enter_slot(
+                block,
+                Value::Missing,
+                &slot,
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap(),
+        Value::Missing
+    );
+    assert_eq!(format!("{snapshots:?}"), saved);
+}

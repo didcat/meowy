@@ -203,3 +203,54 @@ pub(crate) fn scalar_slot_states_reserve_combined_payload_and_reject_invalid_ide
         assert_eq!(format!("{state:?}"), before);
     }
 }
+
+#[test]
+pub(crate) fn scalar_slot_states_never_reinitialize_known_or_uncertain_cells() {
+    let mut flow = Flow::new();
+    let slot = observations::Slot {
+        owner: 0,
+        declared: Domain::scalar(
+            crate::check::dependencies::ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            },
+            &mut flow,
+            Span::default(),
+        )
+        .unwrap()
+        .unwrap(),
+        control: Some(false),
+    };
+    let old = value(7, 1, &mut flow);
+    for data in [
+        None,
+        Some(Data::Partial),
+        Some(Data::Unavailable),
+        Some(old.data.clone()),
+    ] {
+        let mut state = State::new(0, crate::flow::TRUE, &mut flow, Span::default()).unwrap();
+        if let Some(data) = data {
+            state
+                .put_slot(
+                    0,
+                    &Cell {
+                        data,
+                        control: true,
+                    },
+                    &mut flow,
+                    Span::default(),
+                    MAX_EDGES,
+                )
+                .unwrap();
+        }
+        let saved = format!("{state:?}");
+        let cell = value(9, 2, &mut flow);
+        assert!(
+            state
+                .initialize_slot(0, &slot, cell, &mut flow, Span::default(), MAX_EDGES)
+                .unwrap()
+                .is_none()
+        );
+        assert_eq!(format!("{state:?}"), saved);
+    }
+}

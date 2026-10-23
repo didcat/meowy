@@ -5734,32 +5734,24 @@ Dependency-ordered commit plan:
 
 1. Add the bounded slot-state carrier and snapshot/join behavior (`7b274573`, validated).
 2. Qualify slot headers (`2562714a`) and initialize scope entries (`b172ae4f`); both validated.
-3. Initialize eligible slots from saved emission-time values without overwriting initialized
-   or uncertain slots; verify branches, nested targets, tail writes and copies.
+3. Initialize slots from emission-time values (`9cdeaa07`, validated), preserving existing
+   or uncertain initialization, branches, nested targets, tail writes and copies.
 4. Verify remaining identity/control/budget boundaries, update structural evidence and
    handoffs, then run the full gate and preservation audit. Split slices further as needed.
 
-The separate slot tree shares snapshot/join machinery and combined accounting with ordinary
-cells. All three carrier tests and all 3639 library tests pass, including the unchanged
-1000-matcher case (`/tmp/meowy-slot-carrier-library.log`). Namespace/history, partial/missing/
-bottom, exact budget and invalid identity checks pass. Transfer APIs remain test-only until
-entry integration. Declared slot headers now revalidate owners, scalar shapes, layout and
-observed entries. Their three focused tests, all 276 scalar-fact tests and the original
-matcher case pass (`/tmp/meowy-slot-headers.log`, `/tmp/meowy-slot-header-facts.log`,
-`/tmp/meowy-slot-header-matchers.log`). Missing entries and unsupported shapes gain no slot.
-The entry regression first reproduced absent slots (`/tmp/meowy-slot-entries-before.log`).
-Owner seeds and nested entries now establish separate uninitialized slots; all three entry
-tests, all 279 scalar-fact tests and the original matcher case pass
-(`/tmp/meowy-slot-entry-facts.log`, `/tmp/meowy-slot-entry-matchers.log`). Missing/restart
-histories remain unavailable, and bottom/unsupported shapes gain no slot. Next: emission
-initialization from saved values; completed block values and proof outcomes remain gated.
-Three emission regressions reproduce uninitialized slots after emissions, including nested
-targets, tail writes and guarded branches (`/tmp/meowy-slot-emissions-before.log`).
-All four emission regressions and all 3649 library tests pass, including the unchanged
-matcher case (`/tmp/meowy-slot-emission-library.log`). Initialized/partial/unavailable slots
-are never overwritten. Discarded values incompatible with the final block shape remain
-accepted and unavailable. Slot updates and emission histories publish under one combined
-allowance. Next: entry/reentry, control and atomic work/payload boundary checks, then the gate.
+Separate slot storage, declared headers, entry initialization and emission transfers are
+integrated. Missing, partial, unavailable, bottom and initialized states retain distinct
+meanings. No slot reset or overwrite is inferred. Discarded incompatible emissions remain
+accepted with conservative fallback; earlier local/slot snapshots are preserved.
+
+All 18 new structural regressions and all 288 scalar-fact tests pass, including exact header,
+entry and combined emission/history work/payload boundaries, reentry, control and foreign
+owners (`/tmp/meowy-slot-state-boundaries.log`). All-target Clippy passes
+(`/tmp/meowy-slot-state-clippy.log`). The full library passed 3649 tests before these five
+boundary additions, including the original 1000-matcher case. Entry/emission regressions
+first reproduced missing initialization; their before logs and focused slice results remain
+under `/tmp/meowy-slot-*.log`. Next: update structural evidence and handoffs, then run the
+full gate and preservation audit. Completed block values and proof outcomes remain gated.
 
 1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
    emission-time copies, target identity and branch joins. Keep it separate from publication.

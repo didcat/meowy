@@ -191,3 +191,115 @@ pub(crate) fn scalar_emission_boundaries_reserve_exact_budget_and_reject_duplica
     );
     assert_eq!(format!("{snapshots:?}"), saved);
 }
+
+pub(super) fn header(checker: &mut Checker, input: &observations::Emission) -> observations::Slot {
+    let crate::check::dependencies::bodies::completion::Shape::Scalar(kind) =
+        checker.bodies[&input.target].completion.result
+    else {
+        panic!()
+    };
+    observations::Slot {
+        owner: input.owner,
+        declared: Domain::scalar(kind, &mut checker.flow, Span::default())
+            .unwrap()
+            .unwrap(),
+        control: Some(false),
+    }
+}
+
+#[test]
+pub(crate) fn scalar_slot_emission_budgets_publish_history_and_state_together() {
+    let (mut checker, mut snapshots, id, input, before) = setup();
+    let slot = header(&mut checker, &input);
+    let size = snapshots.states.len();
+    let room = snapshots.parts;
+    let start = checker.flow.work;
+    snapshots
+        .emit(
+            id,
+            before,
+            &input,
+            Some(&slot),
+            &mut checker.flow,
+            Span::default(),
+        )
+        .unwrap();
+    let cost = checker.flow.work - start;
+    let used = room - snapshots.parts;
+    let fact = snapshots.emissions.remove(&id).unwrap();
+    snapshots.states.truncate(size);
+    for (room, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {
+        snapshots.parts = room;
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
+        checker.flow.full = false;
+        let saved = format!("{snapshots:?}");
+        let result = snapshots.emit(
+            id,
+            before,
+            &input,
+            Some(&slot),
+            &mut checker.flow,
+            Span::default(),
+        );
+        assert_eq!(result.is_ok(), pass);
+        if !pass {
+            assert_eq!(format!("{snapshots:?}"), saved);
+        }
+    }
+    assert_eq!(snapshots.parts, 0);
+    assert_eq!(snapshots.emissions[&id], fact);
+    assert_eq!(snapshots.states.len(), size + 1);
+    assert!(matches!(
+        snapshots
+            .states
+            .last()
+            .unwrap()
+            .slot(input.target)
+            .unwrap()
+            .data,
+        Data::Initialized { .. }
+    ));
+}
+
+#[test]
+pub(crate) fn scalar_slot_emissions_preserve_control_and_reject_foreign_slot_owners() {
+    for control in [Some(false), Some(true), None] {
+        let (mut checker, mut snapshots, id, input, before) = setup();
+        let mut slot = header(&mut checker, &input);
+        slot.control = control;
+        let after = snapshots
+            .emit(
+                id,
+                before,
+                &input,
+                Some(&slot),
+                &mut checker.flow,
+                Span::default(),
+            )
+            .unwrap();
+        let Value::Known(after) = after else { panic!() };
+        assert_eq!(
+            snapshots.states[after].slot(input.target).unwrap().control,
+            control.unwrap_or(true)
+        );
+    }
+    let (mut checker, mut snapshots, id, input, before) = setup();
+    let mut slot = header(&mut checker, &input);
+    slot.owner += 1;
+    let saved = format!("{snapshots:?}");
+    assert!(
+        snapshots
+            .emit(
+                id,
+                before,
+                &input,
+                Some(&slot),
+                &mut checker.flow,
+                Span::default()
+            )
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(format!("{snapshots:?}"), saved);
+}

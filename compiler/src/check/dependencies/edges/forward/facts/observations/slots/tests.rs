@@ -121,3 +121,45 @@ pub(crate) fn scalar_slot_headers_reject_stale_owners_shapes_and_entry_sites() {
         );
     }
 }
+
+#[test]
+pub(crate) fn scalar_slot_headers_reserve_exact_work_and_payload() {
+    let (mut checker, reports, ports) = context("a:{};b:{->true};f<uint8>:(){->7}");
+    let (graph, _) = checker
+        .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
+        .unwrap();
+    let definitions = definitions::Definitions::default();
+    let (observations, _) = checker
+        .scalar_scope_observations(
+            &reports,
+            &graph,
+            Observations::new(&definitions),
+            Span::default(),
+            MAX_EDGES,
+        )
+        .unwrap();
+    let scopes = observations.scopes.clone();
+    let start = checker.flow.work;
+    let (expected, left) = checker
+        .scalar_slot_observations(&reports, &graph, observations, Span::default(), MAX_EDGES)
+        .unwrap();
+    let cost = checker.flow.work - start;
+    let used = MAX_EDGES - left;
+    let saved = format!("{reports:?}{graph:?}");
+    for (room, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
+        checker.flow.full = false;
+        let observations = Observations {
+            scopes: scopes.clone(),
+            ..Observations::new(&definitions)
+        };
+        let result =
+            checker.scalar_slot_observations(&reports, &graph, observations, Span::default(), room);
+        assert_eq!(result.is_ok(), pass);
+        if let Ok((observations, left)) = result {
+            assert_eq!(left, 0);
+            assert_eq!(observations.slots, expected.slots);
+        }
+        assert_eq!(format!("{reports:?}{graph:?}"), saved);
+    }
+}
