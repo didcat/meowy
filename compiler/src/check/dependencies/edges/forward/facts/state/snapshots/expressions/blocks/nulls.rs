@@ -76,7 +76,7 @@ pub(crate) fn scalar_block_nulls_do_not_recover_partial_or_unknown_completion() 
         ("v:{|false|->null}", true),
         ("f:(flag<boolean>){v:{|flag|->null};v}", false),
         ("v:{1+2}", false),
-        ("v:'out{'out.leave();1}", false),
+        ("v:'out{'out.leave();1}", true),
     ] {
         let (checker, _, _, snapshots) = capture(source);
         let body = checker

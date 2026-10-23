@@ -5940,7 +5940,14 @@ The module is isolated behind its tests until the next integration slice activat
 updates snapshot expectations. All 322 scalar-fact tests pass, including the `never`-only
 negative case (`/tmp/meowy-stopped-propagation.log`). Its initial failure was a test selector
 choosing the root body instead of the nested body; no type-only absence was inferred.
-Next: activate the propagator and verify the resulting snapshot/value histories.
+Propagation commit: `f5653fd3`. The propagator is now active in scalar capture. Qualified
+absent ports validate their original owner/site before joins omit them. Direct/nested exits
+preserve ordinary storage, emitted origins and copies; missing/derived controls remain
+distinct. All 3691 library tests pass, including the original 1000-matcher case
+(`/tmp/meowy-stopped-integration-library.log`). All 326 scalar-fact tests also pass, including
+distinct live exit versions across a function owner and unknown call history before a nested
+leave (`/tmp/meowy-stopped-integration.log`). Next: stale/incomplete evidence and exact-budget
+failure boundaries before full verification.
 
 Next steps:
 

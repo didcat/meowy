@@ -23,8 +23,7 @@ impl Checker {
             return Err(budget(span));
         }
         for (&port, &owner) in absent {
-            if !matches!(port, Port::Normal(_) | Port::Leave(_))
-                || graph.nodes.contains_key(&port)
+            if graph.nodes.contains_key(&port)
                 || graph
                     .external
                     .get(&port)
@@ -32,6 +31,7 @@ impl Checker {
             {
                 return Err(invalid(span));
             }
+            self.scalar_port_site(port, owner, span)?;
         }
         let mut snapshots = self.scalar_entry_snapshots_with(
             graph,

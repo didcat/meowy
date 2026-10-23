@@ -41,6 +41,8 @@ pub(crate) fn scalar_block_values_follow_nested_results_and_guarded_completion()
     for source in [
         "x:=7;v:{->{->x};x=9};v",
         "f:(flag<boolean>){v:'out{->7;|flag|'out.leave();1};v}",
+        "v:'out{->7;'out.leave();1}",
+        "v:'out{->7;{'out.leave();1};2}",
     ] {
         let (mut checker, _, _, snapshots) = capture(source);
         for op in checker.emissions.values() {
@@ -64,8 +66,8 @@ pub(crate) fn scalar_block_values_follow_nested_results_and_guarded_completion()
 pub(crate) fn scalar_block_values_require_completion_history_after_a_known_emission() {
     for source in [
         "f:(text<string>){};v:{->7;f(\"cat\")}",
+        "f:(text<string>){};v:'out{->7;{f(\"cat\");'out.leave()};1}",
         "v:{->7;1+2}",
-        "v:'out{->7;'out.leave();1}",
     ] {
         let (checker, _, _, snapshots) = capture(source);
         let op = checker.emissions.values().next().unwrap();

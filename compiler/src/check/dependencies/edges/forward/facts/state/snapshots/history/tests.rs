@@ -7,6 +7,7 @@ pub(crate) fn scalar_histories_follow_straight_line_tails_and_direct_leaves() {
         "{}",
         "x:=1;{->x;x=2};x",
         "x:=1;'out{->x;x=2;'out.leave()};x",
+        "x:=1;'out{x=2;'out.leave();x=3};x",
     ] {
         let (checker, _, _, snapshots) = capture(source);
         for &block in checker.bodies.keys() {
@@ -30,7 +31,6 @@ pub(crate) fn scalar_histories_follow_straight_line_tails_and_direct_leaves() {
 pub(crate) fn scalar_histories_do_not_restore_unknown_tails_from_known_slots() {
     for source in [
         "d:@\"debug\";v:{->7;d.print(\"tail\")}",
-        "v:'out{->7;'out.leave();1}",
         "v:'loop{->7;|false|'loop.restart()}",
         "v:{->7;1+2}",
     ] {

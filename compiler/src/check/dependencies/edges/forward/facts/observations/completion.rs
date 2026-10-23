@@ -1,5 +1,6 @@
 use super::*;
 
+mod absent;
 mod bodies;
 mod regions;
 
@@ -143,7 +144,9 @@ impl Checker {
             parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
             observations.completion.absent.insert(port, scope.owner);
         }
-        self.scalar_completion_bodies(reports, graph, &sources, observations, span, parts)
+        let (observations, parts) =
+            self.scalar_completion_bodies(reports, graph, &sources, observations, span, parts)?;
+        self.scalar_absent_paths(reports, graph, &sources, observations, span, parts)
     }
 
     pub(super) fn scalar_completion_edge(
@@ -178,6 +181,3 @@ mod tests;
 
 #[cfg(test)]
 mod boundaries;
-
-#[cfg(test)]
-mod absent;
