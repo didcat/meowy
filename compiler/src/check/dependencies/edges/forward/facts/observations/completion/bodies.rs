@@ -20,6 +20,7 @@ impl Checker {
         span: Span,
         mut parts: usize,
     ) -> Result<(Observations<'a, 'd>, usize)> {
+        parts = parts.min(MAX_EDGES);
         if !self.flow.spend(1) {
             return Err(budget(span));
         }

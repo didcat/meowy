@@ -8,13 +8,17 @@ pub(crate) fn scalar_completion_bodies_qualify_never_endpoints_without_claiming_
         .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
         .unwrap();
     let definitions = definitions::Definitions::default();
+    let (sources, parts) = checker
+        .scalar_exit_sources(Span::default(), MAX_EDGES)
+        .unwrap();
     let (obs, _) = checker
-        .scalar_completion_observations(
+        .scalar_completion_bodies(
             &reports,
             &graph,
+            &sources,
             Observations::new(&definitions),
             Span::default(),
-            MAX_EDGES,
+            parts,
         )
         .unwrap();
     let (&block, _) = checker

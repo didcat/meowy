@@ -5931,7 +5931,16 @@ complete sequence evidence and entry control, including bodies without scalar re
 Bodies with missing sequence items or incomplete owners remain unqualified. Headers alone
 do not mark normal/result ports absent. All 320 scalar-fact tests pass
 (`/tmp/meowy-stopped-headers.log`); the original 1000-matcher case and formatting pass
-(`/tmp/meowy-stopped-header-matchers.log`). Next: bounded propagation of qualified absence.
+(`/tmp/meowy-stopped-header-matchers.log`). Header commit: `4af94c1a`.
+The bounded propagation module now validates the original edge inventory, counts every
+predecessor and processes only qualified absence seeds. Restart backedges, unresolved joins,
+unknown leave sources and incomplete body endpoints cannot create absence. A checked
+normal/result relationship only propagates an already-proven stopped normal exit.
+The module is isolated behind its tests until the next integration slice activates it and
+updates snapshot expectations. All 322 scalar-fact tests pass, including the `never`-only
+negative case (`/tmp/meowy-stopped-propagation.log`). Its initial failure was a test selector
+choosing the root body instead of the nested body; no type-only absence was inferred.
+Next: activate the propagator and verify the resulting snapshot/value histories.
 
 Next steps:
 
