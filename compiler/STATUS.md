@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Scalar result-slot initialization is in progress; validation is below.
+Updated: 2026-10-23. Scalar result-slot initialization is implemented; validation is below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: resume result-slot initialization from the
-[completion handoff](#scalar-completion-authority); proof evaluation stays gated.
+Next: qualify completion dependencies and block-value publication from the
+[slot handoff](#scalar-result-slot-initialization); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5626,10 +5626,10 @@ time; known scalar copies preserve storage for tail writes. Later mutations neve
 saved values. Missing/unsupported sources and storage remain unavailable; bottom is distinct.
 
 Completion values remain unavailable. The completion handoff below now qualifies absent
-leave routes and supported storage joins. Per-path result-slot initialization is still
-required before consuming emissions as completed block values. Candidate inventories cannot
-select values. Named aliases, composed emissions, broader shapes, dispatch and
-restart resets remain separate; no proof query executes or gains a capability waiver.
+leave routes and supported storage joins. The slot handoff below retains per-path
+initialization; completion dependencies and result publication remain separate. Candidate
+inventories cannot select values. Named aliases, composed emissions, broader shapes,
+dispatch and restart resets remain separate; no proof query executes or gains a capability waiver.
 
 | Commit | Reviewable slice |
 | --- | --- |
@@ -5681,10 +5681,11 @@ raw guards never authorize pruning. Missing state, unknown effects/control, expl
 unobserved leaves, dead tails, broader result shapes and restart backedges remain unavailable.
 Earlier copies/emitted values retain their original versions and origins.
 
-Block expression values are still unavailable. Publishing them needs per-path result-slot
-initialization and accumulated completion dependencies; candidate inventories or the last
-emission cannot select a result. Broader nested-body non-fallthrough propagation, alias/
-composition precision, restart resets, termination and proof/query E225 remain separate.
+Block expression values are still unavailable. The slot handoff below retains per-path
+initialization; publishing still needs accumulated completion dependencies. Candidate
+inventories or the last emission cannot select a result. Broader nested-body non-fallthrough
+propagation, alias/composition precision, restart resets, termination and proof/query E225
+remain separate.
 
 | Commit | Reviewable slice |
 | --- | --- |
@@ -5724,43 +5725,73 @@ No known failures remain. Nothing was pushed.
 
 ### Scalar result-slot initialization
 
-Current continuation baseline: `176dfacd`; user-owned `docs/programs/hey/` remains excluded.
-Completion routes and ordinary storage joins are qualified. Result slots need their own
-path-specific initialization state; saved emission facts alone cannot select a block value.
-Reuse the immutable cell tree in a separate block-keyed namespace, retaining bounded
-payload/allocation accounting, unknown/partial states and unchanged ordinary storage.
+Scalar states now retain block-keyed result slots separately from ordinary local cells.
+Both trees share immutable snapshot/join machinery and combined logical/allocation bounds.
+Copies preserve old values; joins distinguish uninitialized, partial, unavailable and
+initialized slots, retaining origin only on agreement. Slot cells carry no local version.
+Known bottom clears both trees without changing historical snapshots.
 
-Dependency-ordered commit plan:
+Qualified scalar headers retain declared null/boolean/integer domains and original entry
+identity/control. Owner seeds and observed nested entries establish uninitialized slots.
+Missing/repeated entries cannot invent or reset a slot; unsupported shapes and restart
+histories remain conservative. Unknown entry control is retained conservatively.
 
-1. Add the bounded slot-state carrier and snapshot/join behavior (`7b274573`, validated).
-2. Qualify slot headers (`2562714a`) and initialize scope entries (`b172ae4f`); both validated.
-3. Initialize slots from emission-time values (`9cdeaa07`, validated), preserving existing
-   or uncertain initialization, branches, nested targets, tail writes and copies.
-4. Verify remaining identity/control/budget boundaries, update structural evidence and
-   handoffs, then run the full gate and preservation audit. Split slices further as needed.
+Observed direct primary emissions initialize only known uninitialized target slots from
+saved values. Domains/origins survive tail writes and nested targets; entry/value controls
+accumulate. Initialized, partial, unavailable and absent slots are never overwritten.
+Discarded emissions incompatible with the final block shape remain accepted with unavailable
+transfer. New state and emission history publish under one combined allowance; late failures
+publish neither. Ordinary local storage and proof/borrow authority remain distinct.
 
-Separate slot storage, declared headers, entry initialization and emission transfers are
-integrated. Missing, partial, unavailable, bottom and initialized states retain distinct
-meanings. No slot reset or overwrite is inferred. Discarded incompatible emissions remain
-accepted with conservative fallback; earlier local/slot snapshots are preserved.
+No completed block expression value is published. Implicit null is not synthesized at entry.
+Completion dependencies and result publication remain separate; entry control alone cannot
+prove completion independence. Candidate inventories, final local maps and callee bodies
+cannot supply a slot value or restore unavailable evidence.
 
-All 18 new structural regressions and all 288 scalar-fact tests pass, including exact header,
-entry and combined emission/history work/payload boundaries, reentry, control and foreign
-owners (`/tmp/meowy-slot-state-boundaries.log`). All-target Clippy passes
-(`/tmp/meowy-slot-state-clippy.log`). The full library passed 3649 tests before these five
-boundary additions, including the original 1000-matcher case. Entry/emission regressions
-first reproduced missing initialization; their before logs and focused slice results remain
-under `/tmp/meowy-slot-*.log`. Next: update structural evidence and handoffs, then run the
-full gate and preservation audit. Completed block values and proof outcomes remain gated.
+| Commit | Reviewable slice |
+| --- | --- |
+| `7b274573` | Retain separate slot state in immutable snapshots and joins |
+| `2562714a` | Qualify declared scalar slot entry headers |
+| `b172ae4f` | Initialize owner/nested scope entry slots |
+| `9cdeaa07` | Initialize slots from saved emission-time values |
+| `2df18eee` | Verify control, reentry and atomic budget boundaries |
 
-1. Add bounded per-path scalar result-slot initialization to immutable snapshots, preserving
-   emission-time copies, target identity and branch joins. Keep it separate from publication.
-   Verify uninitialized/partial slots, duplicate/emitted branches, nested targets and budgets.
-2. Publish qualified completed scalar block values using those slot states, declared shapes,
-   completion dependencies and independent observations. Verify empty/null results, guarded
-   leaves, stopped tails and historical copies; do not select from candidate inventories.
-3. Keep nested-body/dead-tail absence precision, aliases/composition, restart resets, arithmetic
-   and wider guards separate. Preserve Path/Indirect/alias fallback until complete evidence.
+All 18 new structural regressions and 288 scalar-fact tests pass. Entry and emission tests
+first reproduced absent initialization. Namespace isolation, historical copies, nested
+owners/targets, guarded/partial paths, unsupported/discarded values, exact quotas and atomic
+failure are covered. All 3654 library tests pass, including the original 1000-matcher case;
+no budget was relaxed. Formatting and all-target Clippy pass.
+Focused logs: `/tmp/meowy-slot-carrier-library.log`, `/tmp/meowy-slot-headers.log`,
+`/tmp/meowy-slot-header-facts.log`, `/tmp/meowy-slot-entries-before.log`,
+`/tmp/meowy-slot-entry-facts.log`, `/tmp/meowy-slot-entry-matchers.log`,
+`/tmp/meowy-slot-emissions-before.log`, `/tmp/meowy-slot-emission-library.log`,
+`/tmp/meowy-slot-state-boundaries.log`, `/tmp/meowy-slot-state-clippy.log`.
+
+Three new test files add 12 structural evidence links across four reference records;
+emission history tests remain linked. Baseline `176dfacd` protects 611 files in
+`/tmp/meowy-slot-states-baseline.json`. The audit preserves 609 files byte-for-byte, all 520
+source expectations, exact capability pins, proof obligations, all 37 reference hashes/gaps/
+prior evidence and all 10 user-owned `docs/programs/hey/` files. The two coverage metadata/
+report edits are reviewed separately (`/tmp/meowy-slot-states-preservation.log`).
+
+All 14 `make test` groups pass: 3654 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-slot-states-gate.log`; details: `build/verification-slot-states`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-slot-states-docs.log`).
+No known failures remain. Nothing was pushed.
+
+1. Qualify completion dependencies for block-normal/result observations, including guards,
+   leaves and tail effects. Entry control or a known slot value cannot establish completion
+   independence. Keep missing control/history explicit and test derived/unknown boundaries.
+2. Publish completed scalar block facts from qualified completion rows and their slot states,
+   retaining declared shapes, origins and original consumer PointIds. Handle implicit null
+   only after qualified completion; do not recover missing/partial evidence or select from
+   candidates. Verify empty/null blocks, stopped tails, guarded leaves and historical copies.
+3. Keep nested-body/dead-tail absence precision, path correlations, aliases/composition,
+   restart resets, arithmetic and wider guards separate until their evidence is complete.
 4. Complete transitive query/E225 qualification and per-query logical charging before proof
    outcomes. Preserve source expectations, capability pins and the original 1000-matcher case.
 
@@ -7393,8 +7424,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scalar completion authority](#scalar-completion-authority):
-retain per-path result-slot initialization before publishing completed scalar block values.
+Resume the ordered actions in [Scalar result-slot initialization](#scalar-result-slot-initialization):
+qualify completion dependencies before publishing completed scalar block values.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7441,7 +7472,8 @@ Scheduled boolean edge restriction supports qualified current locals, including 
 versions. Short-circuit boolean result facts now feed guards and storage transfers.
 Call entry authority and conservative direct-target invalidation are integrated.
 Call-result facts, emission histories and qualified completion storage joins are implemented.
-Per-path result-slot initialization is next; completed block values remain unavailable.
+Per-path result-slot initialization is implemented; completion dependencies and completed
+block-value publication remain next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

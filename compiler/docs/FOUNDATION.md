@@ -2440,8 +2440,8 @@ and unsupported values remain unavailable. Known bottom stays distinct. Named al
 and composed emissions retain their existing conservative fallback.
 
 Emission histories do not publish completed block values or select result candidates.
-Completed values still require path-specific result-slot initialization and accumulated
-completion dependencies. Exact shared work/payload limits, stale histories and duplicate
+Completed values still require accumulated completion dependencies and a separate result
+publication step. Exact shared work/payload limits, stale histories and duplicate
 publication reject without changing earlier records. Source conformance expectations and
 proof-outcome gates are unchanged.
 
@@ -2461,6 +2461,27 @@ constant authority. Empty scopes, tail writes and direct guarded leaves preserve
 historical cell versions without producing block expression facts. Unknown effects, dead
 tails after an exit, unsupported shapes and incomplete control remain conservative. These
 facts do not establish termination, per-query E225 availability or a completed scalar value.
+
+Scalar result slots now occupy a separate block-keyed immutable cell tree in each state.
+Local storage keys cannot alias slot keys. Snapshot copies share unchanged subtrees; joins
+retain uninitialized, partial, unavailable and initialized states, preserving an origin
+only when both inputs agree. Bottom clears both trees. Logical payload and newly allocated
+nodes share the existing bounds, including imports of both trees into the snapshot arena.
+
+Qualified null/boolean/integer headers retain full declared domains and original scope
+owners/control. Owner seeds and observed nested entries establish uninitialized slots;
+an absent or repeated entry cannot invent or reset one. Unsupported shapes, missing state
+and restart histories preserve their boundaries. Unknown entry control remains conservative.
+Implicit null is not written at entry; deciding its completed value remains separate.
+
+Emissions initialize only known uninitialized target slots from saved expression values.
+The copied domain and origin survive tail writes; no local storage version or borrow
+authority is attached to the result slot. Controls accumulate from the entry and value.
+Initialized, partial, unavailable or missing slots are never overwritten. Incompatible
+discarded emissions remain accepted and conservatively unavailable. The emission history
+and new slot state reserve their combined payload before publication; budget or identity
+failures leave earlier records unchanged. Block expression facts and proof outcomes remain
+unavailable until completion dependencies and result publication are qualified.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
