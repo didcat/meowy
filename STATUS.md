@@ -63,19 +63,20 @@ Existing proof/scalar continuation remains next. Nothing was pushed.
 
 ## Current compiler and coverage handoff
 
-Scalar analysis now preserves histories across nested leaves and acyclic tails after exits.
-Qualified body and continuation edges prove which missing inputs are absent; joins retain
-every remaining live path. Emitted values, origins and copies survive, while missing metadata,
-unknown controls and restart cycles remain conservative.
+Scalar result-slot joins now retain known emissions alongside omitted primaries. Completed
+guarded null blocks use those alternatives without changing saved histories or inventing
+shared origins. Local must-initialization, unknown inputs, control dependence and restart
+boundaries remain conservative.
 
-The [stopped-path handoff](compiler/STATUS.md#nested-and-stopped-scalar-paths) records four
-validated slices and 13 new structural regressions. All 331 scalar-fact tests and all-target
-Clippy pass. The original 1000-matcher case passes without budget changes. All 14 verification
-groups and the preservation audit pass. Three new test files extend structural
-evidence; reference contracts, source expectations, proof obligations and pins are unchanged.
+The [result-slot handoff](compiler/STATUS.md#partial-scalar-result-slots) records four
+validated slices and ten new structural regressions. All 341 scalar-fact tests, 3707 library
+tests and all-target Clippy pass, including the original 1000-matcher case without budget
+changes. All 14 verification groups and the preservation audit pass. Two new test
+files extend structural evidence; reference contracts, source expectations, proof obligations
+and pins are unchanged.
 
-Next: qualify partial result-slot joins while retaining initialization and control evidence.
-Broader transfers and proof outcomes remain gated; history is not termination proof.
+Next: qualify nullable boolean/integer block headers from exact checked type/layout evidence.
+Broader transfers and proof outcomes remain gated; this is internal scalar propagation.
 The full documented release remains incomplete. User-owned `docs/programs/hey/` stays
 excluded. Nothing was pushed.
 
@@ -90,16 +91,16 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-The latest `make test` run passes all 14 groups: 3697 library, 925 native and 86 Python tests,
+The latest `make test` run passes all 14 groups: 3707 library, 925 native and 86 Python tests,
 plus 501 required conformance cases with 19 unchanged gaps and zero debug/release failures.
 Formatting, Clippy, both editors and documentation/schema checks pass. Runtime
 debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
 subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
-Summary: `/tmp/meowy-stopped-paths-gate.log`; details: `build/verification-stopped-paths`.
+Summary: `/tmp/meowy-partial-slots-gate.log`; details: `build/verification-partial-slots`.
 The audit preserves 609 protected files, all 520 conformance records, exact capability pins,
 all 37 reference hashes/gaps/prior evidence and all 10 user-owned files under
-`docs/programs/hey/` (`/tmp/meowy-stopped-paths-preservation.log`). The two intentional coverage
-metadata/report edits add 12 structural links without changing reference contracts.
+`docs/programs/hey/` (`/tmp/meowy-partial-slots-preservation.log`). The two intentional coverage
+metadata/report edits add eight structural links without changing reference contracts.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.

@@ -2464,10 +2464,13 @@ storage joins alone do not establish termination, per-query E225 availability or
 scalar value.
 
 Scalar result slots now occupy a separate block-keyed immutable cell tree in each state.
-Local storage keys cannot alias slot keys. Snapshot copies share unchanged subtrees; joins
-retain uninitialized, partial, unavailable and initialized states, preserving an origin
-only when both inputs agree. Bottom clears both trees. Logical payload and newly allocated
-nodes share the existing bounds, including imports of both trees into the snapshot arena.
+Local storage keys cannot alias slot keys. Snapshot copies share unchanged subtrees. Slot
+joins retain known initialized alternatives separately from an omitted primary: a conditional
+cell stores the emitted domain and an origin only when every initialized alternative agrees.
+It carries no local version and does not claim definite initialization. Missing slots and
+opaque partial inputs discard that evidence; ordinary local joins remain unchanged. Bottom
+clears both trees. Logical payload and newly allocated nodes share the existing bounds,
+including conditional domains/origins and imports of both trees into the snapshot arena.
 
 Qualified null/boolean/integer headers retain full declared domains and original scope
 owners/control. Owner seeds and observed nested entries establish uninitialized slots;
@@ -2478,8 +2481,8 @@ Implicit null is not written at entry; it is materialized only at a qualified co
 Emissions initialize only known uninitialized target slots from saved expression values.
 The copied domain and origin survive tail writes; no local storage version or borrow
 authority is attached to the result slot. Controls accumulate from the entry and value.
-Initialized, partial, unavailable or missing slots are never overwritten. Incompatible
-discarded emissions remain accepted and conservatively unavailable. The emission history
+Initialized, conditional, opaque partial, unavailable or missing slots are never overwritten.
+Incompatible discarded emissions remain accepted and conservatively unavailable. The emission history
 and new slot state reserve their combined payload before publication; budget or identity
 failures leave earlier records unchanged. The completed consumer validates its state and
 control history before publishing a block expression fact; proof queries remain unimplemented.
@@ -2523,12 +2526,20 @@ completion controls accumulate; unknown completion cannot be recovered from a kn
 dependent slot. Candidate inventories and final mutable maps supply no replacement value.
 
 A completed uninitialized null slot produces null with a fresh consumer expression origin,
-without changing historical slots. Partial, unavailable, missing and incompatible slots
-remain unavailable. Bottom requires known bottom state; an unobserved skipped body produces
-no fact. These values feed nested blocks, bindings, direct copies, guards and call arguments;
-call results still use declared domains without inspecting callee bodies. Exact work/payload
-reservation and identity checks precede atomic publication. This structural coverage does
-not execute proof queries or close the remaining source-conformance gap.
+without changing historical slots. A conditional null slot publishes only when its retained
+emitted domain fits the declared null slot and its entry/completion history is complete.
+The published value has no shared origin: the omitted path contributes a distinct implicit
+null. Known guard pruning preserves the sole live path's origin instead. Saved emissions and
+slots retain their original histories; subsequent bindings establish ordinary copy identity.
+
+Opaque partial, unavailable, missing and incompatible slots remain unavailable, even under
+dependent control. Nullable boolean/integer block headers remain unqualified; union member
+counts alone supply no declared scalar domain. Bottom requires known bottom state; an
+unobserved skipped body produces no fact. These values feed nested blocks, bindings, direct
+copies, guards and call arguments; call results still use declared domains without inspecting
+callee bodies. Exact work/payload reservation and identity checks precede atomic publication.
+This structural coverage does not execute proof queries or close the remaining
+source-conformance gap.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

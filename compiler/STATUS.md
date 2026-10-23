@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Partial result-slot joins are in progress; validation is below.
+Updated: 2026-10-23. Partial result-slot propagation is qualified; all final checks pass below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: qualify partial result-slot joins using the
-[stopped-path handoff](#nested-and-stopped-scalar-paths); proof evaluation stays gated.
+Next: qualify nullable scalar headers using the
+[result-slot handoff](#partial-scalar-result-slots); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5852,14 +5852,15 @@ Completion, entry and value controls accumulate; unknown completion cannot be re
 known or dependent slot. Tail writes preserve emitted values and historical copies.
 
 A qualified completed uninitialized null slot produces null with a fresh consumer expression
-origin. Publication does not change historical slots. Partial, unavailable, missing and
+origin. Publication does not change historical slots. Opaque partial, unavailable, missing and
 incompatible slots remain unavailable. Known bottom comes only from known bottom state;
 unobserved skipped bodies produce no fact. Nested results, bindings, copies, guards and call
 arguments consume these facts. Call results still use declared domains, never callee bodies.
 
 This is internal scalar propagation, not proof evaluation, termination evidence or complete
-per-query E225 qualification. Wider shapes, nested/dead-tail absence precision, partial-path
-initialization, alias/composition and restart/arithmetic/guard transfers remain separate.
+per-query E225 qualification. The following handoffs extend nested/dead-tail absence and
+conditional null results. Wider shapes, alias/composition and restart/arithmetic/guard
+transfers remain separate.
 
 | Commit | Reviewable slice |
 | --- | --- |
@@ -5909,24 +5910,24 @@ slot histories remain unchanged. Ordinary local joins, missing/opaque markers,
 must-initialization and control dependence retain their boundaries. Nullable scalar headers
 and broader transfers remain separate.
 
-Dependency-ordered commit plan:
+Dependency-ordered commits:
 
 1. `a46e403b`: retain conditional slot domains/origins in bounded cell/tree joins, with
    focused algebra, payload comparison and local-namespace regressions.
 2. `0cf660cf`: publish guarded null results using retained alternatives and complete
    scope/history evidence; test emission origins, copies, control and incomplete inputs.
-3. Complete: qualify exact work/payload limits, invalid alternatives, reentry and unknown
+3. `7602fff9`: qualify exact work/payload limits, invalid alternatives, reentry and unknown
    boundaries. All 3707 library tests and all-target Clippy pass.
-4. Update foundation/structural evidence and both handoffs; run the complete gate and
-   audit preserved contracts, conformance expectations, capability pins and user files.
+4. Foundation/structural evidence, both handoffs, the complete gate and the preservation
+   audit are complete.
 
 Baseline: `4f7d097a`, clean tracked tree; `docs/programs/hey/` is user-owned and excluded.
 `/tmp/meowy-partial-slots-baseline.json` records 611 protected files. Investigation follows
 the result-slot contract in `values-and-blocks.md` and profile-1 joins in `stdlib/proof.md`.
-All 341 scalar-fact tests pass, including ten new join/publication/boundary regressions. Conditional joins
-are associative, preserve only agreed emitted origins, retain control and absorb unknown
-inputs. Ordinary local joins still produce `Partial`; the existing uncertain-emission case
-still refuses to overwrite a possibly initialized slot. The original 1000-matcher test
+All 341 scalar-fact tests pass, including ten new join/publication/boundary regressions.
+Conditional joins are associative, preserve only agreed emitted origins, retain control and
+absorb unknown inputs. Ordinary local joins still produce `Partial`; the existing uncertain
+emission case still refuses to overwrite a possibly initialized slot. The original 1000-matcher test
 passes without budget changes. Logs: `/tmp/meowy-partial-slots-joins.log` and
 `/tmp/meowy-partial-slots-matchers.log`. Four source-driven regressions cover guarded nulls,
 nested leaves, multiple emissions, historical copies, control dependence and missing inputs.
@@ -5937,11 +5938,34 @@ preserve prior records. Invalid/empty domains and foreign origins reject, opaque
 cannot imply null, local reads still require initialization, and entry/emission cannot reset
 conditional slots (`/tmp/meowy-partial-slots-boundaries.log`). All 3707 library tests,
 including the original 1000-matcher case, and all-target Clippy pass without budget changes
-(`/tmp/meowy-partial-slots-library.log`, `/tmp/meowy-partial-slots-clippy.log`). The prior
-full gate below remains the baseline.
+(`/tmp/meowy-partial-slots-library.log`, `/tmp/meowy-partial-slots-clippy.log`). Foundation
+documentation and two new structural evidence files are current; reference contracts,
+source expectations, proof obligations and capability pins are unchanged.
+The preservation audit passes: 609 protected files, all 520 source cases, exact capability
+pins/proof obligations, all 37 reference hashes/gaps/prior evidence and all 10 user-owned
+files remain unchanged. Only eight structural links are appended across four reference
+records (`/tmp/meowy-partial-slots-preservation.log`).
 
-Next: update foundation/coverage and run the full gate and preservation audit. Nullable
-scalar headers remain the next propagation boundary.
+All 14 `make test` groups pass: 3707 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-partial-slots-gate.log`; details: `build/verification-partial-slots`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-partial-slots-docs.log`).
+The post-gate preservation audit passes. No known failures remain. No push was performed.
+
+Next steps:
+
+1. Qualify nullable boolean/integer scope and result-slot headers in `facts/observations/scopes.rs`
+   and `observations/slots.rs` from exact checked result types and layouts. `Shape::Union`
+   member counts are insufficient. Then combine retained emissions with implicit null in
+   `state/snapshots/expressions/blocks.rs`. Verify guarded emissions, missing inputs, origins,
+   control, exact budgets and the original 1000-matcher case; preserve ordinary local joins.
+2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until their
+   evidence is complete; preserve profile precision.
+3. Complete transitive query/E225 qualification and per-query logical charging before proof
+   outcomes. Preserve source expectations and capability pins.
 
 ### Nested and stopped scalar paths
 
@@ -5960,7 +5984,7 @@ Nested leaves and dead acyclic tails preserve live storage, emitted values, orig
 copies. A leave to an inner scope still permits outer continuation; distinct live exits merge
 without inventing version identity. Dependent/unknown guard and call histories remain distinct.
 This is internal scalar propagation, not proof evaluation or termination proof. Missing
-metadata, unproved stopped calls, partial slots and restart cycles retain their boundaries.
+metadata, unproved stopped calls, opaque partial slots and restart cycles retain their boundaries.
 
 | Commit | Reviewable slice |
 | --- | --- |
@@ -5999,17 +6023,8 @@ All four final handoff documentation/tooling checks pass (`/tmp/meowy-stopped-pa
 No known failures remain.
 No push was performed by this continuation.
 
-Next steps:
-
-1. Qualify joins of initialized and uninitialized result slots in `facts/state/cells.rs`
-   and `facts/state/snapshots/expressions/blocks.rs`. Retain initialized alternatives and
-   explicit missing/partial/control evidence before allowing path-dependent implicit null.
-   Verify guarded null emissions, origins, incomplete inputs, exact budgets and the original
-   1000-matcher case. Do not recover values from the current undifferentiated Partial marker.
-2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until their
-   evidence is complete; preserve profile precision.
-3. Complete transitive query/E225 qualification and per-query logical charging before proof
-   outcomes. Preserve source expectations and capability pins.
+The [result-slot handoff](#partial-scalar-result-slots) records subsequent qualification
+and the current ordered next steps.
 
 ### Boolean literal escapes
 
@@ -7641,7 +7656,7 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 ## Next steps
 
 Resume the ordered actions in [Partial scalar result slots](#partial-scalar-result-slots):
-retain known slot alternatives before publishing path-dependent implicit null.
+qualify nullable scalar headers before extending implicit-null publication beyond null blocks.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7690,7 +7705,8 @@ Call entry authority and conservative direct-target invalidation are integrated.
 Call-result facts, emission histories and qualified completion storage joins are implemented.
 Per-path result-slot initialization, completion dependencies and completed scalar block-value
 publication are implemented. Nested-body and acyclic dead-tail absence are qualified.
-Partial result-slot joins remain next.
+Partial result-slot joins and completed guarded null values are qualified; nullable scalar
+headers remain next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
