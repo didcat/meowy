@@ -99,11 +99,15 @@ impl Snapshots {
             return Ok(None);
         };
         cell.validate(row.owner, block, flow, span)?;
+        let joined;
         let (domain, origin) = match &cell.data {
-            Data::Uninitialized if slot.declared == Domain::NULL => {
+            Data::Uninitialized if slot.declared.null => {
                 (&Domain::NULL, Some(Origin::Expression(row.owner, point)))
             }
-            Data::Conditional { domain, .. } if slot.declared == Domain::NULL => (domain, None),
+            Data::Conditional { domain, .. } if slot.declared.null => {
+                joined = domain.join(&Domain::NULL, flow, span)?;
+                (&joined, None)
+            }
             Data::Initialized {
                 version: Some(_), ..
             } => return Err(invalid(span)),
@@ -142,3 +146,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod conditional;
+
+#[cfg(test)]
+mod nullable;

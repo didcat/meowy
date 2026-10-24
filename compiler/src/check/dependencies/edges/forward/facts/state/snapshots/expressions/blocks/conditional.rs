@@ -124,7 +124,7 @@ pub(crate) fn scalar_conditional_blocks_require_complete_inputs_and_keep_control
 }
 
 #[test]
-pub(crate) fn scalar_conditional_blocks_keep_unknown_tails_and_nullable_headers_unavailable() {
+pub(crate) fn scalar_conditional_blocks_keep_unknown_tails_and_restarts_unavailable() {
     for source in [
         "f:(flag<boolean>){v:{|flag|->null;1+2};v}",
         "g:(text<string>){};f:(flag<boolean>){v:{|flag|->null;g(\"cat\")};v}",
@@ -135,10 +135,6 @@ pub(crate) fn scalar_conditional_blocks_keep_unknown_tails_and_nullable_headers_
         let point = checker.bodies[&block].parent.unwrap();
         assert!(snapshots.expressions[&point].value.is_none(), "{source}");
     }
-    let (checker, _, _, snapshots) = capture("f:(flag<boolean>){v:{|flag|->7};v}");
-    let block = checker.emissions.values().next().unwrap().targets[0].block;
-    let point = checker.bodies[&block].parent.unwrap();
-    assert!(snapshots.expressions[&point].value.is_none());
 }
 
 #[test]

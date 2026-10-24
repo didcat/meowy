@@ -5916,7 +5916,7 @@ Dependency-ordered commit plan:
    validate against checked HIR, with type/layout and replay regressions.
 2. `bed6cbed`: preserve descriptors in block reports with atomic merge and same-shape type-drift
    regressions. This metadata prerequisite is separate from header admission.
-3. Qualify scope/result-slot headers with unsupported-union, identity and bounded-work tests.
+3. `d76b79c0`: qualify scope/result-slot headers with unsupported-union, identity and bounded-work tests.
 4. Publish completed nullable results from initialized, conditional or omitted
    slots, preserving origins, control and saved histories; add focused regressions.
 5. Qualify missing/opaque inputs and exact budgets, then update structural coverage,
@@ -5939,8 +5939,15 @@ algebra. All 345 scalar-fact tests pass, including four new header regressions, 
 supported integer widths, unsupported union exclusion and exact work/payload bounds
 (`/tmp/meowy-nullable-headers.log`). All 3716 library tests pass, including the original
 1000-matcher case (`/tmp/meowy-nullable-headers-library.log`); formatting passes.
-Nullable conditional/omitted publication remains gated in this slice.
-Next: implement and validate completed nullable publication.
+Guarded-value, copy and nested-consumer regressions reproduced missing values before
+the change (`/tmp/meowy-nullable-publication-before.log`). Completed consumers now join
+retained conditional emissions with null, or materialize omitted null, when the exact
+declared domain permits it. Initialized emissions retain their original origin and
+precision. Saved slot histories are not rewritten. All four new publication tests and
+349 scalar-fact tests pass (`/tmp/meowy-nullable-publication.log`); formatting passes.
+Known mutable guards verify pruning without crossing nullable conversions, whose
+propagation stays gated and receives an explicit boundary regression next.
+Next: qualify missing/control/budget boundaries, then run the final gate.
 
 ### Partial scalar result slots
 
