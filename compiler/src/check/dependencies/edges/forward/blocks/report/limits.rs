@@ -69,7 +69,7 @@ pub(crate) fn block_reports_merge_atomically_on_metadata_conflicts_and_exhaustio
         .record_block_effect(0, Port::BlockNormal(id), &mut blocks, 1, Span::default())
         .unwrap();
     let expected = blocks.clone();
-    for fault in 0..6 {
+    for fault in 0..7 {
         let mut blocks = expected.clone();
         let (owner, observed) = blocks.get_mut(&id).unwrap();
         match fault {
@@ -79,6 +79,7 @@ pub(crate) fn block_reports_merge_atomically_on_metadata_conflicts_and_exhaustio
             3 => observed.span.end += 1,
             4 => observed.completion.normal = false,
             5 => observed.completion.result = Shape::Other,
+            6 => observed.scalar = None,
             _ => unreachable!(),
         }
         let before = blocks.clone();

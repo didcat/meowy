@@ -2,6 +2,63 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::bodies::completion::Shape;
 
 #[test]
+pub(crate) fn block_reports_keep_exact_nullable_types_despite_identical_union_shapes() {
+    use crate::check::dependencies::ScalarKind;
+
+    let (mut checker, reports) =
+        checked("f:(flag<boolean>){a:{|flag|->true};b:{|flag|->7};c:{|flag|->\"cat\"}}");
+    let blocks = reports
+        .blocks
+        .iter()
+        .filter(|(_, (_, body))| body.completion.result == Shape::Union { members: 2 })
+        .collect::<Vec<_>>();
+    assert_eq!(blocks.len(), 3);
+    for (&id, &(owner, observed)) in blocks {
+        assert_eq!(observed.scalar, checker.bodies[&id].scalar);
+        let Some(scalar) = observed.scalar else {
+            continue;
+        };
+        assert!(scalar.nullable);
+        for replacement in [
+            None,
+            Some(Scalar {
+                kind: ScalarKind::Null,
+                nullable: false,
+            }),
+            Some(Scalar {
+                kind: if scalar.kind == ScalarKind::Bool {
+                    ScalarKind::Int {
+                        bits: 32,
+                        signed: true,
+                    }
+                } else {
+                    ScalarKind::Bool
+                },
+                nullable: true,
+            }),
+        ] {
+            let mut changed = reports.blocks.clone();
+            changed.get_mut(&id).unwrap().1.scalar = replacement;
+            let saved = changed.clone();
+            assert!(
+                checker
+                    .record_block_effect(
+                        owner,
+                        Port::BlockResult(id),
+                        &mut changed,
+                        MAX_EDGES,
+                        Span::default()
+                    )
+                    .unwrap_err()
+                    .message
+                    .contains("identity")
+            );
+            assert_eq!(changed, saved);
+        }
+    }
+}
+
+#[test]
 pub(crate) fn block_reports_keep_independent_roots_and_checked_partial_shapes() {
     let source =
         "f<never>:(){d:@\"debug\";d.panic(\"unused\")};v<{x<int32>;y<int32>}>:{->{->x:1};->y:2}";

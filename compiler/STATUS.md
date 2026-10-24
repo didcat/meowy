@@ -5912,13 +5912,14 @@ The existing scalar domain, conditional slot joins and completion histories are 
 
 Dependency-ordered commit plan:
 
-1. Capture exact plain/nullable scalar descriptors in body metadata and validate
-   them against checked HIR, with type/layout and replay regressions.
-2. Preserve those descriptors in block reports and qualify scope/result-slot
-   headers, with unsupported-union, identity and bounded-work tests.
-3. Publish completed nullable results from initialized, conditional or omitted
+1. `b3fd1066`: capture exact plain/nullable scalar descriptors in body metadata and
+   validate against checked HIR, with type/layout and replay regressions.
+2. Preserve descriptors in block reports with atomic merge and same-shape type-drift
+   regressions. This metadata prerequisite is separate from header admission.
+3. Qualify scope/result-slot headers with unsupported-union, identity and bounded-work tests.
+4. Publish completed nullable results from initialized, conditional or omitted
    slots, preserving origins, control and saved histories; add focused regressions.
-4. Qualify missing/opaque inputs and exact budgets, then update structural coverage,
+5. Qualify missing/opaque inputs and exact budgets, then update structural coverage,
    foundation documentation and both handoffs. Run the complete gate and preservation audit.
 
 The first prerequisite captures plain/nullable null, boolean and exact-width integer
@@ -5930,7 +5931,10 @@ a union count. All three descriptor regressions, 109 block-related tests and the
 Source contracts and expectations remain unchanged. This extends internal scalar propagation.
 Ordinary local joins,
 aliases/composition, restart resets, arithmetic, wider guards and proof outcomes stay gated.
-Next: preserve exact descriptors in reports, then qualify scope/slot headers.
+Reports now retain descriptors and compare them during repeated observations. All
+111 block-related tests pass, including new report/HIR-index type-drift regressions
+and existing exact-budget/atomicity checks (`/tmp/meowy-nullable-reports.log`).
+Formatting passes. Next: qualify scope/slot headers from those descriptors.
 
 ### Partial scalar result slots
 

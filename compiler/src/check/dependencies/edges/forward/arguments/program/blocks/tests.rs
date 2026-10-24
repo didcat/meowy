@@ -3,6 +3,38 @@ use crate::check::dependencies::edges::forward::entries::tests::checked;
 use crate::hir::{Stmt, Type};
 
 #[test]
+pub(crate) fn hir_block_index_rejects_nullable_kind_and_width_drift() {
+    for ty in [
+        Type::Bool,
+        Type::String,
+        Type::Int {
+            bits: 8,
+            signed: false,
+        },
+    ] {
+        let (mut checker, mut program) = checked("flag:=true;v:{|flag|->7}");
+        let reports = checker.entry_reports(&program, Span::default()).unwrap();
+        let Stmt::Bind { value, .. } = &mut program.body.stmts[1] else {
+            panic!()
+        };
+        let ExprKind::Block(block) = &mut value.kind else {
+            panic!()
+        };
+        block.ty = Type::Union(vec![ty, Type::Null]);
+        assert!(checker.bodies[&block.id].layout.matches(&block.ty));
+        let saved = format!("{reports:?}{:?}", checker.bodies);
+        assert!(
+            checker
+                .program_blocks(&program, &reports, Span::default(), MAX_EDGES)
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+        assert_eq!(format!("{reports:?}{:?}", checker.bodies), saved);
+    }
+}
+
+#[test]
 pub(crate) fn hir_block_index_borrows_nested_and_unreached_full_target_types() {
     let source = "f:(n<int32>){r:{->inner:{->n:=1}};|false|{x:{->true}}};r:{->inner:{->n:=2}};r.{->$.inner.n}";
     crate::compile(source).unwrap();

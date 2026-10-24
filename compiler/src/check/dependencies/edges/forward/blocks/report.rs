@@ -1,11 +1,15 @@
 use super::*;
-use crate::{check::dependencies::bodies::Completion, hir};
+use crate::{
+    check::dependencies::bodies::{Completion, Scalar},
+    hir,
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct Observed {
     pub(crate) parent: Option<hir::PointId>,
     pub(crate) span: Span,
     pub(crate) completion: Completion,
+    pub(crate) scalar: Option<Scalar>,
     pub(crate) normal: bool,
     pub(crate) result: bool,
 }
@@ -39,6 +43,7 @@ impl Checker {
             parent: body.parent,
             span: body.span,
             completion: body.completion,
+            scalar: body.scalar,
             normal: false,
             result: false,
         };
@@ -47,6 +52,7 @@ impl Checker {
                 || prior.parent != observed.parent
                 || prior.span != observed.span
                 || prior.completion != observed.completion
+                || prior.scalar != observed.scalar
             {
                 return Err(invalid());
             }
