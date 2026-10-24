@@ -138,7 +138,7 @@ pub(crate) fn scalar_conditional_blocks_keep_unknown_tails_and_nullable_headers_
     let (checker, _, _, snapshots) = capture("f:(flag<boolean>){v:{|flag|->7};v}");
     let block = checker.emissions.values().next().unwrap().targets[0].block;
     let point = checker.bodies[&block].parent.unwrap();
-    assert!(!snapshots.expressions.contains_key(&point));
+    assert!(snapshots.expressions[&point].value.is_none());
 }
 
 #[test]

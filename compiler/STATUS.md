@@ -5914,7 +5914,7 @@ Dependency-ordered commit plan:
 
 1. `b3fd1066`: capture exact plain/nullable scalar descriptors in body metadata and
    validate against checked HIR, with type/layout and replay regressions.
-2. Preserve descriptors in block reports with atomic merge and same-shape type-drift
+2. `bed6cbed`: preserve descriptors in block reports with atomic merge and same-shape type-drift
    regressions. This metadata prerequisite is separate from header admission.
 3. Qualify scope/result-slot headers with unsupported-union, identity and bounded-work tests.
 4. Publish completed nullable results from initialized, conditional or omitted
@@ -5934,7 +5934,13 @@ aliases/composition, restart resets, arithmetic, wider guards and proof outcomes
 Reports now retain descriptors and compare them during repeated observations. All
 111 block-related tests pass, including new report/HIR-index type-drift regressions
 and existing exact-budget/atomicity checks (`/tmp/meowy-nullable-reports.log`).
-Formatting passes. Next: qualify scope/slot headers from those descriptors.
+Scope and slot qualification now use the retained descriptor and existing declared-domain
+algebra. All 345 scalar-fact tests pass, including four new header regressions, all
+supported integer widths, unsupported union exclusion and exact work/payload bounds
+(`/tmp/meowy-nullable-headers.log`). All 3716 library tests pass, including the original
+1000-matcher case (`/tmp/meowy-nullable-headers-library.log`); formatting passes.
+Nullable conditional/omitted publication remains gated in this slice.
+Next: implement and validate completed nullable publication.
 
 ### Partial scalar result slots
 

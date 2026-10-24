@@ -30,9 +30,7 @@ pub(crate) fn scalar_slot_headers_keep_declared_domains_and_supported_entry_iden
         assert!(graph.nodes.contains_key(&Port::BlockEntry(block)));
         assert_eq!(
             slot.declared,
-            domain::Domain::scalar(scope.kind, &mut checker.flow, Span::default())
-                .unwrap()
-                .unwrap()
+            scope.declared(&mut checker.flow, Span::default()).unwrap()
         );
         used += 1 + slot.declared.weight();
     }
@@ -94,7 +92,7 @@ pub(crate) fn scalar_slot_headers_reject_stale_owners_shapes_and_entry_sites() {
             .unwrap();
         match fault {
             0 => scope.owner += 1,
-            1 => scope.kind = crate::check::dependencies::ScalarKind::Null,
+            1 => scope.scalar.kind = crate::check::dependencies::ScalarKind::Null,
             2 => {
                 graph
                     .nodes
@@ -124,7 +122,9 @@ pub(crate) fn scalar_slot_headers_reject_stale_owners_shapes_and_entry_sites() {
 
 #[test]
 pub(crate) fn scalar_slot_headers_reserve_exact_work_and_payload() {
-    let (mut checker, reports, ports) = context("a:{};b:{->true};f<uint8>:(){->7}");
+    let (mut checker, reports, ports) = context(
+        "a:{};b:{->true};f<uint8><null>:(flag<boolean>){|flag|->7};g<boolean><null>:(){->false}",
+    );
     let (graph, _) = checker
         .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
         .unwrap();

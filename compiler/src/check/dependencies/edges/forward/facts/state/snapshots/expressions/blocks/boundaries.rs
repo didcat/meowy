@@ -117,7 +117,7 @@ pub(crate) fn scalar_block_publication_rejects_stale_headers_rows_and_shapes_ato
                 }
                 11 => snapshots.rows.get_mut(&forward.input).unwrap().control = None,
                 12 => {
-                    obs.scopes.get_mut(&block).unwrap().kind =
+                    obs.scopes.get_mut(&block).unwrap().scalar.kind =
                         crate::check::dependencies::ScalarKind::Bool
                 }
                 13 => obs.slots.get_mut(&block).unwrap().control = Some(true),

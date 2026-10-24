@@ -1,14 +1,33 @@
 use super::*;
-use crate::check::dependencies::{ScalarKind, SequenceSource, bodies::completion::Shape};
+use crate::check::dependencies::{SequenceSource, bodies::Scalar};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) struct Scope {
     pub(in super::super) owner: usize,
     pub(in super::super) parent: Option<PointId>,
-    pub(in super::super) kind: ScalarKind,
+    pub(in super::super) scalar: Scalar,
     pub(in super::super) normal: bool,
     pub(in super::super) result: bool,
     pub(in super::super) control: Option<bool>,
+}
+
+impl Scope {
+    pub(in super::super) fn declared(
+        self,
+        flow: &mut crate::flow::Flow,
+        span: Span,
+    ) -> Result<domain::Domain> {
+        if self.scalar.shape().is_none() {
+            return Err(invalid(span));
+        }
+        let value =
+            domain::Domain::scalar(self.scalar.kind, flow, span)?.ok_or_else(|| invalid(span))?;
+        if self.scalar.nullable {
+            value.join(&domain::Domain::NULL, flow, span)
+        } else {
+            Ok(value)
+        }
+    }
 }
 
 impl Checker {
@@ -36,14 +55,15 @@ impl Checker {
                 || observed.parent != body.parent
                 || observed.span != body.span
                 || observed.completion != body.completion
+                || observed.scalar != body.scalar
             {
                 return Err(invalid(span));
             }
-            let Shape::Scalar(kind) = observed.completion.result else {
+            let Some(scalar) = observed.scalar else {
                 continue;
             };
-            if matches!(kind, ScalarKind::Float { .. } | ScalarKind::String) {
-                continue;
+            if scalar.shape() != Some(observed.completion.result) {
+                return Err(invalid(span));
             }
             if !observed.normal && !observed.result
                 || observed.normal != graph.nodes.contains_key(&Port::BlockNormal(id))
@@ -168,7 +188,7 @@ impl Checker {
                     Scope {
                         owner,
                         parent: observed.parent,
-                        kind,
+                        scalar,
                         normal: observed.normal,
                         result: observed.result,
                         control,
@@ -231,3 +251,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod nullable;

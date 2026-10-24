@@ -69,7 +69,7 @@ impl Snapshots {
         };
         if slot.owner != row.owner
             || slot.control != scope.control
-            || Domain::scalar(scope.kind, flow, span)?.as_ref() != Some(&slot.declared)
+            || scope.declared(flow, span)? != slot.declared
         {
             return Err(invalid(span));
         }

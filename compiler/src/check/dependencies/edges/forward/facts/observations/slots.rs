@@ -1,5 +1,4 @@
 use super::*;
-use crate::check::dependencies::bodies::completion::Shape;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(in super::super) struct Slot {
@@ -36,7 +35,9 @@ impl Checker {
                 || scope.owner != body.owner
                 || scope.parent != body.parent
                 || scope.parent != observed.parent
-                || Shape::Scalar(scope.kind) != body.completion.result
+                || Some(scope.scalar) != body.scalar
+                || observed.scalar != body.scalar
+                || scope.scalar.shape() != Some(body.completion.result)
                 || observed.completion != body.completion
                 || scope.normal != observed.normal
                 || scope.result != observed.result
@@ -51,8 +52,7 @@ impl Checker {
             if node.site != self.scalar_port_site(port, scope.owner, span)? {
                 return Err(invalid(span));
             }
-            let declared = domain::Domain::scalar(scope.kind, &mut self.flow, span)?
-                .ok_or_else(|| invalid(span))?;
+            let declared = scope.declared(&mut self.flow, span)?;
             parts = parts
                 .checked_sub(1 + declared.weight())
                 .ok_or_else(|| budget(span))?;
