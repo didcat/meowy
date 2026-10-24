@@ -57,7 +57,10 @@ impl Checker {
             return Err(budget());
         }
         let body = self.bodies.get(&block.id).ok_or_else(invalid)?;
-        if blocks.contains_key(&block.id) || body.owner != owner || !body.layout.matches(&block.ty)
+        if blocks.contains_key(&block.id)
+            || body.owner != owner
+            || !body.layout.matches(&block.ty)
+            || body.scalar != crate::check::dependencies::bodies::Scalar::of(&block.ty)
         {
             return Err(invalid());
         }

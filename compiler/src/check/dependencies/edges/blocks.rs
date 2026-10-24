@@ -84,6 +84,7 @@ impl Checker {
                     && tracked.span == span
                     && tracked.completion.valid()
                     && tracked.completion == super::super::bodies::Completion::of(&body.ty)
+                    && tracked.scalar == super::super::bodies::Scalar::of(&body.ty)
                     && tracked.layout.matches(&body.ty)
             })
         {

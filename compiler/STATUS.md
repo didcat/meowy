@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-23. Partial result-slot propagation is qualified; all final checks pass below.
+Updated: 2026-10-24. Nullable scalar block qualification is in progress below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5901,6 +5901,37 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
 No known failures remain. Nothing was pushed.
 
+### Nullable scalar block results
+
+Resume from `46f3914a` with a clean tracked tree. User-owned `docs/programs/hey/`
+is excluded; `/tmp/meowy-nullable-blocks-baseline.json` preserves the starting files.
+The starting body metadata retained only `Shape::Union { members }` and an unknown
+layout for nullable results. Neither identifies the scalar alternative. Capture a
+bounded exact descriptor from the checked type before qualifying scope/slot headers.
+The existing scalar domain, conditional slot joins and completion histories are reused.
+
+Dependency-ordered commit plan:
+
+1. Capture exact plain/nullable scalar descriptors in body metadata and validate
+   them against checked HIR, with type/layout and replay regressions.
+2. Preserve those descriptors in block reports and qualify scope/result-slot
+   headers, with unsupported-union, identity and bounded-work tests.
+3. Publish completed nullable results from initialized, conditional or omitted
+   slots, preserving origins, control and saved histories; add focused regressions.
+4. Qualify missing/opaque inputs and exact budgets, then update structural coverage,
+   foundation documentation and both handoffs. Run the complete gate and preservation audit.
+
+The first prerequisite captures plain/nullable null, boolean and exact-width integer
+descriptors directly from checked HIR. Replay, endpoint and HIR-index validation compare
+the descriptor; result-layout checks validate its shallow shape without deriving it from
+a union count. All three descriptor regressions, 109 block-related tests and the original
+1000-matcher regression pass; formatting passes. Logs: `/tmp/meowy-nullable-body-tests.log`,
+`/tmp/meowy-nullable-body-blocks.log`, `/tmp/meowy-nullable-body-matchers.log`.
+Source contracts and expectations remain unchanged. This extends internal scalar propagation.
+Ordinary local joins,
+aliases/composition, restart resets, arithmetic, wider guards and proof outcomes stay gated.
+Next: preserve exact descriptors in reports, then qualify scope/slot headers.
+
 ### Partial scalar result slots
 
 Result-slot joins now retain conditional domains and agreed emitted origins separately from
@@ -7655,8 +7686,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Partial scalar result slots](#partial-scalar-result-slots):
-qualify nullable scalar headers before extending implicit-null publication beyond null blocks.
+Resume the ordered actions in [Nullable scalar block results](#nullable-scalar-block-results):
+qualify exact nullable headers, then extend completed implicit-null publication.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are

@@ -308,6 +308,7 @@ pub(crate) fn block_completion_bounds_empty_body_maps_and_work_atomically() {
                 parent: None,
                 span,
                 completion: Completion::of(&hir::Type::Null),
+                scalar: super::super::Scalar::of(&hir::Type::Null),
                 layout: super::super::Layout::Slots(vec![super::super::layout::Slot {
                     field: None,
                     mutable: false,

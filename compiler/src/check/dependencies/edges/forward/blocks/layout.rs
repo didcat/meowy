@@ -18,7 +18,11 @@ impl Checker {
             return Err(budget());
         }
         let body = self.bodies.get(&id).ok_or_else(invalid)?;
-        if !body.completion.valid() {
+        if !body.completion.valid()
+            || body
+                .scalar
+                .is_some_and(|scalar| scalar.shape() != Some(body.completion.result))
+        {
             return Err(invalid());
         }
         let shape = body.completion.result;

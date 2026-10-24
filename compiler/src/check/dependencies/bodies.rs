@@ -7,6 +7,8 @@ pub(crate) mod completion;
 pub(crate) use completion::{Completion, MAX_BODY_RESULTS};
 pub(crate) mod layout;
 pub(crate) use layout::Layout;
+mod scalar;
+pub(crate) use scalar::Scalar;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Role {
@@ -47,6 +49,7 @@ pub(crate) struct Body {
     pub(crate) parent: Option<hir::PointId>,
     pub(crate) span: Span,
     pub(crate) completion: Completion,
+    pub(crate) scalar: Option<Scalar>,
     pub(crate) layout: Layout,
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
@@ -483,7 +486,7 @@ impl Checker {
     pub(crate) fn track_body(&mut self, block: &hir::Block, span: Span) -> Result<()> {
         if !self
             .flow
-            .spend(self.bodies.len().checked_ilog2().unwrap_or(0) as usize + 1)
+            .spend(self.bodies.len().checked_ilog2().unwrap_or(0) as usize + 2)
         {
             return Err(Walk::budget(span));
         }
@@ -524,6 +527,7 @@ impl Checker {
             parent: self.point.filter(|id| self.points[*id].owner == self.owner),
             span,
             completion: Completion::of(&block.ty),
+            scalar: Scalar::of(&block.ty),
             layout,
             facts: walk.facts,
             links: walk.links,
