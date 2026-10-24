@@ -32,7 +32,10 @@ impl Scalar {
         match self.kind {
             ScalarKind::Null if !self.nullable => {}
             ScalarKind::Bool => {}
-            ScalarKind::Int { bits, .. } if matches!(bits, 8 | 16 | 32 | 64) => {}
+            ScalarKind::Int {
+                bits: 8 | 16 | 32 | 64,
+                ..
+            } => {}
             _ => return None,
         }
         Some(if self.nullable {

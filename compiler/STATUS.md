@@ -5917,7 +5917,7 @@ Dependency-ordered commit plan:
 2. `bed6cbed`: preserve descriptors in block reports with atomic merge and same-shape type-drift
    regressions. This metadata prerequisite is separate from header admission.
 3. `d76b79c0`: qualify scope/result-slot headers with unsupported-union, identity and bounded-work tests.
-4. Publish completed nullable results from initialized, conditional or omitted
+4. `9866e674`: publish completed nullable results from initialized, conditional or omitted
    slots, preserving origins, control and saved histories; add focused regressions.
 5. Qualify missing/opaque inputs and exact budgets, then update structural coverage,
    foundation documentation and both handoffs. Run the complete gate and preservation audit.
@@ -5946,8 +5946,13 @@ declared domain permits it. Initialized emissions retain their original origin a
 precision. Saved slot histories are not rewritten. All four new publication tests and
 349 scalar-fact tests pass (`/tmp/meowy-nullable-publication.log`); formatting passes.
 Known mutable guards verify pruning without crossing nullable conversions, whose
-propagation stays gated and receives an explicit boundary regression next.
-Next: qualify missing/control/budget boundaries, then run the final gate.
+propagation stays gated. Four added boundary regressions cover incomplete histories,
+control dependence, incompatible domains, metadata drift, conversions and restart/unknown
+tails. Exact publication budgets now include nullable boolean/uint64 and omitted integer paths.
+All 3724 library tests pass (`/tmp/meowy-nullable-boundaries-library.log`), including
+the original 1000-matcher case. All-target Clippy and formatting pass
+(`/tmp/meowy-nullable-clippy.log`). No known failures remain.
+Next: update structural evidence and documentation, then run the final gate and preservation audit.
 
 ### Partial scalar result slots
 
