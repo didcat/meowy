@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-24. Nullable scalar block propagation is qualified; all 14 gate checks pass.
+Updated: 2026-10-24. Nullable conversion qualification is in progress below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5901,6 +5901,37 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
 No known failures remain. Nothing was pushed.
 
+### Nullable scalar conversions
+
+Resume from `4976cb87` with a clean tracked tree. User-owned `docs/programs/hey/`
+is excluded; `/tmp/meowy-nullable-conversions-baseline.json` protects the starting files.
+Conversion records retain stages and projection shapes but no exact scalar type pair.
+Capture the pair from the checked outer HIR coercion; do not infer it from member counts.
+Only non-projecting null/boolean/integer injection into a compatible nullable scalar is
+eligible. This preserves the existing value/domain/identity and does not add possible null.
+
+Dependency-ordered commit plan:
+
+1. Capture exact eligible source/target scalar descriptors with atomic replay and
+   type/width/exclusion regressions. Preserve existing untyped/projection stage APIs.
+2. Retain and validate the descriptors in coercion reports, including independent
+   operation/result observations and exact limits.
+3. Qualify exact conversion graph stages and preserve storage at observed operations;
+   keep result-value publication separate. Test sparse stages, edges and budgets.
+4. Publish values through complete source/operation/result histories. Verify typed
+   nullable emissions, copies, saved origins, null injection and call arguments.
+5. Qualify missing/control/bottom/identity and exact publication boundaries. Update
+   structural evidence and both handoffs, then run the complete gate and preservation audit.
+
+Exact nullable type pairs now come from checked outer HIR coercions in expected and
+composed fallback contexts. Existing stage APIs remain available for untyped/projection
+records; typed publication validates descriptor compatibility before changing records.
+All 144 coercion tests pass, including three new capture/replay/exclusion regressions
+(`/tmp/meowy-nullable-conversions-capture.log`). The original 1000-matcher case and
+formatting pass (`/tmp/meowy-nullable-conversions-matchers.log`). Wider conversions, projections, alias/composition,
+restart resets, arithmetic and proof outcomes remain separate. Source contracts and
+conformance expectations remain unchanged. Next: retain and validate descriptors in reports.
+
 ### Nullable scalar block results
 
 Exact checked scalar descriptors now distinguish nullable boolean/integer results from
@@ -7712,8 +7743,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Nullable scalar block results](#nullable-scalar-block-results):
-qualify exact nullable conversion evidence before propagation.
+Resume the ordered actions in [Nullable scalar conversions](#nullable-scalar-conversions):
+capture exact types, qualify stages, then propagate through complete histories.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are

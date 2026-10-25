@@ -1,3 +1,4 @@
+use super::dependencies::{Coercion, CoercionKind};
 use super::{Checker, Frame, Result, Scope, Slots, Value};
 use crate::ast::{self, ExprKind, Span, StmtKind};
 use crate::diagnostic::Diagnostic;
@@ -417,7 +418,17 @@ impl Checker {
             _ => {
                 let (input, kind, result) = self.composed_fallback_point(value, expected)?;
                 if let Some(point) = self.point {
-                    self.coercion_operation(point, input, kind, value.span)?;
+                    self.typed_coercion_stages(
+                        (point, input),
+                        kind,
+                        (false, None, None),
+                        if kind == CoercionKind::Convert {
+                            Coercion::scalars(&result)
+                        } else {
+                            None
+                        },
+                        value.span,
+                    )?;
                 }
                 Ok(result)
             }

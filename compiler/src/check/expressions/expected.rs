@@ -62,12 +62,19 @@ impl Checker {
             if shared && !primary && kind == CoercionKind::Forward {
                 self.region_edges(point, source, span)?;
             } else if !self.required {
-                self.coercion_stages(
+                self.typed_coercion_stages(
                     (point, source),
                     kind,
-                    primary,
-                    if primary { shape } else { None },
-                    if primary { fields } else { None },
+                    (
+                        primary,
+                        if primary { shape } else { None },
+                        if primary { fields } else { None },
+                    ),
+                    if !primary && kind == CoercionKind::Convert {
+                        Coercion::scalars(&value)
+                    } else {
+                        None
+                    },
                     span,
                 )?;
             }

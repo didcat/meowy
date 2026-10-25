@@ -10,6 +10,9 @@ use crate::{
     hir,
 };
 
+mod scalars;
+pub(crate) use scalars::Types;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Kind {
     Forward,
@@ -42,6 +45,7 @@ pub(crate) struct Coercion {
     pub(crate) primary: bool,
     pub(crate) source: Option<Shape>,
     pub(crate) fields: Option<usize>,
+    pub(crate) scalar: Option<Types>,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
@@ -90,19 +94,32 @@ impl Checker {
         fields: Option<usize>,
         span: Span,
     ) -> Result<()> {
+        self.typed_coercion_stages(site, kind, (primary, source, fields), None, span)
+    }
+
+    pub(crate) fn typed_coercion_stages(
+        &mut self,
+        site: (hir::PointId, hir::PointId),
+        kind: Kind,
+        projection: (bool, Option<Shape>, Option<usize>),
+        scalar: Option<Types>,
+        span: Span,
+    ) -> Result<()> {
         let (id, input) = site;
+        let (primary, source, fields) = projection;
         let budget = || Diagnostic::unsupported("proof coercion-operation budget exhausted", span);
         let invalid =
             || Diagnostic::unsupported("proof coercion-operation identity mismatch", span);
         if !self
             .flow
-            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize * 2 + 9)
+            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize * 2 + 11)
         {
             return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
         if !kind.valid_source(primary, source)
             || !Coercion::valid_fields(source, fields)
+            || !Coercion::valid_scalars(kind, primary, scalar)
             || point.kind != PointKind::Expr
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
@@ -138,6 +155,7 @@ impl Checker {
             primary,
             source,
             fields,
+            scalar,
             control: self.control,
             span,
             edges,
