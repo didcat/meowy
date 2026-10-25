@@ -2307,10 +2307,31 @@ Forwarding preserves the current storage snapshot and copies the domain, optiona
 same-value origin and accumulated control marks. It creates no new version or equality
 identity. Missing inner facts or unavailable outer state remain unavailable, including
 result-only paths with a missing operation predecessor. Earlier copied facts retain their
-own domains and controls. Predicates, changed types, primary projections, conversions,
-stopped operands and unsupported sources gain no scalar transfer. Calls and storage
-updates through aliases, paths or indirect storage still stop current-state propagation;
-earlier facts remain historical.
+own domains and controls. Predicates, changed narrowing/ascriptions, primary projections,
+wider conversions, stopped operands and unsupported sources gain no scalar transfer.
+Calls and storage updates through aliases, paths or indirect storage still stop
+current-state propagation; earlier facts remain historical.
+
+Non-projecting nullable conversions now retain exact source/target scalar descriptors
+from the checked outer HIR coercion. A compatible boolean/integer can enter its nullable
+type, and null can enter any supported nullable scalar type. Width and signedness remain
+exact. Capture/replay, effect reports and graph qualification validate the original point,
+owner, input, stages, control and type pair. Other unions, numeric/library conversions
+and primary projections remain outside this transfer.
+
+Independent operation/result observations preserve storage only at reached qualified
+operations. A result requires matching source/operation/result state and completion
+histories before copying the saved domain, local/version association and same-value origin.
+Value control accumulates without rewriting prior storage or completion histories. The
+nullable target adds no possible null to the source value. Typed block emissions, copies
+and call arguments consume the converted fact; calls retain their declared domains and
+never inspect callee bodies.
+
+Missing sources, unavailable state, unknown completion and incompatible source domains
+produce no value. Known bottom requires a known bottom state; unobserved operations produce
+no expression record. Exact work/payload limits and identity failures preserve prior records.
+This extends internal scalar propagation; proof outcomes and transitive per-query E225
+qualification remain incomplete.
 
 Bind transfers initialize qualified uninitialized cells. Write transfers replace existing
 cells even when prior initialization or value facts are incomplete; a missing state or
@@ -2540,7 +2561,7 @@ origin instead. Saved emissions and slots retain their original histories; subse
 bindings establish ordinary copy identity.
 
 Opaque partial, unavailable, missing and incompatible slots remain unavailable, even under
-dependent control. Nullable conversions, other unions, unknown tails and restart histories
+dependent control. Projected/wider conversions, other unions, unknown tails and restart histories
 retain their existing boundaries. Bottom requires known bottom state; an
 unobserved skipped body produces no fact. These values feed nested blocks, bindings, direct
 copies, guards and call arguments; call results still use declared domains without inspecting

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-24. Nullable conversion qualification is in progress below.
+Updated: 2026-10-24. Nullable conversion propagation is qualified; all 14 gate checks pass.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -44,7 +44,7 @@ The audit preserves 588 protected files, all 517 prior cases, 34 unchanged refer
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
 Next: continue scalar transfers using the
-[nullable-block handoff](#nullable-scalar-block-results); proof evaluation stays gated.
+[nullable-conversion handoff](#nullable-scalar-conversions); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5903,55 +5903,66 @@ No known failures remain. Nothing was pushed.
 
 ### Nullable scalar conversions
 
-Resume from `4976cb87` with a clean tracked tree. User-owned `docs/programs/hey/`
-is excluded; `/tmp/meowy-nullable-conversions-baseline.json` protects the starting files.
-Conversion records retain stages and projection shapes but no exact scalar type pair.
-Capture the pair from the checked outer HIR coercion; do not infer it from member counts.
-Only non-projecting null/boolean/integer injection into a compatible nullable scalar is
-eligible. This preserves the existing value/domain/identity and does not add possible null.
+Checked non-projecting nullable conversions now preserve scalar domains, local/version
+associations and same-value origins. Exact descriptors capture null or a supported
+boolean/integer source and its compatible nullable target. Capture/replay, reports and
+observations retain original points, owners, inputs, stages and control. Primary projections,
+other unions and numeric conversions remain outside this transfer.
 
-Dependency-ordered commit plan:
+Qualified operation observations preserve storage. Result publication validates the full
+source/operation/result state and completion chain before copying the source fact; making
+a type nullable adds no possible null. Typed block emissions, guarded results, tail writes,
+ordinary copies and call arguments preserve saved histories. Call results remain their
+full declared domains. Missing sources/state/control and incompatible domains remain
+unavailable. Known bottom requires known bottom state; unobserved operations create no fact.
 
-1. `4a153cde`: capture exact eligible source/target scalar descriptors with atomic replay and
-   type/width/exclusion regressions. Preserve existing untyped/projection stage APIs.
-2. `e6f8fe19`: retain and validate the descriptors in coercion reports, including independent
-   operation/result observations and exact limits.
-3. `98227ab1`: qualify exact conversion graph stages and preserve storage at observed operations;
-   keep result-value publication separate. Test sparse stages, edges and budgets.
-4. `0f02cdb8`: publish values through complete source/operation/result histories. Verify typed
-   nullable emissions, copies, saved origins, null injection and call arguments.
-5. Qualify missing/control/bottom/identity and exact publication boundaries. Update
-   structural evidence and both handoffs, then run the complete gate and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `4a153cde` | Capture exact scalar nullable conversion types from checked HIR |
+| `e6f8fe19` | Retain and validate exact descriptor pairs in coercion reports |
+| `98227ab1` | Qualify independent conversion stages and preserve storage |
+| `0f02cdb8` | Propagate converted values through complete histories |
+| `99e935ed` | Verify missing/control/type boundaries and exact publication limits |
 
-Exact nullable type pairs now come from checked outer HIR coercions in expected and
-composed fallback contexts. Existing stage APIs remain available for untyped/projection
-records; typed publication validates descriptor compatibility before changing records.
-All 144 coercion tests pass, including three new capture/replay/exclusion regressions
-(`/tmp/meowy-nullable-conversions-capture.log`). The original 1000-matcher case and
-formatting pass (`/tmp/meowy-nullable-conversions-matchers.log`). Wider conversions, projections, alias/composition,
-restart resets, arithmetic and proof outcomes remain separate. Source contracts and
-conformance expectations remain unchanged. Reports now retain exact descriptor pairs,
-validate them before stage publication and compare them across repeat observations.
-All 147 coercion tests pass, including three new sparse-stage/type-drift regressions
-and extended exact-work/shared-capacity coverage (`/tmp/meowy-nullable-conversions-reports.log`).
-Formatting passes. Exact conversion stages now validate original records, graph ports,
-owners and stored edges before preserving storage at observed operations. Result values
-remain unavailable in this prerequisite. All 3734 library tests pass, including four new
-stage/storage regressions, exact work/payload checks and the original 1000-matcher case
-(`/tmp/meowy-nullable-conversions-stages.log`). Formatting passes.
-All three source-driven value regressions reproduced missing facts before implementation
-(`/tmp/meowy-nullable-conversions-values-before.log`). Result observations now retain
-their original report and publish only after validating source/operation/result history,
-owner and exact source/target domains. Domain, origin and storage identity are copied;
-conversion adds no possible null. Missing state/control remains unavailable. All 3737
-library tests pass, including the three new regressions and original 1000-matcher case
-(`/tmp/meowy-nullable-conversions-values.log`); formatting passes.
-Five new boundary tests now exercise exact work/payload publication limits, duplicate
-records, missing stages/source/control, incompatible domains, stale identities, preserved
-histories and known bottom versus unobserved operations. All 3742 library tests pass,
-including the original 1000-matcher case (`/tmp/meowy-nullable-conversions-boundaries.log`).
+All 18 new structural regressions and 3742 library tests pass, including the original
+1000-matcher case without budget changes (`/tmp/meowy-nullable-conversions-boundaries.log`).
 All-target Clippy and formatting pass (`/tmp/meowy-nullable-conversions-clippy.log`).
-Next: update documentation/evidence, then run the final gate and preservation audit.
+Capture tests cover boolean, null and every signed/unsigned integer width, excluding
+projections, incompatible widths and wider unions. Independent operation/result stages,
+report drift, exact edges and shared limits are tested. Publication covers typed nullable
+block emissions, guard pruning, saved values/origins, copies and unspecialized calls.
+Missing history, incompatible domains, unknown control, duplicate records and exact budgets
+preserve prior records. False branches retain observed bottom; code after a stopping call
+supplies the separate unobserved-operation regression.
+
+Baseline `4976cb87` has a clean tracked tree. User-owned `docs/programs/hey/` is excluded;
+`/tmp/meowy-nullable-conversions-baseline.json` protects 612 files. Five new test-bearing
+files extend structural evidence. The preservation audit passes: 610 protected files,
+all 10 user-owned files, 520 source records, proof obligations/pins and all 37 reference
+hashes/gaps/prior evidence are unchanged. Exactly 18 structural links are added across
+four records (`/tmp/meowy-nullable-conversions-preservation.log`). Documentation/evidence
+are updated. Proof outcomes, transitive query/E225 qualification and full v0.0.1 release
+qualification remain gated.
+
+All 14 `make test` groups pass: 3742 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+all-target Clippy, both editors and documentation/schema checks pass. Runtime debug,
+release and sanitized profiles each pass 100 regular cases across nine suites plus
+subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
+Summary: `/tmp/meowy-nullable-conversions-gate.log`; details: `build/verification-nullable-conversions`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-nullable-conversions-docs.log`).
+The post-gate preservation audit passes.
+No known failures remain. Nothing was pushed.
+
+Next steps:
+
+1. Qualify scalar primary projection value histories using existing Projection ports,
+   checked record layouts and original result-slot source links before extending nullable
+   conversions to projected values. Start with `facts/observations/wrappers.rs`, existing
+   `consumers/primary/` qualifiers and `state/snapshots/expressions/`; verify emitted values
+   across tail writes, missing/ambiguous slots, control, owners and exact budgets.
+2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until
+   their evidence is complete. Preserve per-query charging and source expectations before outcomes.
 
 ### Nullable scalar block results
 
@@ -5983,10 +5994,9 @@ exact work/payload bounds. Publication tests cover guarded values, tail writes/c
 known guard pruning, nested leaves/results and call arguments. Missing histories, opaque
 slots, out-of-range alternatives, metadata drift and exact atomic publication budgets pass.
 
-Nullable conversion propagation remains separate: an explicitly annotated nullable block
-can insert a Convert around an emission, whose value remains unavailable. The boundary
-regressions preserve this case alongside unknown arithmetic/call tails and restart headers.
-Known mutable guards exercise pruning without crossing conversions. Proof evaluation,
+Non-projecting nullable conversions are now qualified above, including typed block
+emissions. Projected conversions, unknown arithmetic/call tails and restart headers remain
+separate. Known mutable guards retain their pruning behavior. Proof evaluation,
 transitive query/E225 qualification and full v0.0.1 release qualification remain gated.
 
 Baseline `46f3914a` has a clean tracked tree; user-owned `docs/programs/hey/` is excluded.
@@ -6008,16 +6018,8 @@ All four final handoff documentation/tooling checks pass (`/tmp/meowy-nullable-b
 The post-gate preservation audit passes.
 No known failures remain. Nothing was pushed.
 
-Next steps:
-
-1. Capture exact scalar source/target descriptors for non-projecting nullable Convert in
-   `dependencies/coercions.rs` and its reports before admitting those observations through
-   `facts/observations/wrappers.rs` and `state/snapshots/expressions/forwarded.rs`. Existing
-   coercion headers lack those exact types. Verify typed nullable block emissions, saved
-   origins, missing/control histories and exact budgets; keep other conversions separate.
-2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until
-   their evidence is complete. Preserve per-query charging, source expectations and pins
-   before enabling proof outcomes.
+The nullable conversion continuation and current next actions are recorded in
+[Nullable scalar conversions](#nullable-scalar-conversions).
 
 ### Partial scalar result slots
 
@@ -7765,7 +7767,7 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 ## Next steps
 
 Resume the ordered actions in [Nullable scalar conversions](#nullable-scalar-conversions):
-capture exact types, qualify stages, then propagate through complete histories.
+qualify scalar primary projection histories before widening conversions.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
