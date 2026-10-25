@@ -2425,7 +2425,10 @@ the remaining source-conformance gap. Wider block shapes, alias transfers, resta
 arithmetic, guards and transitive query/E225 qualification remain separate.
 
 Ordinary scalar block histories now retain exact owners, result shapes, parent consumers
-and independently observed normal/result ports. Bounded header and endpoint checks use the
+and independently observed normal/result ports. Checked body metadata also retains exact
+boolean/integer kind, width, signedness and nullability. Replay, endpoint and HIR-index
+checks reject type changes even when shallow union shapes agree. Block reports preserve
+that descriptor across repeated observations. Bounded header and endpoint checks use the
 validated predecessor graph without repeating whole-block statement scans. Enclosing
 branch ancestry retains independent, dependent or unknown control; a result-only
 observation cannot restore a missing completion predecessor. Float, string, aggregate,
@@ -2472,8 +2475,10 @@ opaque partial inputs discard that evidence; ordinary local joins remain unchang
 clears both trees. Logical payload and newly allocated nodes share the existing bounds,
 including conditional domains/origins and imports of both trees into the snapshot arena.
 
-Qualified null/boolean/integer headers retain full declared domains and original scope
-owners/control. Owner seeds and observed nested entries establish uninitialized slots;
+Qualified null/boolean/integer headers, including nullable boolean/integer results, retain
+full declared domains and original scope owners/control. Nullable descriptors come from
+checked types alongside validated layouts; a union member count cannot supply one.
+Owner seeds and observed nested entries establish uninitialized slots;
 an absent or repeated entry cannot invent or reset one. Unsupported shapes, missing state
 and restart histories preserve their boundaries. Unknown entry control remains conservative.
 Implicit null is not written at entry; it is materialized only at a qualified completed consumer.
@@ -2525,16 +2530,18 @@ copy saved domains and origins without local/version associations. Entry, value 
 completion controls accumulate; unknown completion cannot be recovered from a known or
 dependent slot. Candidate inventories and final mutable maps supply no replacement value.
 
-A completed uninitialized null slot produces null with a fresh consumer expression origin,
-without changing historical slots. A conditional null slot publishes only when its retained
-emitted domain fits the declared null slot and its entry/completion history is complete.
-The published value has no shared origin: the omitted path contributes a distinct implicit
-null. Known guard pruning preserves the sole live path's origin instead. Saved emissions and
-slots retain their original histories; subsequent bindings establish ordinary copy identity.
+A completed uninitialized slot produces null with a fresh consumer expression origin when
+its declared domain includes null, without changing historical slots. A conditional slot
+joins its retained emitted domain with null only when the result fits the declaration and
+its entry/completion history is complete. The published value has no shared origin: the
+omitted path contributes a distinct implicit null. Initialized slots retain their saved
+domain and origin without adding null. Known guard pruning preserves the sole live path's
+origin instead. Saved emissions and slots retain their original histories; subsequent
+bindings establish ordinary copy identity.
 
 Opaque partial, unavailable, missing and incompatible slots remain unavailable, even under
-dependent control. Nullable boolean/integer block headers remain unqualified; union member
-counts alone supply no declared scalar domain. Bottom requires known bottom state; an
+dependent control. Nullable conversions, other unions, unknown tails and restart histories
+retain their existing boundaries. Bottom requires known bottom state; an
 unobserved skipped body produces no fact. These values feed nested blocks, bindings, direct
 copies, guards and call arguments; call results still use declared domains without inspecting
 callee bodies. Exact work/payload reservation and identity checks precede atomic publication.

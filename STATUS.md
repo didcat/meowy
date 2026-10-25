@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-23. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-24. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -63,20 +63,19 @@ Existing proof/scalar continuation remains next. Nothing was pushed.
 
 ## Current compiler and coverage handoff
 
-Scalar result-slot joins now retain known emissions alongside omitted primaries. Completed
-guarded null blocks use those alternatives without changing saved histories or inventing
-shared origins. Local must-initialization, unknown inputs, control dependence and restart
-boundaries remain conservative.
+Nullable boolean/integer block headers now retain exact checked type descriptors. Completed
+consumers combine guarded emissions with omitted null while preserving saved slot histories,
+origins and control dependence. Ordinary local joins and unknown inputs remain conservative.
 
-The [result-slot handoff](compiler/STATUS.md#partial-scalar-result-slots) records four
-validated slices and ten new structural regressions. All 341 scalar-fact tests, 3707 library
-tests and all-target Clippy pass, including the original 1000-matcher case without budget
-changes. All 14 verification groups and the preservation audit pass. Two new test
-files extend structural evidence; reference contracts, source expectations, proof obligations
-and pins are unchanged.
+The [nullable-block handoff](compiler/STATUS.md#nullable-scalar-block-results) records five
+validated implementation/test slices and 17 new structural regressions. All 14 verification
+groups pass: 3724 library, 925 native, 86 Python and 501 required conformance cases, with
+19 unchanged gaps and zero failures. The original 1000-matcher case passes without budget
+changes. Structural evidence, foundation documentation and the preservation audit are current.
+Reference contracts, source expectations, proof obligations and pins are unchanged.
 
-Next: qualify nullable boolean/integer block headers from exact checked type/layout evidence.
-Broader transfers and proof outcomes remain gated; this is internal scalar propagation.
+Next: capture exact source/target types for non-projecting nullable conversions before
+qualifying their scalar transfer. Broader transfers and proof outcomes remain gated.
 The full documented release remains incomplete. User-owned `docs/programs/hey/` stays
 excluded. Nothing was pushed.
 
@@ -91,16 +90,16 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-The latest `make test` run passes all 14 groups: 3707 library, 925 native and 86 Python tests,
+The latest `make test` run passes all 14 groups: 3724 library, 925 native and 86 Python tests,
 plus 501 required conformance cases with 19 unchanged gaps and zero debug/release failures.
 Formatting, Clippy, both editors and documentation/schema checks pass. Runtime
 debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
 subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
-Summary: `/tmp/meowy-partial-slots-gate.log`; details: `build/verification-partial-slots`.
-The audit preserves 609 protected files, all 520 conformance records, exact capability pins,
+Summary: `/tmp/meowy-nullable-blocks-gate.log`; details: `build/verification-nullable-blocks`.
+The audit preserves 610 protected files, all 520 conformance records, exact capability pins,
 all 37 reference hashes/gaps/prior evidence and all 10 user-owned files under
-`docs/programs/hey/` (`/tmp/meowy-partial-slots-preservation.log`). The two intentional coverage
-metadata/report edits add eight structural links without changing reference contracts.
+`docs/programs/hey/` (`/tmp/meowy-nullable-blocks-preservation.log`). The two intentional coverage
+metadata/report edits add 15 structural links without changing reference contracts.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.

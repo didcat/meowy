@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-24. Nullable scalar block qualification is in progress below.
+Updated: 2026-10-24. Nullable scalar block propagation is qualified; all 14 gate checks pass.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -43,8 +43,8 @@ contract checks pass. Summary: `/tmp/meowy-null-literal-gate.log`; details:
 The audit preserves 588 protected files, all 517 prior cases, 34 unchanged reference
 records, prior evidence, proof obligations, exact capability pins and user-owned files
 (`/tmp/meowy-null-literal-preservation.log`). No known failures remain. Nothing was pushed.
-Next: qualify nullable scalar headers using the
-[result-slot handoff](#partial-scalar-result-slots); proof evaluation stays gated.
+Next: continue scalar transfers using the
+[nullable-block handoff](#nullable-scalar-block-results); proof evaluation stays gated.
 
 ## Numeric shadowing implementation
 
@@ -5903,56 +5903,69 @@ No known failures remain. Nothing was pushed.
 
 ### Nullable scalar block results
 
-Resume from `46f3914a` with a clean tracked tree. User-owned `docs/programs/hey/`
-is excluded; `/tmp/meowy-nullable-blocks-baseline.json` preserves the starting files.
-The starting body metadata retained only `Shape::Union { members }` and an unknown
-layout for nullable results. Neither identifies the scalar alternative. Capture a
-bounded exact descriptor from the checked type before qualifying scope/slot headers.
-The existing scalar domain, conditional slot joins and completion histories are reused.
+Exact checked scalar descriptors now distinguish nullable boolean/integer results from
+other unions with the same member count. Body replay, endpoint/HIR checks, reports,
+scope headers and slot declarations preserve kind, integer width/signedness and nullability.
+General union layouts remain unknown; the scalar descriptor comes from the checked type.
 
-Dependency-ordered commit plan:
+Completed consumers join retained conditional emissions with implicit null only when the
+exact declaration permits it. Initialized emissions preserve their saved domain/origin;
+omitted slots produce null with a fresh consumer origin. Conditional results have no shared
+origin. Tail writes, nested leaves, copies and call arguments preserve historical values.
+Missing/opaque inputs, unknown control, incompatible domains and restart paths remain
+unavailable. Ordinary local joins and must-initialization are unchanged.
 
-1. `b3fd1066`: capture exact plain/nullable scalar descriptors in body metadata and
-   validate against checked HIR, with type/layout and replay regressions.
-2. `bed6cbed`: preserve descriptors in block reports with atomic merge and same-shape type-drift
-   regressions. This metadata prerequisite is separate from header admission.
-3. `d76b79c0`: qualify scope/result-slot headers with unsupported-union, identity and bounded-work tests.
-4. `9866e674`: publish completed nullable results from initialized, conditional or omitted
-   slots, preserving origins, control and saved histories; add focused regressions.
-5. Qualify missing/opaque inputs and exact budgets, then update structural coverage,
-   foundation documentation and both handoffs. Run the complete gate and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `b3fd1066` | Capture and validate exact scalar body type descriptors |
+| `bed6cbed` | Preserve exact descriptors across block reports |
+| `d76b79c0` | Qualify nullable scope and result-slot headers |
+| `9866e674` | Publish completed nullable scalar block values |
+| `8ac7ad78` | Verify missing/control/type boundaries and exact budgets |
 
-The first prerequisite captures plain/nullable null, boolean and exact-width integer
-descriptors directly from checked HIR. Replay, endpoint and HIR-index validation compare
-the descriptor; result-layout checks validate its shallow shape without deriving it from
-a union count. All three descriptor regressions, 109 block-related tests and the original
-1000-matcher regression pass; formatting passes. Logs: `/tmp/meowy-nullable-body-tests.log`,
-`/tmp/meowy-nullable-body-blocks.log`, `/tmp/meowy-nullable-body-matchers.log`.
-Source contracts and expectations remain unchanged. This extends internal scalar propagation.
-Ordinary local joins,
-aliases/composition, restart resets, arithmetic, wider guards and proof outcomes stay gated.
-Reports now retain descriptors and compare them during repeated observations. All
-111 block-related tests pass, including new report/HIR-index type-drift regressions
-and existing exact-budget/atomicity checks (`/tmp/meowy-nullable-reports.log`).
-Scope and slot qualification now use the retained descriptor and existing declared-domain
-algebra. All 345 scalar-fact tests pass, including four new header regressions, all
-supported integer widths, unsupported union exclusion and exact work/payload bounds
-(`/tmp/meowy-nullable-headers.log`). All 3716 library tests pass, including the original
-1000-matcher case (`/tmp/meowy-nullable-headers-library.log`); formatting passes.
-Guarded-value, copy and nested-consumer regressions reproduced missing values before
-the change (`/tmp/meowy-nullable-publication-before.log`). Completed consumers now join
-retained conditional emissions with null, or materialize omitted null, when the exact
-declared domain permits it. Initialized emissions retain their original origin and
-precision. Saved slot histories are not rewritten. All four new publication tests and
-349 scalar-fact tests pass (`/tmp/meowy-nullable-publication.log`); formatting passes.
-Known mutable guards verify pruning without crossing nullable conversions, whose
-propagation stays gated. Four added boundary regressions cover incomplete histories,
-control dependence, incompatible domains, metadata drift, conversions and restart/unknown
-tails. Exact publication budgets now include nullable boolean/uint64 and omitted integer paths.
-All 3724 library tests pass (`/tmp/meowy-nullable-boundaries-library.log`), including
-the original 1000-matcher case. All-target Clippy and formatting pass
-(`/tmp/meowy-nullable-clippy.log`). No known failures remain.
-Next: update structural evidence and documentation, then run the final gate and preservation audit.
+All 17 new structural regressions and 3724 library tests pass, including the original
+1000-matcher case without budget changes (`/tmp/meowy-nullable-boundaries-library.log`).
+All-target Clippy and formatting pass (`/tmp/meowy-nullable-clippy.log`). Header tests cover
+boolean and all signed/unsigned integer widths, unsupported unions, stale identities and
+exact work/payload bounds. Publication tests cover guarded values, tail writes/copies,
+known guard pruning, nested leaves/results and call arguments. Missing histories, opaque
+slots, out-of-range alternatives, metadata drift and exact atomic publication budgets pass.
+
+Nullable conversion propagation remains separate: an explicitly annotated nullable block
+can insert a Convert around an emission, whose value remains unavailable. The boundary
+regressions preserve this case alongside unknown arithmetic/call tails and restart headers.
+Known mutable guards exercise pruning without crossing conversions. Proof evaluation,
+transitive query/E225 qualification and full v0.0.1 release qualification remain gated.
+
+Baseline `46f3914a` has a clean tracked tree; user-owned `docs/programs/hey/` is excluded.
+`/tmp/meowy-nullable-blocks-baseline.json` protects 612 files. Four new test-bearing files
+extend structural evidence. Reference contracts, source expectations, proof obligations
+and capability pins remain unchanged. The preservation audit passes: 610 protected files,
+all 10 user-owned files, 520 source records, proof obligations/pins and all 37 reference
+hashes/gaps/prior evidence are unchanged. Exactly 15 structural links are added across
+four records (`/tmp/meowy-nullable-blocks-preservation.log`). Foundation documentation
+and both handoffs are updated.
+
+All 14 `make test` groups pass: 3724 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+all-target Clippy, both editors and documentation/schema checks pass. Runtime debug,
+release and sanitized profiles each pass 100 regular cases across nine suites plus
+subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
+Summary: `/tmp/meowy-nullable-blocks-gate.log`; details: `build/verification-nullable-blocks`.
+All four final handoff documentation/tooling checks pass (`/tmp/meowy-nullable-blocks-docs.log`).
+The post-gate preservation audit passes.
+No known failures remain. Nothing was pushed.
+
+Next steps:
+
+1. Capture exact scalar source/target descriptors for non-projecting nullable Convert in
+   `dependencies/coercions.rs` and its reports before admitting those observations through
+   `facts/observations/wrappers.rs` and `state/snapshots/expressions/forwarded.rs`. Existing
+   coercion headers lack those exact types. Verify typed nullable block emissions, saved
+   origins, missing/control histories and exact budgets; keep other conversions separate.
+2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until
+   their evidence is complete. Preserve per-query charging, source expectations and pins
+   before enabling proof outcomes.
 
 ### Partial scalar result slots
 
@@ -5960,8 +5973,8 @@ Result-slot joins now retain conditional domains and agreed emitted origins sepa
 the opaque `Partial` marker. Completed null blocks combine these known emissions with omitted
 primaries, discarding identity because the implicit-null path has a distinct origin. Saved
 slot histories remain unchanged. Ordinary local joins, missing/opaque markers,
-must-initialization and control dependence retain their boundaries. Nullable scalar headers
-and broader transfers remain separate.
+must-initialization and control dependence retain their boundaries. The nullable continuation
+is qualified above; broader transfers remain separate.
 
 Dependency-ordered commits:
 
@@ -5984,7 +5997,7 @@ emission case still refuses to overwrite a possibly initialized slot. The origin
 passes without budget changes. Logs: `/tmp/meowy-partial-slots-joins.log` and
 `/tmp/meowy-partial-slots-matchers.log`. Four source-driven regressions cover guarded nulls,
 nested leaves, multiple emissions, historical copies, control dependence and missing inputs.
-Unknown tails, restart headers and nullable scalar headers remain unavailable
+Unknown tails and restart headers remain unavailable
 (`/tmp/meowy-partial-slots-publication.log`). Exact work/payload limits pass for conditional
 joins across aligned and differing tree shapes and for completed publication; failures
 preserve prior records. Invalid/empty domains and foreign origins reject, opaque slots
@@ -6008,17 +6021,8 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-partial-slots-docs.log`).
 The post-gate preservation audit passes. No known failures remain. No push was performed.
 
-Next steps:
-
-1. Qualify nullable boolean/integer scope and result-slot headers in `facts/observations/scopes.rs`
-   and `observations/slots.rs` from exact checked result types and layouts. `Shape::Union`
-   member counts are insufficient. Then combine retained emissions with implicit null in
-   `state/snapshots/expressions/blocks.rs`. Verify guarded emissions, missing inputs, origins,
-   control, exact budgets and the original 1000-matcher case; preserve ordinary local joins.
-2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until their
-   evidence is complete; preserve profile precision.
-3. Complete transitive query/E225 qualification and per-query logical charging before proof
-   outcomes. Preserve source expectations and capability pins.
+The nullable header/publication continuation and current next actions are recorded in
+[Nullable scalar block results](#nullable-scalar-block-results).
 
 ### Nested and stopped scalar paths
 
@@ -7709,7 +7713,7 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 ## Next steps
 
 Resume the ordered actions in [Nullable scalar block results](#nullable-scalar-block-results):
-qualify exact nullable headers, then extend completed implicit-null publication.
+qualify exact nullable conversion evidence before propagation.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
