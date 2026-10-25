@@ -3,6 +3,24 @@ use super::*;
 use crate::check::dependencies::CoercionKind;
 
 #[test]
+pub(crate) fn scalar_conversion_operations_preserve_storage_before_value_publication() {
+    let (checker, _, _, snapshots) = capture("x:=7;v<int32><null>:x;x=9;x");
+    let (&point, op) = checker
+        .coercions
+        .iter()
+        .find(|(_, op)| op.scalar.is_some())
+        .unwrap();
+    let source = snapshots.after(Port::Normal(op.input)).unwrap();
+    assert!(matches!(source, View::Known(_)));
+    assert_eq!(snapshots.before(Port::Operation(point)), Some(source));
+    assert_eq!(snapshots.after(Port::Operation(point)), Some(source));
+    assert_eq!(snapshots.after(Port::Normal(point)), Some(source));
+    assert!(!snapshots.expressions.contains_key(&point));
+    let read = checker.local_reads.keys().next_back().unwrap();
+    assert!(snapshots.expressions[read].value.is_some());
+}
+
+#[test]
 pub(crate) fn scalar_forward_values_reach_typed_binding_inputs_without_changing_storage() {
     let (mut checker, _, _, snapshots) =
         capture("n<uint64>:((18446744073709551615));f:(){v<boolean>:(true)}");

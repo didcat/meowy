@@ -5914,7 +5914,7 @@ Dependency-ordered commit plan:
 
 1. `4a153cde`: capture exact eligible source/target scalar descriptors with atomic replay and
    type/width/exclusion regressions. Preserve existing untyped/projection stage APIs.
-2. Retain and validate the descriptors in coercion reports, including independent
+2. `e6f8fe19`: retain and validate the descriptors in coercion reports, including independent
    operation/result observations and exact limits.
 3. Qualify exact conversion graph stages and preserve storage at observed operations;
    keep result-value publication separate. Test sparse stages, edges and budgets.
@@ -5934,7 +5934,12 @@ conformance expectations remain unchanged. Reports now retain exact descriptor p
 validate them before stage publication and compare them across repeat observations.
 All 147 coercion tests pass, including three new sparse-stage/type-drift regressions
 and extended exact-work/shared-capacity coverage (`/tmp/meowy-nullable-conversions-reports.log`).
-Formatting passes. Next: qualify scalar operation histories while keeping value publication separate.
+Formatting passes. Exact conversion stages now validate original records, graph ports,
+owners and stored edges before preserving storage at observed operations. Result values
+remain unavailable in this prerequisite. All 3734 library tests pass, including four new
+stage/storage regressions, exact work/payload checks and the original 1000-matcher case
+(`/tmp/meowy-nullable-conversions-stages.log`). Formatting passes.
+Next: publish converted values through the complete validated history chain.
 
 ### Nullable scalar block results
 

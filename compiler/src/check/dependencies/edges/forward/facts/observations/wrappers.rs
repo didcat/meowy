@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::grouped::MAX_GROUPS;
 
+mod conversions;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) struct Forward {
     pub(in super::super) owner: usize,
@@ -11,7 +13,7 @@ pub(in super::super) struct Forward {
 impl Checker {
     pub(super) fn scalar_wrapper_observations<'a, 'd>(
         &mut self,
-        reports: &Reports,
+        reports: &'a Reports,
         graph: &graph::Graph<'_>,
         mut observations: Observations<'a, 'd>,
         span: Span,
@@ -64,9 +66,21 @@ impl Checker {
         if reports.effects.len() > MAX_EDGES || !self.flow.spend(reports.effects.len() + 1) {
             return Err(budget(span));
         }
-        for (&point, (owner, effect)) in &reports.effects {
+        for (&point, source) in &reports.effects {
+            let (owner, effect) = source;
             let (family, input, control) = match effect {
                 Effect::Coercion(op) => {
+                    if op.scalar.is_some() {
+                        self.scalar_conversion_observation(
+                            reports,
+                            graph,
+                            (point, source),
+                            &mut observations,
+                            span,
+                            &mut parts,
+                        )?;
+                        continue;
+                    }
                     let input = self.forward_coercion_input(reports, point, *owner, span)?;
                     if op.op == crate::check::dependencies::CoercionKind::Forward && !op.primary {
                         if !self.flow.spend(2) {
