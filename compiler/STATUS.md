@@ -5918,7 +5918,7 @@ Dependency-ordered commit plan:
    operation/result observations and exact limits.
 3. `98227ab1`: qualify exact conversion graph stages and preserve storage at observed operations;
    keep result-value publication separate. Test sparse stages, edges and budgets.
-4. Publish values through complete source/operation/result histories. Verify typed
+4. `0f02cdb8`: publish values through complete source/operation/result histories. Verify typed
    nullable emissions, copies, saved origins, null injection and call arguments.
 5. Qualify missing/control/bottom/identity and exact publication boundaries. Update
    structural evidence and both handoffs, then run the complete gate and preservation audit.
@@ -5946,7 +5946,12 @@ owner and exact source/target domains. Domain, origin and storage identity are c
 conversion adds no possible null. Missing state/control remains unavailable. All 3737
 library tests pass, including the three new regressions and original 1000-matcher case
 (`/tmp/meowy-nullable-conversions-values.log`); formatting passes.
-Next: qualify adversarial histories and exact publication budgets, then run final verification.
+Five new boundary tests now exercise exact work/payload publication limits, duplicate
+records, missing stages/source/control, incompatible domains, stale identities, preserved
+histories and known bottom versus unobserved operations. All 3742 library tests pass,
+including the original 1000-matcher case (`/tmp/meowy-nullable-conversions-boundaries.log`).
+All-target Clippy and formatting pass (`/tmp/meowy-nullable-conversions-clippy.log`).
+Next: update documentation/evidence, then run the final gate and preservation audit.
 
 ### Nullable scalar block results
 
