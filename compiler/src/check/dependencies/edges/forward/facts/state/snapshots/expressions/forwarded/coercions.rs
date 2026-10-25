@@ -3,7 +3,7 @@ use super::*;
 use crate::check::dependencies::CoercionKind;
 
 #[test]
-pub(crate) fn scalar_conversion_operations_preserve_storage_before_value_publication() {
+pub(crate) fn scalar_conversion_operations_preserve_storage_and_input_identity() {
     let (checker, _, _, snapshots) = capture("x:=7;v<int32><null>:x;x=9;x");
     let (&point, op) = checker
         .coercions
@@ -15,7 +15,10 @@ pub(crate) fn scalar_conversion_operations_preserve_storage_before_value_publica
     assert_eq!(snapshots.before(Port::Operation(point)), Some(source));
     assert_eq!(snapshots.after(Port::Operation(point)), Some(source));
     assert_eq!(snapshots.after(Port::Normal(point)), Some(source));
-    assert!(!snapshots.expressions.contains_key(&point));
+    assert_eq!(
+        snapshots.expressions[&point],
+        snapshots.expressions[&op.input]
+    );
     let read = checker.local_reads.keys().next_back().unwrap();
     assert!(snapshots.expressions[read].value.is_some());
 }

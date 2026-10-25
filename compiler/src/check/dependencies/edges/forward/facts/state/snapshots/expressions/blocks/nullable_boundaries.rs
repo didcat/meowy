@@ -100,10 +100,8 @@ pub(crate) fn nullable_block_values_do_not_materialize_null_from_opaque_or_incom
 }
 
 #[test]
-pub(crate) fn nullable_block_values_keep_conversion_unknown_tail_and_restart_boundaries() {
+pub(crate) fn nullable_block_values_keep_unknown_tail_and_restart_boundaries() {
     for source in [
-        "v<boolean><null>:{|true|->true};v",
-        "v<int8><null>:{|true|->7};v",
         "f:(flag<boolean>){v:{|flag|->7;1+2};v}",
         "g:(text<string>){};f:(flag<boolean>){v:{|flag|->true;g(\"cat\")};v}",
         "f:(flag<boolean>){v:'loop{|flag|->7;|false|'loop.restart()};v}",

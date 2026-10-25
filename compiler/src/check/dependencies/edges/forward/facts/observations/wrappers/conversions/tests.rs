@@ -40,7 +40,7 @@ pub(crate) fn scalar_conversion_observations_keep_exact_sources_and_sparse_stage
             .scalar_observations(&reports, &graph, &definitions, Span::default(), MAX_EDGES)
             .unwrap();
         assert_eq!(obs.sources.contains_key(&Port::Operation(point)), operation);
-        assert!(!obs.sources.contains_key(&Port::Normal(point)));
+        assert_eq!(obs.sources.contains_key(&Port::Normal(point)), result);
         assert!(!obs.forwarded.contains_key(&Port::Normal(point)));
         if operation {
             assert!(std::ptr::eq(

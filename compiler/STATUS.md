@@ -5916,7 +5916,7 @@ Dependency-ordered commit plan:
    type/width/exclusion regressions. Preserve existing untyped/projection stage APIs.
 2. `e6f8fe19`: retain and validate the descriptors in coercion reports, including independent
    operation/result observations and exact limits.
-3. Qualify exact conversion graph stages and preserve storage at observed operations;
+3. `98227ab1`: qualify exact conversion graph stages and preserve storage at observed operations;
    keep result-value publication separate. Test sparse stages, edges and budgets.
 4. Publish values through complete source/operation/result histories. Verify typed
    nullable emissions, copies, saved origins, null injection and call arguments.
@@ -5939,7 +5939,14 @@ owners and stored edges before preserving storage at observed operations. Result
 remain unavailable in this prerequisite. All 3734 library tests pass, including four new
 stage/storage regressions, exact work/payload checks and the original 1000-matcher case
 (`/tmp/meowy-nullable-conversions-stages.log`). Formatting passes.
-Next: publish converted values through the complete validated history chain.
+All three source-driven value regressions reproduced missing facts before implementation
+(`/tmp/meowy-nullable-conversions-values-before.log`). Result observations now retain
+their original report and publish only after validating source/operation/result history,
+owner and exact source/target domains. Domain, origin and storage identity are copied;
+conversion adds no possible null. Missing state/control remains unavailable. All 3737
+library tests pass, including the three new regressions and original 1000-matcher case
+(`/tmp/meowy-nullable-conversions-values.log`); formatting passes.
+Next: qualify adversarial histories and exact publication budgets, then run final verification.
 
 ### Nullable scalar block results
 

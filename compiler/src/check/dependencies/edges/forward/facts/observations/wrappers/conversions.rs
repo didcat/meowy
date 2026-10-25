@@ -57,10 +57,8 @@ impl Checker {
             {
                 return Err(invalid(span));
             }
-            if port == Port::Operation(point) {
-                *parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
-                observations.sources.insert(port, source);
-            }
+            *parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
+            observations.sources.insert(port, source);
         }
         Ok(())
     }

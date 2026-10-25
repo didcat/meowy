@@ -3,6 +3,7 @@ use super::*;
 
 mod blocks;
 mod calls;
+mod conversions;
 mod forwarded;
 mod logical;
 mod reads;
@@ -77,6 +78,11 @@ impl Snapshots {
             return Err(budget(span));
         }
         let (owner, effect) = *source;
+        if matches!(effect, Effect::Coercion(_)) {
+            return self
+                .converted_expression(point, source, flow, span)
+                .map(|()| Some(false));
+        }
         if matches!(effect, Effect::Call { .. }) {
             let control = observations
                 .call_controls
