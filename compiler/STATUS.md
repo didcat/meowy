@@ -5912,7 +5912,7 @@ eligible. This preserves the existing value/domain/identity and does not add pos
 
 Dependency-ordered commit plan:
 
-1. Capture exact eligible source/target scalar descriptors with atomic replay and
+1. `4a153cde`: capture exact eligible source/target scalar descriptors with atomic replay and
    type/width/exclusion regressions. Preserve existing untyped/projection stage APIs.
 2. Retain and validate the descriptors in coercion reports, including independent
    operation/result observations and exact limits.
@@ -5930,7 +5930,11 @@ All 144 coercion tests pass, including three new capture/replay/exclusion regres
 (`/tmp/meowy-nullable-conversions-capture.log`). The original 1000-matcher case and
 formatting pass (`/tmp/meowy-nullable-conversions-matchers.log`). Wider conversions, projections, alias/composition,
 restart resets, arithmetic and proof outcomes remain separate. Source contracts and
-conformance expectations remain unchanged. Next: retain and validate descriptors in reports.
+conformance expectations remain unchanged. Reports now retain exact descriptor pairs,
+validate them before stage publication and compare them across repeat observations.
+All 147 coercion tests pass, including three new sparse-stage/type-drift regressions
+and extended exact-work/shared-capacity coverage (`/tmp/meowy-nullable-conversions-reports.log`).
+Formatting passes. Next: qualify scalar operation histories while keeping value publication separate.
 
 ### Nullable scalar block results
 

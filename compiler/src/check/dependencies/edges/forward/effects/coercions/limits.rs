@@ -86,7 +86,7 @@ pub(crate) fn coercion_effects_reject_corrupt_sources_and_edges_atomically() {
 
 #[test]
 pub(crate) fn coercion_effects_bound_duplicate_work_and_shared_capacity() {
-    let source = "n:7;a<int32>:n;r:{->7;->tag:true};x<int32><null>:r";
+    let source = "n:7;a<int32>:n;b<int32><null>:n;r:{->7;->tag:true};x<int32><null>:r";
     let (mut checker, mut reports) = checked(source, false);
     for (_, walk) in reports.entries.values_mut() {
         walk.ports.extend(walk.ports.clone());
