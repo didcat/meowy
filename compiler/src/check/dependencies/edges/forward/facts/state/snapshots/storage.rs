@@ -13,7 +13,22 @@ impl Snapshots {
         if !flow.spend(2) {
             return Err(budget(span));
         }
-        let Some(storage) = definitions.storage.get(&point) else {
+        let record = if definitions.records.is_empty() {
+            None
+        } else {
+            if !flow.spend(1) {
+                return Err(budget(span));
+            }
+            definitions.records.get(&point)
+        };
+        if record.is_some() && definitions.storage.contains_key(&point) {
+            return Err(invalid(span));
+        }
+        let Some(storage) = definitions
+            .storage
+            .get(&point)
+            .or_else(|| record.map(|record| &record.storage))
+        else {
             return Ok(None);
         };
         let (site, map, key, binding) = match storage.version.definition {
@@ -58,32 +73,51 @@ impl Snapshots {
         if source.owner != storage.version.owner || source.after != before {
             return Err(invalid(span));
         }
-        let fact = self.expressions.get(&storage.input);
+        let fact = if let Some(record) = record {
+            if !binding {
+                return Err(invalid(span));
+            }
+            let Some((block, fact)) = self.records.get(&storage.input) else {
+                return Ok(Some(Value::Missing));
+            };
+            if *block != record.block || self.expressions.contains_key(&storage.input) {
+                return Err(invalid(span));
+            }
+            Some(fact)
+        } else {
+            self.expressions.get(&storage.input)
+        };
         if fact.is_some_and(|fact| fact.owner != storage.version.owner) {
             return Err(invalid(span));
         }
         let value = fact.and_then(|fact| fact.value.as_ref());
-        let domain = value.map_or(&storage.declared, |value| &value.domain);
-        if !domain.fits(&storage.declared, flow, span)? {
+        let domain = value
+            .map(|value| &value.domain)
+            .or_else(|| record.is_none().then_some(&storage.declared));
+        if let Some(domain) = domain
+            && !domain.fits(&storage.declared, flow, span)?
+        {
             return Err(invalid(span));
         }
-        if domain.weight() > self.room() || !flow.spend(domain.weight() + 2) {
+        let weight = domain.map_or(0, Domain::weight);
+        if weight > self.room() || !flow.spend(weight + 2) {
             return Err(budget(span));
         }
-        let origin = match value.and_then(|value| value.origin) {
-            Some(origin) => origin,
-            None => Origin::of_version(
+        let origin = match (domain, value.and_then(|value| value.origin)) {
+            (None, _) => None,
+            (_, Some(origin)) => Some(origin),
+            (_, None) => Some(Origin::of_version(
                 value
                     .and_then(|value| value.version)
                     .unwrap_or(storage.version),
                 span,
-            )?,
+            )?),
         };
         let cell = Cell {
             data: Data::Initialized {
                 version: Some(storage.version),
-                domain: Some(domain.clone()),
-                origin: Some(origin),
+                domain: domain.cloned(),
+                origin,
             },
             control: old.control || storage.control || value.is_none_or(|value| value.control),
         };
@@ -101,3 +135,6 @@ mod writes;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod records;

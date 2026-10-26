@@ -31,6 +31,49 @@ impl Snapshots {
         {
             return Err(invalid(span));
         }
+        let record = if self.records.is_empty() {
+            None
+        } else {
+            if !flow.spend(1) {
+                return Err(budget(span));
+            }
+            self.records.get(&input)
+        };
+        if let Some((block, record)) = record {
+            let weight = record.weight() + 1;
+            if record.owner != forward.owner || source.is_none() || fact.is_some() {
+                return Err(invalid(span));
+            }
+            if let Value::Known(id) = row.before
+                && self
+                    .states
+                    .get(id)
+                    .is_none_or(|state| state.owner() != forward.owner)
+            {
+                return Err(invalid(span));
+            }
+            if weight > self.parts || !flow.spend(weight + 1) {
+                return Err(budget(span));
+            }
+            let value = if row.before == Value::Missing {
+                None
+            } else {
+                record.value.clone().map(|mut value| {
+                    value.control |= forward.control;
+                    value
+                })
+            };
+            return self.record_primary(
+                point,
+                *block,
+                Fact {
+                    owner: forward.owner,
+                    value,
+                },
+                flow,
+                span,
+            );
+        }
         let value = match row.before {
             Value::Missing => None,
             Value::Known(id) => {

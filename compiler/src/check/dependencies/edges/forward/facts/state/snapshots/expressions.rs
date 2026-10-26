@@ -44,16 +44,21 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Option<bool>> {
-        if !flow.spend(4) {
+        if !flow.spend(3) {
             return Err(budget(span));
         }
         let Port::Normal(point) = port else {
             return Ok(Some(false));
         };
-        if let Some(&block) = observations.records.get(&point) {
-            return self
-                .record_expression_value(point, block, observations, flow, span)
-                .map(|()| Some(false));
+        if !observations.records.is_empty() {
+            if !flow.spend(1) {
+                return Err(budget(span));
+            }
+            if let Some(&block) = observations.records.get(&point) {
+                return self
+                    .record_expression_value(point, block, observations, flow, span)
+                    .map(|()| Some(false));
+            }
         }
         if let Some(logical) = observations.logical.get(&port) {
             if observations.forwarded.contains_key(&port)

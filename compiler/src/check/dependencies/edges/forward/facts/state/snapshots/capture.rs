@@ -298,6 +298,12 @@ impl Snapshots {
                                 || definitions
                                     .storage
                                     .get(&point)
+                                    .or_else(|| {
+                                        definitions
+                                            .records
+                                            .get(&point)
+                                            .map(|record| &record.storage)
+                                    })
                                     .is_none_or(|storage| storage.version != location.version)
                                 || !matches!(after.get(location.version.local).map(|cell| &cell.data),
                                     Some(Data::Initialized { version: Some(version), .. })
