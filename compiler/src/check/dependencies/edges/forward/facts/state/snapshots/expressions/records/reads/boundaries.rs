@@ -1,7 +1,7 @@
 use super::super::super::primaries::boundaries::setup;
 use super::*;
 
-pub(self) fn read(obs: &observations::Observations<'_, '_>) -> PointId {
+pub(super) fn read(obs: &observations::Observations<'_, '_>) -> PointId {
     obs.sources
         .iter()
         .filter_map(|(&port, source)| match port {
