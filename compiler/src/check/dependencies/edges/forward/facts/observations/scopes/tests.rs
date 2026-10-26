@@ -19,14 +19,16 @@ pub(crate) fn scalar_scopes_qualify_nested_owners_and_preserve_missing_leave_his
             MAX_EDGES,
         )
         .unwrap();
-    assert_eq!(observations.scopes.len(), 4);
+    assert_eq!(observations.scopes.len(), 5);
     assert_eq!(observations.forwarded.len(), 2);
-    assert_eq!(MAX_EDGES - left, 4 + observations.forwarded.len());
+    assert_eq!(MAX_EDGES - left, 5 + observations.forwarded.len());
     for (&id, scope) in &observations.scopes {
         assert_eq!(scope.control, Some(false));
         assert!(scope.normal && scope.result);
         assert_eq!(scope.owner, reports.blocks[&id].0);
-        if let Some(parent) = scope.parent {
+        if let Some(parent) = scope.parent
+            && checker.bodies[&id].scalar.is_some()
+        {
             assert_eq!(
                 observations.forwarded[&Port::Normal(parent)],
                 Forward {

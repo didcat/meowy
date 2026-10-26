@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::{SequenceSource, bodies::Scalar};
 
+mod primary;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) struct Scope {
     pub(in super::super) owner: usize,
@@ -59,10 +61,10 @@ impl Checker {
             {
                 return Err(invalid(span));
             }
-            let Some(scalar) = observed.scalar else {
+            let Some(scalar) = self.scalar_scope_type(id, span)? else {
                 continue;
             };
-            if scalar.shape() != Some(observed.completion.result) {
+            if observed.scalar.is_some() && scalar.shape() != Some(observed.completion.result) {
                 return Err(invalid(span));
             }
             if !observed.normal && !observed.result
@@ -143,7 +145,7 @@ impl Checker {
                     return Err(invalid(span));
                 }
                 self.scalar_scope_edges(graph, owner, edge.to, Family::Endpoint, &[edge], span)?;
-                if graph.nodes.contains_key(&edge.to) {
+                if observed.scalar.is_some() && graph.nodes.contains_key(&edge.to) {
                     if !self.flow.spend(4) {
                         return Err(budget(span));
                     }

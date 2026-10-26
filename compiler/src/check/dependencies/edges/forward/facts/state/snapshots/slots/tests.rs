@@ -24,7 +24,7 @@ pub(crate) fn scalar_slot_entries_create_separate_uninitialized_root_and_nested_
 #[test]
 pub(crate) fn scalar_slot_entries_preserve_unsupported_shape_boundaries() {
     for source in [
-        "r:{->field:7}",
+        "r:{->field:=7}",
         "v:{->1.5}",
         "v:{->\"cat\"}",
         "n:7;v:{->&n}",

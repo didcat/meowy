@@ -5901,6 +5901,38 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
 No known failures remain. Nothing was pushed.
 
+### Scalar primary projection histories
+
+Current work: qualify the next bounded scalar value path from existing Projection ports
+and original result-slot histories. Baseline `130bc8fc` has a clean tracked tree;
+user-owned `docs/programs/hey/` stays excluded. Preservation hashes and prior coverage
+metadata are retained in `/tmp/meowy-primary-values-baseline.json`.
+
+Dependency-ordered commit plan:
+
+1. Qualify ordinary record primary scope/slot headers from complete immutable scalar
+   layouts, without publishing the record as a scalar value.
+2. Preserve scalar state through qualified immutable named-field emissions.
+3. Qualify coercion Projection ports and publish original primary slot histories,
+   with Forward result consumers and focused tail/control/boundary regressions.
+4. Verify adversarial histories and exact shared work/payload bounds.
+5. Update structural evidence and foundation/handoff documentation; run the complete
+   `make test` gate and preservation audit.
+
+Investigation: scalar snapshots previously tracked only whole-scalar block slots; named
+emissions interrupted the history. The first bounded path is ordinary record blocks with
+immutable null/boolean/integer layouts and coercion-owned primaries. Existing source-slot
+links and checked stage qualifiers are reusable. Dispatches, stored record copies,
+projected conversions, aliases/composition, restart resets and arithmetic remain separate.
+
+Header qualification is complete: ordinary record scopes retain exact immutable scalar
+primary types and separate slots, with no whole-record scalar publication. Complete
+layouts reject mutable, reference-bearing and unsupported suffixes. Four new structural
+regressions cover types, owners/stages/layout drift and exact work/payload limits.
+All 3746 library tests pass, including the original 1000-matcher case; formatting passes
+(`/tmp/meowy-primary-headers-library.log`). Next: preserve qualified named emissions.
+Reference contracts and source expectations remain unchanged.
+
 ### Nullable scalar conversions
 
 Checked non-projecting nullable conversions now preserve scalar domains, local/version

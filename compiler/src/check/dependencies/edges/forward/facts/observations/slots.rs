@@ -22,6 +22,7 @@ impl Checker {
         }
         let mut parts = parts.min(MAX_EDGES);
         for (&block, scope) in &observations.scopes {
+            let scalar = self.scalar_scope_type(block, span)?;
             if !self.flow.spend(
                 self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                     + reports.blocks.len().checked_ilog2().unwrap_or(0) as usize
@@ -35,9 +36,8 @@ impl Checker {
                 || scope.owner != body.owner
                 || scope.parent != body.parent
                 || scope.parent != observed.parent
-                || Some(scope.scalar) != body.scalar
+                || Some(scope.scalar) != scalar
                 || observed.scalar != body.scalar
-                || scope.scalar.shape() != Some(body.completion.result)
                 || observed.completion != body.completion
                 || scope.normal != observed.normal
                 || scope.result != observed.result

@@ -21,7 +21,7 @@ pub(crate) fn scalar_slot_headers_keep_declared_domains_and_supported_entry_iden
     let (observations, left) = checker
         .scalar_slot_observations(&reports, &graph, observations, Span::default(), MAX_EDGES)
         .unwrap();
-    assert_eq!(observations.slots.len(), 4);
+    assert_eq!(observations.slots.len(), 5);
     let mut used = 0;
     for (&block, slot) in &observations.slots {
         let scope = observations.scopes[&block];
