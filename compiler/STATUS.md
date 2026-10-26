@@ -5946,8 +5946,12 @@ keyed by Projection port. Four new regressions and all 3757 library tests pass
 groups, parameters, nested leaves, known/unknown control, bottom and projection-only paths.
 A wholly nonreturning entry retains unknown control and publishes unavailable facts.
 The final lookup charge passes all 380 scalar-fact tests
-(`/tmp/meowy-primary-values-facts.log`). Next: adversarial publication and shared limits;
-later operation/results and projected conversions remain separate.
+(`/tmp/meowy-primary-values-facts.log`). Publication is committed as `bb2a1814`. Adversarial owner/row/header/slot regressions
+pass (`/tmp/meowy-primary-boundaries.log`). Exact observation/publication work and
+payload regressions pass, including duplicate publication and skipped projections.
+All 3763 library tests pass (`/tmp/meowy-primary-boundaries-library.log`). All-target Clippy and formatting pass (`/tmp/meowy-primary-clippy.log`); identical
+state-preserving branches are combined. Next: structural evidence, documentation, complete
+verification and preservation audit. Later operations/results and projected conversions remain separate.
 Reference contracts and source expectations remain unchanged.
 
 ### Nullable scalar conversions

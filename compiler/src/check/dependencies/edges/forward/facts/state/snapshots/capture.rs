@@ -119,9 +119,7 @@ impl Checker {
                             before
                         }
                     }
-                } else if matches!(port, Port::Entry(_) | Port::Normal(_)) {
-                    before
-                } else if primary.is_some() {
+                } else if matches!(port, Port::Entry(_) | Port::Normal(_)) || primary.is_some() {
                     before
                 } else if matches!(
                     port,
