@@ -57,16 +57,22 @@ impl Snapshots {
         if !value.domain.fits(&declared, flow, span)? {
             return Ok(None);
         }
-        if fact.weight() > self.parts || !flow.spend(fact.weight()) {
+        let weight = 1 + value.domain.weight() + usize::from(value.origin.is_some());
+        if weight > self.parts || !flow.spend(weight) {
             return Err(budget(span));
         }
-        let mut value = value.clone();
-        value.local = None;
-        value.version = None;
-        value.control |= history || primary.control;
-        Ok(Some(value))
+        Ok(Some(Scalar {
+            domain: value.domain.clone(),
+            local: None,
+            version: None,
+            origin: value.origin,
+            control: value.control || history || primary.control,
+        }))
     }
 }
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod boundaries;

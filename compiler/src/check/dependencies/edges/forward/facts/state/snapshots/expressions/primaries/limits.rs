@@ -7,6 +7,7 @@ pub(crate) fn primary_publication_reserves_exact_work_and_payload_without_partia
         "-(({->7;->tag:false}))",
         "!({->true;->tag:7})",
         "-{->7;->tag:false;1+2}",
+        "r:{->7;->tag:false};copy:r;v<int32>:copy",
     ] {
         setup(source, |checker, snapshots, port, primary, obs| {
             let start = checker.flow.work;

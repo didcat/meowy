@@ -1,7 +1,7 @@
 use super::super::super::capture::tests::capture;
 use super::*;
 
-pub(super) fn setup(
+pub(in super::super) fn setup(
     source: &str,
     check: impl FnOnce(
         &mut Checker,
@@ -12,7 +12,7 @@ pub(super) fn setup(
     ),
 ) {
     let (mut checker, program, reports, mut snapshots) = capture(source);
-    let (_, _, entries, parts) = checker
+    let (versions, events, entries, parts) = checker
         .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
         .unwrap();
     let (ports, parts) = checker
@@ -21,9 +21,14 @@ pub(super) fn setup(
     let (graph, parts) = checker
         .scalar_graph(&reports, ports, Span::default(), parts)
         .unwrap();
-    let definitions = definitions::Definitions::default();
+    let (definitions, parts) = checker
+        .scalar_definitions(&reports, &versions, &events, &graph, Span::default(), parts)
+        .unwrap();
     let (obs, parts) = checker
         .scalar_observations(&reports, &graph, &definitions, Span::default(), parts)
+        .unwrap();
+    let (obs, parts) = checker
+        .scalar_read_observations(&program, &reports, &graph, obs, Span::default(), parts)
         .unwrap();
     let (obs, parts) = checker
         .scalar_scope_observations(&reports, &graph, obs, Span::default(), parts)

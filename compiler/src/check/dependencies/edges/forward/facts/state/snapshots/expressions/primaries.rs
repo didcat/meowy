@@ -90,7 +90,7 @@ impl Snapshots {
 mod tests;
 
 #[cfg(test)]
-mod boundaries;
+pub(super) mod boundaries;
 
 #[cfg(test)]
 mod limits;

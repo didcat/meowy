@@ -5946,8 +5946,14 @@ separate read/copy value publication are implemented. Three new regressions and 
 Stored Projection consumers now use qualified record facts, preserving copy histories
 and wrapper control without reopening the original block state. Three new regressions
 and all 3779 library tests pass (`/tmp/meowy-record-projections-library.log`), including
-the original 1000-matcher case. Formatting passes. Next: adversarial read/projection
-histories and exact shared budgets; projected operation/results remain gated.
+the original 1000-matcher case. Formatting and all-target Clippy pass
+(`/tmp/meowy-record-histories-clippy.log`); projections are committed as `1ba30f2f`.
+Five new adversarial read/projection tests exposed an overly large transient payload
+reservation for stored projection copies; publication now reserves only the projected
+payload and copies no local/version fields. Read fixtures target the actual Read port
+beneath ordinary Forward wrappers. All 3784 library tests and formatting pass
+(`/tmp/meowy-record-boundaries-library.log`), including unchanged 1000-matcher limits.
+Observation/storage budget coverage follows; projected operation/results remain gated.
 
 ### Scalar primary projection histories
 
