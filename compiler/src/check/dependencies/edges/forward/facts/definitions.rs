@@ -2,7 +2,9 @@ use super::super::effects::Effect;
 use super::*;
 use versions::{Definition, Version};
 
+mod records;
 mod storage;
+pub(super) use records::Record;
 pub(super) use storage::Storage;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -17,6 +19,7 @@ pub(super) struct Definitions {
     pub(super) declarations: HashMap<hir::LocalId, Location>,
     pub(super) writes: HashMap<PointId, Location>,
     pub(super) storage: HashMap<PointId, Storage>,
+    pub(super) records: HashMap<PointId, Record>,
 }
 
 impl Checker {
@@ -54,6 +57,16 @@ impl Checker {
                 span,
                 &mut parts,
             )?;
+            if matches!(slot.ty, hir::Type::Record { .. }) {
+                self.scalar_record_definition(
+                    reports,
+                    &mut definitions,
+                    location,
+                    slot.ty,
+                    span,
+                    &mut parts,
+                )?;
+            }
         }
         for (&point, event) in events {
             let Some(version) = event.version else {

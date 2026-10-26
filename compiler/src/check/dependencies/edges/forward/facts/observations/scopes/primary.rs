@@ -2,7 +2,7 @@ use super::*;
 use crate::check::dependencies::bodies::{Layout, completion::Shape};
 
 impl Checker {
-    pub(in super::super) fn scalar_scope_type(
+    pub(in super::super::super) fn scalar_scope_type(
         &mut self,
         block: hir::BlockId,
         span: Span,

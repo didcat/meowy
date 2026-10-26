@@ -5901,6 +5901,37 @@ ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
 All four final handoff documentation/tooling checks pass (`/tmp/meowy-block-values-docs.log`).
 No known failures remain. Nothing was pushed.
 
+### Immutable record primary histories
+
+Current work resumes immutable record bindings/reads/copies from the direct projection
+handoff. Baseline `01fac7c8` has a clean tracked tree; user-owned `docs/programs/hey/`
+stays excluded. `/tmp/meowy-record-histories-baseline.json` protects reference/source
+contracts, proof obligations, capability pins, coverage metadata and user files.
+
+Dependency-ordered commit plan:
+
+1. Qualify immutable record Bind descriptors using existing initializer/source links,
+   canonical storage and complete immutable scalar layouts; include identity tests.
+2. Capture completed record-primary facts separately from whole-scalar expressions and
+   initialize existing local cells with saved primary histories; test tails and boundaries.
+3. Qualify record reads/copies with exact definition history, preserving current storage
+   and saved origins; test independent copies and conservative unsupported paths.
+4. Connect stored record histories to existing Projection ports; verify missing/ambiguous
+   history, control, owners and exact shared limits.
+5. Update structural evidence and handoffs, run `make test`, and audit preservation.
+
+Investigation: immutable records already have qualified initializer identities, versions
+and uninitialized local cells, but no scalar declared domain. Separate record descriptors
+and facts can reuse these cells without publishing whole-record reads as scalar values.
+Forward coercion results, nullable conversions, dispatch/alias/composition histories,
+mutable/reference-bearing layouts and restart/arithmetic work remain separate.
+
+Record Bind descriptors now retain original blocks, canonical versions, exact primary
+domains and complete immutable layouts. Four focused identity/exclusion/budget tests pass
+(`/tmp/meowy-record-definitions.log`). All 3767 library tests and formatting pass
+(`/tmp/meowy-record-definitions-library.log`). Next: separate completed
+record facts from scalar expressions, then integrate binding storage and read/copy histories.
+
 ### Scalar primary projection histories
 
 Direct ordinary record primaries now retain saved scalar values at their original
