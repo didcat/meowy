@@ -1,5 +1,7 @@
 use super::*;
 
+mod reads;
+
 impl Snapshots {
     pub(super) fn record_expression_value(
         &mut self,
@@ -11,6 +13,9 @@ impl Snapshots {
     ) -> Result<()> {
         if !flow.spend(4) {
             return Err(budget(span));
+        }
+        if let Some(source) = observations.sources.get(&Port::Normal(point)) {
+            return self.record_read_expression((point, block), source, observations, flow, span);
         }
         let scope = observations
             .scopes

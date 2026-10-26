@@ -55,12 +55,54 @@ impl Checker {
             {
                 continue;
             }
+            let record = if observations.definitions.records.is_empty() {
+                None
+            } else {
+                if !self.flow.spend(1) {
+                    return Err(budget(span));
+                }
+                match location.version.definition {
+                    versions::Definition::Bind(bind) => observations.definitions.records.get(&bind),
+                    _ => None,
+                }
+            };
+            if let Some(record) = record {
+                let Some(input) = self.read_initializer_input(reports, point, *owner, span)? else {
+                    continue;
+                };
+                let body = self
+                    .bodies
+                    .get(&record.block)
+                    .ok_or_else(|| invalid(span))?;
+                let counts = body.layout.counts().ok_or_else(|| invalid(span))?;
+                if !self.flow.spend(counts.0 + counts.1 + 4) {
+                    return Err(budget(span));
+                }
+                if record.storage.version != location.version
+                    || record.storage.input != input
+                    || body.owner != *owner
+                    || !body
+                        .layout
+                        .matches(program.locals.get(*local).ok_or_else(|| invalid(span))?)
+                {
+                    return Err(invalid(span));
+                }
+            }
             if let std::collections::hash_map::Entry::Vacant(entry) =
                 observations.declared.entry(*local)
             {
                 let ty = program.locals.get(*local).ok_or_else(|| invalid(span))?;
-                let Some(declared) = Domain::declared(ty, &mut self.flow, span)? else {
-                    continue;
+                let declared = if let Some(record) = record {
+                    let weight = record.storage.declared.weight();
+                    if weight > parts || !self.flow.spend(weight) {
+                        return Err(budget(span));
+                    }
+                    record.storage.declared.clone()
+                } else {
+                    let Some(declared) = Domain::declared(ty, &mut self.flow, span)? else {
+                        continue;
+                    };
+                    declared
                 };
                 parts = parts
                     .checked_sub(1 + declared.weight())
@@ -84,6 +126,17 @@ impl Checker {
                     parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
                     if observations.sources.insert(port, source).is_some() {
                         return Err(invalid(span));
+                    }
+                    if port == Port::Normal(point)
+                        && let Some(record) = record
+                    {
+                        if !self.flow.spend(1) {
+                            return Err(budget(span));
+                        }
+                        parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
+                        if observations.records.insert(point, record.block).is_some() {
+                            return Err(invalid(span));
+                        }
                     }
                 }
             }

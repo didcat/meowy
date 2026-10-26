@@ -5939,7 +5939,10 @@ Storage now consumes separate record facts without a declared-primary fallback;
 transparent wrappers retain record identity. Empty-map fast paths retain record-free
 costs with unchanged limits. Three new regressions and all 3773 library tests pass,
 including the original 1000-matcher case (`/tmp/meowy-record-storage-library.log`).
-Formatting passes. Next: exact record reads/copies and stored Projection consumers.
+Formatting passes; storage is committed as `164a6482`. Record-read qualification and
+separate read/copy value publication are implemented. Three new regressions and all
+3776 library tests pass (`/tmp/meowy-record-reads-library.log`), including the original
+1000-matcher case. Formatting passes. Stored Projection consumers are next.
 
 ### Scalar primary projection histories
 
