@@ -2307,8 +2307,9 @@ Forwarding preserves the current storage snapshot and copies the domain, optiona
 same-value origin and accumulated control marks. It creates no new version or equality
 identity. Missing inner facts or unavailable outer state remain unavailable, including
 result-only paths with a missing operation predecessor. Earlier copied facts retain their
-own domains and controls. Predicates, changed narrowing/ascriptions, primary projections,
-wider conversions, stopped operands and unsupported sources gain no scalar transfer.
+own domains and controls. Predicates, changed narrowing/ascriptions, wider conversions,
+stopped operands and unsupported sources gain no scalar transfer. Primary-port histories
+are described below.
 Calls and storage updates through aliases, paths or indirect storage still stop
 current-state propagation; earlier facts remain historical.
 
@@ -2332,6 +2333,28 @@ produce no value. Known bottom requires a known bottom state; unobserved operati
 no expression record. Exact work/payload limits and identity failures preserve prior records.
 This extends internal scalar propagation; proof outcomes and transitive per-query E225
 qualification remain incomplete.
+
+Direct scalar primary Projection ports now retain separate bounded value histories.
+Ordinary record scope/slot headers validate complete immutable null/boolean/integer
+layouts. Qualified named-field initialization preserves the saved primary and current
+scalar storage, including outer-scope emissions; it grants no field or alias value facts.
+Mutable, reference-bearing and unsupported suffixes remain opaque.
+
+Unary/binary/coercion projection qualification reuses original source-slot links and
+producer stages, retaining exact owners, inputs, integer widths and explicit groups.
+Publication validates the source, completed block and projection rows before copying the
+saved emitted domain and origin. Later tail writes cannot replace that value, and no local
+storage version is attached. Projection facts remain distinct from whole-record values,
+operation results and projected conversions. Both binary steps are independent; a reached
+left projection can retain a value when the right operand stops.
+
+Missing/ambiguous slots, incompatible domains, unknown completion/control and unsupported
+histories remain unavailable. A wholly nonreturning entry retains its existing unknown
+control boundary. Known bottom and skipped, unobserved projections remain distinct.
+Shared work/payload limits and stale or duplicate publication preserve prior records.
+Immutable stored records/copies, dispatches, broader layouts, arithmetic, restarts and
+projected coercion results remain separate. This is structural scalar-analysis evidence,
+not proof-query execution or additional language/release qualification.
 
 Bind transfers initialize qualified uninitialized cells. Write transfers replace existing
 cells even when prior initialization or value facts are incomplete; a missing state or

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-24. Nullable conversion propagation is qualified; all 14 gate checks pass.
+Updated: 2026-10-26. Direct scalar projection histories are qualified; all 14 gate checks pass.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5903,56 +5903,64 @@ No known failures remain. Nothing was pushed.
 
 ### Scalar primary projection histories
 
-Current work: qualify the next bounded scalar value path from existing Projection ports
-and original result-slot histories. Baseline `130bc8fc` has a clean tracked tree;
-user-owned `docs/programs/hey/` stays excluded. Preservation hashes and prior coverage
-metadata are retained in `/tmp/meowy-primary-values-baseline.json`.
+Direct ordinary record primaries now retain saved scalar values at their original
+Projection ports. Complete immutable null/boolean/integer layouts qualify scope/slot
+headers. Named-field initialization preserves current state and the primary history,
+including outer-scope emissions, without granting field/alias value facts. Unary/binary/
+coercion qualifiers reuse checked stages, original source-slot links and explicit groups.
 
-Dependency-ordered commit plan:
+Publication validates source, completion, slot and projection identities before copying
+saved domains and origins without a local/storage version. Tail writes preserve prior
+emissions; binary steps remain independent, including a left projection before a stopping
+right operand. Missing/ambiguous slots, incompatible values and unknown histories stay
+unavailable. Known bottom and unobserved skipped projections remain distinct. Wholly
+nonreturning entries retain their existing unknown-control boundary.
 
-1. Qualify ordinary record primary scope/slot headers from complete immutable scalar
-   layouts, without publishing the record as a scalar value.
-2. Preserve scalar state through qualified immutable named-field emissions.
-3. Qualify unary/binary/coercion Projection ports using original groups and source-slot links.
-4. Publish primary slot histories at Projection ports with focused tail/control tests.
-5. Verify adversarial histories and exact shared work/payload bounds.
-6. Update structural evidence and foundation/handoff documentation; run the complete
-   `make test` gate and preservation audit.
+| Commit | Reviewable slice |
+| --- | --- |
+| `09e67c0d` | Qualify exact ordinary record primary scope/slot headers |
+| `3097476b` | Preserve primary state across qualified named-field emissions |
+| `27c60088` | Qualify original scalar Projection sources and independent stages |
+| `bb2a1814` | Publish saved primary values at original Projection ports |
+| `5c6e4f25` | Verify adversarial histories and exact atomic shared limits |
 
-Investigation: scalar snapshots previously tracked only whole-scalar block slots; named
-emissions interrupted the history. The first bounded path is ordinary record blocks with
-immutable null/boolean/integer layouts and direct unary/binary primary ports. Existing source-slot
-links and checked stage qualifiers are reusable. Dispatches, stored record copies,
-projected conversions, aliases/composition, restart resets and arithmetic remain separate.
+All 21 new structural regressions and 3763 library tests pass, including the original
+1000-matcher case without budget changes (`/tmp/meowy-primary-boundaries-library.log`).
+All-target Clippy and formatting pass (`/tmp/meowy-primary-clippy.log`). Seven test-bearing
+files add 24 structural links across four reference records. Reference contracts, source
+expectations, proof obligations and capability pins remain unchanged.
 
-Header qualification `09e67c0d` is complete: ordinary record scopes retain exact immutable scalar
-primary types and separate slots, with no whole-record scalar publication. Complete
-layouts reject mutable, reference-bearing and unsupported suffixes. Four new structural
-regressions cover types, owners/stages/layout drift and exact work/payload limits.
-All 3746 library tests pass, including the original 1000-matcher case; formatting passes
-(`/tmp/meowy-primary-headers-library.log`). Named-emission transport now preserves scalar state through checked immutable field
-initialization, including emissions targeting an outer record. It does not overwrite the
-primary slot or grant field/alias value histories. Unknown inputs, unsupported layouts and
-fields discarded from the completed layout remain unavailable. Three new regressions and
-all 3749 library tests pass; formatting passes (`/tmp/meowy-primary-fields-library.log`).
-Named-emission transport is committed as `3097476b`. Projection qualifiers now retain exact direct-block/group sources at independent unary,
-binary and coercion ports. Stored records, dispatches and unsupported layouts stay opaque.
-Four new regressions cover owners/links/stages/edges, both operand steps and left projection
-before a stopping right operand. All 3753 library tests and formatting pass
-(`/tmp/meowy-primary-observations-library.log`), committed as `27c60088`. Projection
-publication reuses completed block-slot validation and keeps a separate bounded fact map
-keyed by Projection port. Four new regressions and all 3757 library tests pass
-(`/tmp/meowy-primary-values-library.log`): tail writes, original origins, both operands,
-groups, parameters, nested leaves, known/unknown control, bottom and projection-only paths.
-A wholly nonreturning entry retains unknown control and publishes unavailable facts.
-The final lookup charge passes all 380 scalar-fact tests
-(`/tmp/meowy-primary-values-facts.log`). Publication is committed as `bb2a1814`. Adversarial owner/row/header/slot regressions
-pass (`/tmp/meowy-primary-boundaries.log`). Exact observation/publication work and
-payload regressions pass, including duplicate publication and skipped projections.
-All 3763 library tests pass (`/tmp/meowy-primary-boundaries-library.log`). All-target Clippy and formatting pass (`/tmp/meowy-primary-clippy.log`); identical
-state-preserving branches are combined. Next: structural evidence, documentation, complete
-verification and preservation audit. Later operations/results and projected conversions remain separate.
-Reference contracts and source expectations remain unchanged.
+Baseline `130bc8fc` had a clean tracked tree. User-owned `docs/programs/hey/` stays excluded;
+`/tmp/meowy-primary-values-baseline.json` protects 611 files and prior coverage metadata.
+Foundation documentation and structural evidence are updated. The preservation audit
+passes: 609 protected files, all 10 user-owned files, 520 source records, proof obligations,
+capability pins and all 37 reference hashes/gaps/prior evidence are unchanged. Only the
+reviewed inventory and generated report add 24 structural links across four records
+(`/tmp/meowy-primary-values-preservation.log`).
+
+All 14 `make test` groups pass: 3763 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-primary-values-gate.log`; details: `build/verification-primary-values`.
+All four final handoff documentation/tooling checks pass
+(`/tmp/meowy-primary-values-docs.log`); the post-gate preservation audit passes.
+No known failures remain.
+Proof outcomes, transitive query/E225 qualification and full release qualification remain
+gated. Nothing was pushed.
+
+Next steps:
+
+1. Qualify primary histories through immutable record bindings/reads/copies using
+   `facts/definitions/`, `facts/observations/reads.rs` and original consumer/initializer
+   qualifiers. Preserve complete layouts, canonical storage and historical slots across
+   tail writes and copies; verify stale identity, unavailable history and exact budgets.
+2. Use those qualified Projection facts for Forward coercion results, then compatible
+   nullable conversions. Preserve source domains, origins, independent stages and control;
+   verify source-level expectations and keep numeric/library conversions opaque.
+3. Keep dispatch/alias/composition histories, wider layouts, restart resets, arithmetic,
+   broader guards and per-query proof/E225 qualification separate until validated.
 
 ### Nullable scalar conversions
 
@@ -6007,15 +6015,8 @@ All four final handoff documentation/tooling checks pass (`/tmp/meowy-nullable-c
 The post-gate preservation audit passes.
 No known failures remain. Nothing was pushed.
 
-Next steps:
-
-1. Qualify scalar primary projection value histories using existing Projection ports,
-   checked record layouts and original result-slot source links before extending nullable
-   conversions to projected values. Start with `facts/observations/wrappers.rs`, existing
-   `consumers/primary/` qualifiers and `state/snapshots/expressions/`; verify emitted values
-   across tail writes, missing/ambiguous slots, control, owners and exact budgets.
-2. Keep aliases/composition, restart resets, arithmetic and wider guards separate until
-   their evidence is complete. Preserve per-query charging and source expectations before outcomes.
+The direct projection milestone and current next actions are recorded in
+[Scalar primary projection histories](#scalar-primary-projection-histories).
 
 ### Nullable scalar block results
 
@@ -7819,8 +7820,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Nullable scalar conversions](#nullable-scalar-conversions):
-qualify scalar primary projection histories before widening conversions.
+Resume the ordered actions in [Scalar primary projection histories](#scalar-primary-projection-histories):
+qualify immutable stored record histories before widening projected coercion results.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
