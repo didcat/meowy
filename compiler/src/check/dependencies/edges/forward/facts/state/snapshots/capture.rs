@@ -80,6 +80,12 @@ impl Checker {
                             &mut self.flow,
                             span,
                         )?
+                    } else if let Some(forward) = observations.forwarded.get(&port) {
+                        if forward.owner != owner || !matches!(forward.input, Port::Normal(_)) {
+                            return Err(invalid(span));
+                        }
+                        control = history::combine(control, Some(forward.control));
+                        before
                     } else if bottom {
                         before
                     } else {

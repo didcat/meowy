@@ -5913,10 +5913,10 @@ Dependency-ordered commit plan:
 1. Qualify ordinary record primary scope/slot headers from complete immutable scalar
    layouts, without publishing the record as a scalar value.
 2. Preserve scalar state through qualified immutable named-field emissions.
-3. Qualify coercion Projection ports and publish original primary slot histories,
-   with Forward result consumers and focused tail/control/boundary regressions.
-4. Verify adversarial histories and exact shared work/payload bounds.
-5. Update structural evidence and foundation/handoff documentation; run the complete
+3. Qualify coercion Projection ports using original groups, layouts and source-slot links.
+4. Publish primary slot histories and Forward results with focused tail/control tests.
+5. Verify adversarial histories and exact shared work/payload bounds.
+6. Update structural evidence and foundation/handoff documentation; run the complete
    `make test` gate and preservation audit.
 
 Investigation: scalar snapshots previously tracked only whole-scalar block slots; named
@@ -5925,12 +5925,17 @@ immutable null/boolean/integer layouts and coercion-owned primaries. Existing so
 links and checked stage qualifiers are reusable. Dispatches, stored record copies,
 projected conversions, aliases/composition, restart resets and arithmetic remain separate.
 
-Header qualification is complete: ordinary record scopes retain exact immutable scalar
+Header qualification `09e67c0d` is complete: ordinary record scopes retain exact immutable scalar
 primary types and separate slots, with no whole-record scalar publication. Complete
 layouts reject mutable, reference-bearing and unsupported suffixes. Four new structural
 regressions cover types, owners/stages/layout drift and exact work/payload limits.
 All 3746 library tests pass, including the original 1000-matcher case; formatting passes
-(`/tmp/meowy-primary-headers-library.log`). Next: preserve qualified named emissions.
+(`/tmp/meowy-primary-headers-library.log`). Named-emission transport now preserves scalar state through checked immutable field
+initialization, including emissions targeting an outer record. It does not overwrite the
+primary slot or grant field/alias value histories. Unknown inputs, unsupported layouts and
+fields discarded from the completed layout remain unavailable. Three new regressions and
+all 3749 library tests pass; formatting passes (`/tmp/meowy-primary-fields-library.log`).
+Next: qualify coercion-owned Projection observations independently of publication.
 Reference contracts and source expectations remain unchanged.
 
 ### Nullable scalar conversions

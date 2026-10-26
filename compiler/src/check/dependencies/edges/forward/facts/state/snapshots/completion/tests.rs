@@ -71,7 +71,7 @@ pub(crate) fn scalar_completion_storage_keeps_unknown_effects_and_restarts_unava
     for source in [
         "d:@\"debug\";x:=1;{d.print(\"tail\");x=2};x",
         "x:=1;'loop{|false|'loop.restart();x=2};x",
-        "x:=1;{->field:2;x=2};x",
+        "x:=1;{->field:=2;x=2};x",
     ] {
         let (checker, _, _, snapshots) = capture(source);
         let point = *checker.local_reads.keys().next_back().unwrap();

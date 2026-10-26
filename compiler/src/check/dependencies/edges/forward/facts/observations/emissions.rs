@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::emissions::Projection;
 
+mod fields;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) struct Emission {
     pub(in super::super) owner: usize,
@@ -25,7 +27,8 @@ impl Checker {
             return Err(budget(span));
         }
         let mut parts = parts.min(MAX_EDGES);
-        for (&statement, (owner, effect)) in &reports.effects {
+        for (&statement, source) in &reports.effects {
+            let (owner, effect) = source;
             let Effect::Emission(observed) = effect else {
                 continue;
             };
@@ -45,6 +48,16 @@ impl Checker {
             let [target] = observed.targets.as_slice() else {
                 continue;
             };
+            if target.field.is_some() {
+                self.scalar_field_emission(
+                    graph,
+                    &mut observations,
+                    (statement, source),
+                    span,
+                    &mut parts,
+                )?;
+                continue;
+            }
             if observed.composed.is_some()
                 || target.projection != Projection::Value
                 || target.field.is_some()
