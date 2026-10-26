@@ -7,6 +7,7 @@ pub(in super::super::super) struct Primary {
     pub(in super::super::super) input: PointId,
     pub(in super::super::super) block: hir::BlockId,
     pub(in super::super::super) control: bool,
+    pub(in super::super::super) stored: bool,
 }
 
 impl Checker {
@@ -102,6 +103,8 @@ impl Checker {
                 .ok_or_else(|| invalid(span))?;
             let mut current = input;
             let mut hops = 0;
+            let mut stored = false;
+            let mut wrapped = false;
             while current != parent {
                 if hops >= MAX_GROUPS
                     || !self
@@ -110,15 +113,65 @@ impl Checker {
                 {
                     return Err(budget(span));
                 }
-                let Some(group) = self.group_inputs.get(&current).copied() else {
-                    break;
-                };
-                current = self.qualified_group_input(current, *owner, group, span)?;
+                if let Some(group) = self.group_inputs.get(&current).copied() {
+                    current = self.qualified_group_input(current, *owner, group, span)?;
+                } else {
+                    if !self
+                        .flow
+                        .spend(reports.effects.len().checked_ilog2().unwrap_or(0) as usize + 3)
+                    {
+                        return Err(budget(span));
+                    }
+                    if let Some((_, Effect::Read { local, .. })) = reports.effects.get(&current) {
+                        let Some(source) =
+                            self.read_initializer_input(reports, current, *owner, span)?
+                        else {
+                            break;
+                        };
+                        let Some(location) = observations.definitions.declarations.get(local)
+                        else {
+                            break;
+                        };
+                        let versions::Definition::Bind(bind) = location.version.definition else {
+                            break;
+                        };
+                        let Some(record) = observations.definitions.records.get(&bind) else {
+                            break;
+                        };
+                        if record.block != slot.block
+                            || record.storage.input != source
+                            || record.storage.version != location.version
+                            || location.version.owner != *owner
+                            || location.version.local != *local
+                        {
+                            return Err(invalid(span));
+                        }
+                        stored = true;
+                        break;
+                    }
+                    wrapped = true;
+                    if let Some(next) =
+                        self.forward_coercion_input(reports, current, *owner, span)?
+                    {
+                        current = next;
+                    } else if let Some(next) =
+                        self.unchanged_ascription_input(reports, current, *owner, span)?
+                    {
+                        current = next;
+                    } else if let Some(next) =
+                        self.unchanged_narrowing_input(reports, current, *owner, span)?
+                    {
+                        current = next;
+                    } else {
+                        break;
+                    }
+                }
                 hops += 1;
             }
-            if current != parent {
+            if current != parent && !stored {
                 continue;
             }
+            let stored = stored || wrapped;
             self.scalar_scope_edges(
                 graph,
                 *owner,
@@ -146,6 +199,7 @@ impl Checker {
                         input,
                         block: slot.block,
                         control,
+                        stored,
                     },
                 )
                 .is_some()

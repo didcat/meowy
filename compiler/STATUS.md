@@ -5942,7 +5942,12 @@ including the original 1000-matcher case (`/tmp/meowy-record-storage-library.log
 Formatting passes; storage is committed as `164a6482`. Record-read qualification and
 separate read/copy value publication are implemented. Three new regressions and all
 3776 library tests pass (`/tmp/meowy-record-reads-library.log`), including the original
-1000-matcher case. Formatting passes. Stored Projection consumers are next.
+1000-matcher case. Formatting passes; reads/copies are committed as `063db0f1`.
+Stored Projection consumers now use qualified record facts, preserving copy histories
+and wrapper control without reopening the original block state. Three new regressions
+and all 3779 library tests pass (`/tmp/meowy-record-projections-library.log`), including
+the original 1000-matcher case. Formatting passes. Next: adversarial read/projection
+histories and exact shared budgets; projected operation/results remain gated.
 
 ### Scalar primary projection histories
 

@@ -1,5 +1,7 @@
 use super::*;
 
+mod stored;
+
 impl Snapshots {
     pub(in super::super) fn primary_expression(
         &mut self,
@@ -44,6 +46,9 @@ impl Snapshots {
         let row = self.rows.get(&port).ok_or_else(|| invalid(span))?;
         if row.owner != primary.owner || row.before != row.after {
             return Err(invalid(span));
+        }
+        if primary.stored {
+            return self.stored_primary_value(port, primary, observations, flow, span);
         }
         let Some(scope) = observations.scopes.get(&primary.block) else {
             return Ok(None);
