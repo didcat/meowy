@@ -5913,15 +5913,15 @@ Dependency-ordered commit plan:
 1. Qualify ordinary record primary scope/slot headers from complete immutable scalar
    layouts, without publishing the record as a scalar value.
 2. Preserve scalar state through qualified immutable named-field emissions.
-3. Qualify coercion Projection ports using original groups, layouts and source-slot links.
-4. Publish primary slot histories and Forward results with focused tail/control tests.
+3. Qualify unary/binary/coercion Projection ports using original groups and source-slot links.
+4. Publish primary slot histories at Projection ports with focused tail/control tests.
 5. Verify adversarial histories and exact shared work/payload bounds.
 6. Update structural evidence and foundation/handoff documentation; run the complete
    `make test` gate and preservation audit.
 
 Investigation: scalar snapshots previously tracked only whole-scalar block slots; named
 emissions interrupted the history. The first bounded path is ordinary record blocks with
-immutable null/boolean/integer layouts and coercion-owned primaries. Existing source-slot
+immutable null/boolean/integer layouts and direct unary/binary primary ports. Existing source-slot
 links and checked stage qualifiers are reusable. Dispatches, stored record copies,
 projected conversions, aliases/composition, restart resets and arithmetic remain separate.
 
@@ -5935,7 +5935,12 @@ initialization, including emissions targeting an outer record. It does not overw
 primary slot or grant field/alias value histories. Unknown inputs, unsupported layouts and
 fields discarded from the completed layout remain unavailable. Three new regressions and
 all 3749 library tests pass; formatting passes (`/tmp/meowy-primary-fields-library.log`).
-Next: qualify coercion-owned Projection observations independently of publication.
+Named-emission transport is committed as `3097476b`. Projection qualifiers now retain exact direct-block/group sources at independent unary,
+binary and coercion ports. Stored records, dispatches and unsupported layouts stay opaque.
+Four new regressions cover owners/links/stages/edges, both operand steps and left projection
+before a stopping right operand. All 3753 library tests and formatting pass
+(`/tmp/meowy-primary-observations-library.log`). Next: publish saved primary values at
+qualified Projection ports; later operations/results remain separate.
 Reference contracts and source expectations remain unchanged.
 
 ### Nullable scalar conversions

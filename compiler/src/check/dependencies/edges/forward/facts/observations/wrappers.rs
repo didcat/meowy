@@ -2,6 +2,8 @@ use super::*;
 use crate::check::dependencies::grouped::MAX_GROUPS;
 
 mod conversions;
+mod primaries;
+pub(in super::super) use primaries::Primary;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) struct Forward {
@@ -70,6 +72,17 @@ impl Checker {
             let (owner, effect) = source;
             let (family, input, control) = match effect {
                 Effect::Coercion(op) => {
+                    if op.primary {
+                        self.scalar_primary_observation(
+                            reports,
+                            graph,
+                            (point, source),
+                            &mut observations,
+                            span,
+                            &mut parts,
+                        )?;
+                        continue;
+                    }
                     if op.scalar.is_some() {
                         self.scalar_conversion_observation(
                             reports,
@@ -93,6 +106,17 @@ impl Checker {
                         }
                     }
                     (Family::Coercion, input, op.control)
+                }
+                Effect::Unary(_) | Effect::Binary(_) => {
+                    self.scalar_primary_observation(
+                        reports,
+                        graph,
+                        (point, source),
+                        &mut observations,
+                        span,
+                        &mut parts,
+                    )?;
+                    continue;
                 }
                 Effect::Narrowing(op) => {
                     let input = self.unchanged_narrowing_input(reports, point, *owner, span)?;

@@ -15,6 +15,7 @@ pub(super) use emissions::Emission;
 pub(super) use logical::Logical;
 pub(super) use slots::Slot;
 pub(super) use wrappers::Forward;
+pub(super) use wrappers::Primary;
 
 #[derive(Debug)]
 pub(super) struct Observations<'a, 'd> {
@@ -22,6 +23,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) sources: HashMap<Port, &'a (usize, Effect)>,
     pub(super) declared: HashMap<hir::LocalId, domain::Domain>,
     pub(super) forwarded: HashMap<Port, Forward>,
+    pub(super) primaries: HashMap<Port, Primary>,
     pub(super) guards: guards::Inputs,
     pub(super) logical: HashMap<Port, Logical>,
     pub(super) calls: Option<&'d super::super::arguments::Mutations>,
@@ -39,6 +41,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             sources: HashMap::new(),
             declared: HashMap::new(),
             forwarded: HashMap::new(),
+            primaries: HashMap::new(),
             guards: guards::Inputs::new(),
             logical: HashMap::new(),
             calls: None,

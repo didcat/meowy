@@ -75,7 +75,7 @@ impl Checker {
         Ok(Some(Slot { block, index: 0 }))
     }
 
-    pub(super) fn primary_slot(
+    pub(in super::super) fn primary_slot(
         &mut self,
         reports: &Reports,
         input: PointId,
