@@ -145,17 +145,23 @@ impl Checker {
                     return Err(invalid(span));
                 }
                 self.scalar_scope_edges(graph, owner, edge.to, Family::Endpoint, &[edge], span)?;
-                if observed.scalar.is_some() && graph.nodes.contains_key(&edge.to) {
-                    if !self.flow.spend(4) {
+                if graph.nodes.contains_key(&edge.to) {
+                    if !self.flow.spend(6) {
                         return Err(budget(span));
                     }
                     if observations.sources.contains_key(&edge.to)
                         || observations.logical.contains_key(&edge.to)
+                        || observations.forwarded.contains_key(&edge.to)
+                        || observations.records.contains_key(&parent)
                     {
                         return Err(invalid(span));
                     }
                     parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;
-                    if observations
+                    if observed.scalar.is_none() {
+                        if observations.records.insert(parent, id).is_some() {
+                            return Err(invalid(span));
+                        }
+                    } else if observations
                         .forwarded
                         .insert(
                             edge.to,

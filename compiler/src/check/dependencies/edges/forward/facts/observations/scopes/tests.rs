@@ -21,7 +21,10 @@ pub(crate) fn scalar_scopes_qualify_nested_owners_and_preserve_missing_leave_his
         .unwrap();
     assert_eq!(observations.scopes.len(), 5);
     assert_eq!(observations.forwarded.len(), 2);
-    assert_eq!(MAX_EDGES - left, 5 + observations.forwarded.len());
+    assert_eq!(
+        MAX_EDGES - left,
+        5 + observations.forwarded.len() + observations.records.len()
+    );
     for (&id, scope) in &observations.scopes {
         assert_eq!(scope.control, Some(false));
         assert!(scope.normal && scope.result);
@@ -95,7 +98,7 @@ pub(crate) fn scalar_scopes_keep_result_only_observations_without_recovering_nor
 
 #[test]
 pub(crate) fn scalar_block_consumers_reject_conflicting_and_foreign_routes() {
-    for fault in 0..3 {
+    for fault in 0..4 {
         let (mut checker, reports, ports) = context("v:{->7}");
         let (mut graph, _) = checker
             .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
@@ -121,6 +124,9 @@ pub(crate) fn scalar_block_consumers_reject_conflicting_and_foreign_routes() {
             }
             1 => graph.nodes.get_mut(&port).unwrap().incoming[0].source.owner += 1,
             2 => graph.nodes.get_mut(&port).unwrap().incoming[0].edge = usize::MAX,
+            3 => {
+                observations.records.insert(observed.parent.unwrap(), block);
+            }
             _ => unreachable!(),
         }
         let saved = format!("{reports:?}{graph:?}");

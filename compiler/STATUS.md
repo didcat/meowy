@@ -5912,13 +5912,14 @@ Dependency-ordered commit plan:
 
 1. Qualify immutable record Bind descriptors using existing initializer/source links,
    canonical storage and complete immutable scalar layouts; include identity tests.
-2. Capture completed record-primary facts separately from whole-scalar expressions and
-   initialize existing local cells with saved primary histories; test tails and boundaries.
-3. Qualify record reads/copies with exact definition history, preserving current storage
+2. Capture completed record-primary facts separately from whole-scalar expressions;
+   verify saved values and unsupported histories.
+3. Initialize existing local cells and transparent wrappers with saved primary histories.
+4. Qualify record reads/copies with exact definition history, preserving current storage
    and saved origins; test independent copies and conservative unsupported paths.
-4. Connect stored record histories to existing Projection ports; verify missing/ambiguous
+5. Connect stored record histories to existing Projection ports; verify missing/ambiguous
    history, control, owners and exact shared limits.
-5. Update structural evidence and handoffs, run `make test`, and audit preservation.
+6. Update structural evidence and handoffs, run `make test`, and audit preservation.
 
 Investigation: immutable records already have qualified initializer identities, versions
 and uninitialized local cells, but no scalar declared domain. Separate record descriptors
@@ -5929,8 +5930,11 @@ mutable/reference-bearing layouts and restart/arithmetic work remain separate.
 Record Bind descriptors now retain original blocks, canonical versions, exact primary
 domains and complete immutable layouts. Four focused identity/exclusion/budget tests pass
 (`/tmp/meowy-record-definitions.log`). All 3767 library tests and formatting pass
-(`/tmp/meowy-record-definitions-library.log`). Next: separate completed
-record facts from scalar expressions, then integrate binding storage and read/copy histories.
+(`/tmp/meowy-record-definitions-library.log`). Bind descriptors are committed as `607a2e79`. Completed record facts are implemented
+in a separate map. Three new regressions and all 3770 library tests pass
+(`/tmp/meowy-record-values-library.log`). Record/scalar conflicts and final lookup charges
+pass all 393 scalar-fact tests (`/tmp/meowy-record-values-facts.log`). Next: wrapper
+transport and Bind storage; record reads and projections remain separate.
 
 ### Scalar primary projection histories
 

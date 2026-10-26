@@ -8,6 +8,7 @@ mod forwarded;
 mod logical;
 mod primaries;
 mod reads;
+mod records;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Scalar {
@@ -43,12 +44,17 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Option<bool>> {
-        if !flow.spend(3) {
+        if !flow.spend(4) {
             return Err(budget(span));
         }
         let Port::Normal(point) = port else {
             return Ok(Some(false));
         };
+        if let Some(&block) = observations.records.get(&point) {
+            return self
+                .record_expression_value(point, block, observations, flow, span)
+                .map(|()| Some(false));
+        }
         if let Some(logical) = observations.logical.get(&port) {
             if observations.forwarded.contains_key(&port)
                 || observations.sources.contains_key(&port)
