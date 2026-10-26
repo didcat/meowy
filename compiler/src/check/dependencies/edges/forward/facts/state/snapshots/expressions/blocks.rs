@@ -21,7 +21,7 @@ impl Snapshots {
         )
     }
 
-    pub(self) fn block_value(
+    pub(super) fn block_value(
         &self,
         point: PointId,
         forward: &observations::Forward,

@@ -63,6 +63,14 @@ impl Checker {
                 if position == 0 {
                     continue;
                 }
+                let primary = if matches!(port, Port::Projection { .. }) {
+                    if !self.flow.spend(1) {
+                        return Err(budget(span));
+                    }
+                    observations.primaries.get(&port)
+                } else {
+                    None
+                };
                 let (before, mut control) =
                     snapshots.inputs(graph, port, Some(absent), &mut self.flow, span)?;
                 let bottom = match before {
@@ -112,6 +120,8 @@ impl Checker {
                         }
                     }
                 } else if matches!(port, Port::Entry(_) | Port::Normal(_)) {
+                    before
+                } else if primary.is_some() {
                     before
                 } else if matches!(
                     port,
@@ -202,6 +212,15 @@ impl Checker {
                     &mut self.flow,
                     span,
                 )?;
+                if let Some(primary) = primary {
+                    snapshots.primary_expression(
+                        port,
+                        primary,
+                        observations,
+                        &mut self.flow,
+                        span,
+                    )?;
+                }
                 if matches!(port, Port::Normal(_)) {
                     let own = snapshots.expression(port, observations, &mut self.flow, span)?;
                     if own != Some(false) {
@@ -220,6 +239,7 @@ impl Checker {
         if snapshots.rows.len() != graph.nodes.len()
             || snapshots.guards.len() != observations.guards.len()
             || snapshots.emissions.len() != observations.emissions.len()
+            || snapshots.projections.len() != observations.primaries.len()
         {
             return Err(invalid(span));
         }

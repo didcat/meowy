@@ -5939,8 +5939,15 @@ Named-emission transport is committed as `3097476b`. Projection qualifiers now r
 binary and coercion ports. Stored records, dispatches and unsupported layouts stay opaque.
 Four new regressions cover owners/links/stages/edges, both operand steps and left projection
 before a stopping right operand. All 3753 library tests and formatting pass
-(`/tmp/meowy-primary-observations-library.log`). Next: publish saved primary values at
-qualified Projection ports; later operations/results remain separate.
+(`/tmp/meowy-primary-observations-library.log`), committed as `27c60088`. Projection
+publication reuses completed block-slot validation and keeps a separate bounded fact map
+keyed by Projection port. Four new regressions and all 3757 library tests pass
+(`/tmp/meowy-primary-values-library.log`): tail writes, original origins, both operands,
+groups, parameters, nested leaves, known/unknown control, bottom and projection-only paths.
+A wholly nonreturning entry retains unknown control and publishes unavailable facts.
+The final lookup charge passes all 380 scalar-fact tests
+(`/tmp/meowy-primary-values-facts.log`). Next: adversarial publication and shared limits;
+later operation/results and projected conversions remain separate.
 Reference contracts and source expectations remain unchanged.
 
 ### Nullable scalar conversions

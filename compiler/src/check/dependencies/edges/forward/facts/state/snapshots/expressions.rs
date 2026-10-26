@@ -6,6 +6,7 @@ mod calls;
 mod conversions;
 mod forwarded;
 mod logical;
+mod primaries;
 mod reads;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
