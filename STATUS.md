@@ -63,21 +63,22 @@ Existing proof/scalar continuation remains next. Nothing was pushed.
 
 ## Current compiler and coverage handoff
 
-Direct ordinary record primary projections now preserve saved scalar values and origins
-across tail writes, explicit groups and independent operand stages. Complete immutable
-scalar layouts and named-field initialization retain the history; missing, ambiguous or
-unknown evidence remains unavailable.
+Immutable record bindings, reads and copies now preserve saved scalar-primary domains and
+origins across later writes. Each destination keeps its own storage version; record facts
+remain separate from whole-scalar expressions. Qualified Projection ports consume these
+histories with exact owner, layout, version and control checks.
 
-The [projection handoff](compiler/STATUS.md#scalar-primary-projection-histories) records five
-validated implementation/test commits and 21 new structural regressions. All 14 verification
-groups pass: 3763 library, 925 native, 86 Python and 501 required conformance cases, with
-19 unchanged gaps and zero failures. The original 1000-matcher case passes without budget
-changes. Structural evidence, foundation documentation and the preservation audit are current.
-Reference contracts, source expectations, proof obligations and capability pins are unchanged.
+The [record-history handoff](compiler/STATUS.md#immutable-record-primary-histories) records
+eight validated implementation/test commits and 24 new structural regressions. All 14
+verification groups pass: 3787 library, 925 native, 86 Python and 501 required conformance
+cases, with 19 unchanged gaps and zero failures. The original 1000-matcher case passes
+with unchanged limits. Structural evidence, foundation documentation and the preservation
+audit are current. Reference contracts, source expectations, proof obligations and
+capability pins are unchanged.
 
-Next: retain primary histories through immutable record bindings/copies, then qualify
-projected coercion results. Broader transfers, proof outcomes and the complete documented
-release remain gated. User-owned `docs/programs/hey/` stays excluded. Nothing was pushed.
+Next: publish Forward coercion results from saved Projection facts, then extend compatible
+nullable conversions. Broader transfers, proof outcomes and the complete documented release
+remain gated. User-owned `docs/programs/hey/` stays excluded. Nothing was pushed.
 
 ## Build and test commands
 
@@ -90,16 +91,16 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-The latest `make test` run passes all 14 groups: 3763 library, 925 native and 86 Python tests,
+The latest `make test` run passes all 14 groups: 3787 library, 925 native and 86 Python tests,
 plus 501 required conformance cases with 19 unchanged gaps and zero debug/release failures.
 Formatting, Clippy, both editors and documentation/schema checks pass. Runtime
 debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
 subprocess probes. The gate ran outside sandbox ptrace supervision with sanitizers enabled.
-Summary: `/tmp/meowy-primary-values-gate.log`; details: `build/verification-primary-values`.
+Summary: `/tmp/meowy-record-histories-gate.log`; details: `build/verification-record-histories`.
 The audit preserves 609 protected files, all 520 conformance records, exact capability pins,
 all 37 reference hashes/gaps/prior evidence and all 10 user-owned files under
-`docs/programs/hey/` (`/tmp/meowy-primary-values-preservation.log`). The two intentional coverage
-metadata/report edits add 24 structural links without changing reference contracts.
+`docs/programs/hey/` (`/tmp/meowy-record-histories-preservation.log`). The two intentional coverage
+metadata/report edits add 36 structural links without changing reference contracts.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.

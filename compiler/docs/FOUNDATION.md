@@ -2352,9 +2352,37 @@ Missing/ambiguous slots, incompatible domains, unknown completion/control and un
 histories remain unavailable. A wholly nonreturning entry retains its existing unknown
 control boundary. Known bottom and skipped, unobserved projections remain distinct.
 Shared work/payload limits and stale or duplicate publication preserve prior records.
-Immutable stored records/copies, dispatches, broader layouts, arithmetic, restarts and
-projected coercion results remain separate. This is structural scalar-analysis evidence,
-not proof-query execution or additional language/release qualification.
+Dispatches, broader layouts, arithmetic, restarts and projected coercion results remain
+separate. Immutable stored-record histories are qualified below. This is structural
+scalar-analysis evidence, not proof-query execution or additional language/release
+qualification.
+
+Immutable record bindings now retain exact primary descriptors alongside scalar Bind
+descriptors. Original initializer/source links, canonical storage, owners and complete
+immutable null/boolean/integer layouts are validated before admission. Completed record
+primaries occupy a separate fact map; whole-record reads never become scalar expression
+facts. Groups, Forward wrappers and unchanged ascriptions preserve the record identity.
+
+Record Bind transfer saves the primary domain and origin in the existing versioned local
+cell. Each copy has its own destination version while retaining its saved value origin.
+Unknown record values have no declared-primary fallback, and missing facts or state do
+not restore storage. Later writes to the original scalar source cannot change the record's
+saved primary. Mutable, parameter, reference-bearing and unsupported records stay opaque.
+
+Record reads validate their original definition, canonical local, operation/result rows,
+current version and control before publishing a separate record fact. Stored Projection
+ports consume those facts without reopening the source block's old state. Projection drops
+the record local/version association and retains the saved domain, origin and accumulated
+control. Whole-record equality gains no primary projection. Unknown current histories,
+ambiguous cells, incompatible values and missing operation/definition evidence remain
+unavailable; known bottom remains distinct from unobserved execution.
+
+Record observation, storage, read and projection publication share existing work/payload
+limits. Failed identity checks, short budgets and duplicate publication preserve prior
+records. Empty-map fast paths retain record-free analysis costs; the original 1000-matcher
+case passes without budget changes. This is internal structural evidence. Forward coercion
+results, projected nullable conversions, dispatch/alias/composition histories, arithmetic,
+restarts and proof-query outcomes remain separate.
 
 Bind transfers initialize qualified uninitialized cells. Write transfers replace existing
 cells even when prior initialization or value facts are incomplete; a missing state or

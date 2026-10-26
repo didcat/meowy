@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-26. Direct scalar projection histories are qualified; all 14 gate checks pass.
+Updated: 2026-10-26. Immutable record primary histories are qualified; all 14 gate checks pass.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5903,61 +5903,72 @@ No known failures remain. Nothing was pushed.
 
 ### Immutable record primary histories
 
-Current work resumes immutable record bindings/reads/copies from the direct projection
-handoff. Baseline `01fac7c8` has a clean tracked tree; user-owned `docs/programs/hey/`
-stays excluded. `/tmp/meowy-record-histories-baseline.json` protects reference/source
-contracts, proof obligations, capability pins, coverage metadata and user files.
+Immutable record Bind descriptors now validate canonical versions, original initializer
+blocks and complete immutable null/boolean/integer layouts. Completed record primaries and
+record reads use a separate fact map, preserving the distinction from whole-scalar values.
+Groups, Forward wrappers and unchanged ascriptions retain those histories.
 
-Dependency-ordered commit plan:
+Bindings/copies store saved primary domains and origins in existing local cells, with a
+separate version for each destination. Later scalar writes preserve saved record values.
+Unknown record values never fall back to the full declared primary domain; missing facts
+or state cannot recover storage. Reads require exact declaration/operation/result history,
+canonical local identity, current version and control. Stored Projection ports consume
+saved record facts without reopening the original block state, dropping local/version
+associations while preserving domain, origin and accumulated control.
 
-1. Qualify immutable record Bind descriptors using existing initializer/source links,
-   canonical storage and complete immutable scalar layouts; include identity tests.
-2. Capture completed record-primary facts separately from whole-scalar expressions;
-   verify saved values and unsupported histories.
-3. Initialize existing local cells and transparent wrappers with saved primary histories.
-4. Qualify record reads/copies with exact definition history, preserving current storage
-   and saved origins; test independent copies and conservative unsupported paths.
-5. Connect stored record histories to existing Projection ports; verify missing/ambiguous
-   history, control, owners and exact shared limits.
-6. Update structural evidence and handoffs, run `make test`, and audit preservation.
+Mutable/parameter/reference-bearing/unsupported records remain opaque. Missing/ambiguous
+cells, unknown control and incompatible values remain unavailable. Known bottom and skipped
+execution remain distinct; whole-record equality gains no scalar projection. Exact budget
+and identity failures preserve earlier records. Empty-map fast paths retain record-free
+costs, and stored projection copies reserve only their actual output payload.
 
-Investigation: immutable records already have qualified initializer identities, versions
-and uninitialized local cells, but no scalar declared domain. Separate record descriptors
-and facts can reuse these cells without publishing whole-record reads as scalar values.
-Forward coercion results, nullable conversions, dispatch/alias/composition histories,
-mutable/reference-bearing layouts and restart/arithmetic work remain separate.
+| Commit | Reviewable slice |
+| --- | --- |
+| `607a2e79` | Qualify immutable record Bind descriptors |
+| `9bcb383c` | Retain completed record facts separately |
+| `164a6482` | Store primary histories and forward record wrappers |
+| `063db0f1` | Propagate exact record reads and immutable copies |
+| `1ba30f2f` | Project saved record-copy values |
+| `daa6c209` | Verify missing/stale histories and atomic publication |
+| `0542b99a` | Verify exact observation/storage budgets |
+| `7bc651c9` | Keep test-helper visibility explicit and Clippy-clean |
 
-Record Bind descriptors now retain original blocks, canonical versions, exact primary
-domains and complete immutable layouts. Four focused identity/exclusion/budget tests pass
-(`/tmp/meowy-record-definitions.log`). All 3767 library tests and formatting pass
-(`/tmp/meowy-record-definitions-library.log`). Bind descriptors are committed as `607a2e79`. Completed record facts are implemented
-in a separate map. Three new regressions and all 3770 library tests pass
-(`/tmp/meowy-record-values-library.log`). Record/scalar conflicts and final lookup charges
-pass all 393 scalar-fact tests (`/tmp/meowy-record-values-facts.log`). Next: wrapper
-transport and Bind storage. Completed record facts are committed as `9bcb383c`.
-Storage now consumes separate record facts without a declared-primary fallback;
-transparent wrappers retain record identity. Empty-map fast paths retain record-free
-costs with unchanged limits. Three new regressions and all 3773 library tests pass,
-including the original 1000-matcher case (`/tmp/meowy-record-storage-library.log`).
-Formatting passes; storage is committed as `164a6482`. Record-read qualification and
-separate read/copy value publication are implemented. Three new regressions and all
-3776 library tests pass (`/tmp/meowy-record-reads-library.log`), including the original
-1000-matcher case. Formatting passes; reads/copies are committed as `063db0f1`.
-Stored Projection consumers now use qualified record facts, preserving copy histories
-and wrapper control without reopening the original block state. Three new regressions
-and all 3779 library tests pass (`/tmp/meowy-record-projections-library.log`), including
-the original 1000-matcher case. Formatting and all-target Clippy pass
-(`/tmp/meowy-record-histories-clippy.log`); projections are committed as `1ba30f2f`.
-Five new adversarial read/projection tests exposed an overly large transient payload
-reservation for stored projection copies; publication now reserves only the projected
-payload and copies no local/version fields. Read fixtures target the actual Read port
-beneath ordinary Forward wrappers. All 3784 library tests and formatting pass
-(`/tmp/meowy-record-boundaries-library.log`), including unchanged 1000-matcher limits.
-Boundary/publication checks are committed as `daa6c209`. Exact record-read observation
-and Bind storage budgets, plus stale storage/source tests, pass. All 3787 library tests
-and formatting pass (`/tmp/meowy-record-limits-library.log`), including the original
-1000-matcher case with unchanged limits. Next: coverage, documentation, full gate and
-preservation audit. Projected operation/results remain gated.
+All 24 new structural regressions and 3787 library tests pass, including the original
+1000-matcher case with unchanged limits (`/tmp/meowy-record-limits-library.log`). Formatting
+and all-target Clippy pass (`/tmp/meowy-record-histories-clippy.log`). Nine new
+test-bearing files add 36 structural links across four reference records. Reference
+contracts, source expectations, proof obligations and capability pins are unchanged.
+
+Baseline `01fac7c8` had a clean tracked tree. User-owned `docs/programs/hey/` stays excluded.
+`/tmp/meowy-record-histories-baseline.json` protects 611 files and prior coverage metadata.
+Foundation documentation and structural evidence are updated. The preservation audit passes:
+609 protected files, all 10 user-owned files, 520 source records, exact pins/proof obligations
+and 37 reference hashes/gaps/prior evidence are unchanged. Only the reviewed inventory and
+generated report add 36 structural links (`/tmp/meowy-record-histories-preservation.log`).
+
+All 14 `make test` groups pass: 3787 library, 925 native, 86 Python and 501 required
+conformance cases, with 19 unchanged gaps and zero debug/release failures. Formatting,
+Clippy, both editors and documentation/schema checks pass. Runtime debug/release/sanitized
+profiles each pass 100 regular cases across nine suites plus subprocess probes. The gate
+ran outside sandbox ptrace supervision with sanitizers enabled. Summary:
+`/tmp/meowy-record-histories-gate.log`; details: `build/verification-record-histories`.
+All four final handoff documentation/tooling checks pass
+(`/tmp/meowy-record-histories-docs.log`); the post-gate preservation audit passes.
+No known failures remain.
+Proof outcomes, transitive query/E225 qualification and full release qualification remain
+gated. Nothing was pushed.
+
+Next steps:
+
+1. Publish Forward coercion results from qualified Projection facts in
+   `facts/observations/wrappers/` and `state/snapshots/expressions/`. Validate original
+   Projection/result edges, owners, domains and control; preserve saved origins across
+   assignments/copies and test known, missing, bottom, stopped and exact-budget histories.
+2. Extend exact compatible nullable conversions to qualified projected sources. Retain
+   preconversion types and independent operation/result histories; nullable targets must
+   not widen known domains. Keep numeric/library conversions and wider unions opaque.
+3. Keep dispatch/alias/composition histories, broader layouts, restart resets, arithmetic,
+   wider guards and per-query proof/E225 qualification separate until validated.
 
 ### Scalar primary projection histories
 
@@ -6008,17 +6019,8 @@ No known failures remain.
 Proof outcomes, transitive query/E225 qualification and full release qualification remain
 gated. Nothing was pushed.
 
-Next steps:
-
-1. Qualify primary histories through immutable record bindings/reads/copies using
-   `facts/definitions/`, `facts/observations/reads.rs` and original consumer/initializer
-   qualifiers. Preserve complete layouts, canonical storage and historical slots across
-   tail writes and copies; verify stale identity, unavailable history and exact budgets.
-2. Use those qualified Projection facts for Forward coercion results, then compatible
-   nullable conversions. Preserve source domains, origins, independent stages and control;
-   verify source-level expectations and keep numeric/library conversions opaque.
-3. Keep dispatch/alias/composition histories, wider layouts, restart resets, arithmetic,
-   broader guards and per-query proof/E225 qualification separate until validated.
+The immutable-record continuation and current next actions are recorded in
+[Immutable record primary histories](#immutable-record-primary-histories).
 
 ### Nullable scalar conversions
 
@@ -7878,8 +7880,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Scalar primary projection histories](#scalar-primary-projection-histories):
-qualify immutable stored record histories before widening projected coercion results.
+Resume the ordered actions in [Immutable record primary histories](#immutable-record-primary-histories):
+publish Forward coercion results before widening projected nullable conversions.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
