@@ -5953,7 +5953,11 @@ reservation for stored projection copies; publication now reserves only the proj
 payload and copies no local/version fields. Read fixtures target the actual Read port
 beneath ordinary Forward wrappers. All 3784 library tests and formatting pass
 (`/tmp/meowy-record-boundaries-library.log`), including unchanged 1000-matcher limits.
-Observation/storage budget coverage follows; projected operation/results remain gated.
+Boundary/publication checks are committed as `daa6c209`. Exact record-read observation
+and Bind storage budgets, plus stale storage/source tests, pass. All 3787 library tests
+and formatting pass (`/tmp/meowy-record-limits-library.log`), including the original
+1000-matcher case with unchanged limits. Next: coverage, documentation, full gate and
+preservation audit. Projected operation/results remain gated.
 
 ### Scalar primary projection histories
 
