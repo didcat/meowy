@@ -854,21 +854,21 @@ the fixture catalog and does not execute the compiler.
 
 ## Implementation map
 
-| File | Responsibility |
-| --- | --- |
-| `src/lexer.rs`, `src/parser.rs`, `src/parser/`, `src/ast.rs` | Lossless tokens, parser state and focused expression/statement/type grammar |
-| `src/check.rs`, `src/check/`, `src/hir.rs` | Shared checker state and focused resolution, type, expression and block checking modules |
-| `src/list.rs`, `src/list_context.rs`, `src/list_context/` | Bounded lists, candidate selection, effectful blocks, isolated probes and inference budgets |
-| `src/flow.rs` | Shared boolean guards for reachability, disjoint emissions and narrowing |
-| `src/borrow.rs`, `src/borrow/` | Shared borrow facts, origin validation, value/control traversal and result transfers |
-| `src/borrow_contract.rs` | Symbolic function inputs, caller origin substitution and all-input lifetime bounds |
-| `src/borrow_value.rs` | Active union variants, component paths, coercions and bounded value snapshots |
-| `src/loans.rs`, `src/loans/` | Guarded storage availability, value/control construction, authority and access conflicts |
-| `src/diagnostic.rs`, `src/driver.rs`, `src/main.rs` | Diagnostics, commands, build publication and process launch |
-| `src/backend.rs`, `src/backend/` | Bridge and generator core, aggregate/list/arithmetic/output lowering and focused native tests |
-| `native/bridge.cpp` | LLVM verification, optimization and object emission |
-| `native/runtime.cpp` | Versioned scalar output and panic ABI, separate from LLVM |
-| `build.rs` | Exact native-tool version checks, bridge/runtime bootstrap |
-| `tests/native.rs`, `tests/native/`, `tests/conformance.py` | Single native test target, shared harness, behavior-focused cases and catalog execution |
+| File                                                         | Responsibility                                                                                |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `src/lexer.rs`, `src/parser.rs`, `src/parser/`, `src/ast.rs` | Lossless tokens, parser state and focused expression/statement/type grammar                   |
+| `src/check.rs`, `src/check/`, `src/hir.rs`                   | Shared checker state and focused resolution, type, expression and block checking modules      |
+| `src/list.rs`, `src/list_context.rs`, `src/list_context/`    | Bounded lists, candidate selection, effectful blocks, isolated probes and inference budgets   |
+| `src/flow.rs`                                                | Shared boolean guards for reachability, disjoint emissions and narrowing                      |
+| `src/borrow.rs`, `src/borrow/`                               | Shared borrow facts, origin validation, value/control traversal and result transfers          |
+| `src/borrow_contract.rs`                                     | Symbolic function inputs, caller origin substitution and all-input lifetime bounds            |
+| `src/borrow_value.rs`                                        | Active union variants, component paths, coercions and bounded value snapshots                 |
+| `src/loans.rs`, `src/loans/`                                 | Guarded storage availability, value/control construction, authority and access conflicts      |
+| `src/diagnostic.rs`, `src/driver.rs`, `src/main.rs`          | Diagnostics, commands, build publication and process launch                                   |
+| `src/backend.rs`, `src/backend/`                             | Bridge and generator core, aggregate/list/arithmetic/output lowering and focused native tests |
+| `native/bridge.cpp`                                          | LLVM verification, optimization and object emission                                           |
+| `native/runtime.cpp`                                         | Versioned scalar output and panic ABI, separate from LLVM                                     |
+| `build.rs`                                                   | Exact native-tool version checks, bridge/runtime bootstrap                                    |
+| `tests/native.rs`, `tests/native/`, `tests/conformance.py`   | Single native test target, shared harness, behavior-focused cases and catalog execution       |
 
 The full architecture and release gates remain in [COMPILER.md](../COMPILER.md).

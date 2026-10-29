@@ -573,14 +573,14 @@ primary. It does not carry metadata fields into the result. Numeric operands
 obey the same-type rule above; untyped literals receive the other operand's
 expected type before defaulting.
 
-| Operation                             | Accepted types and result                                                                                                                |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `+`, `-`, `*`, `/`                    | Same integer or float type; result has that type.                                                                                        |
-| `%`                                  | Integers; operands have the same type and the result preserves it.                                                                |
-| Unary `-`                             | Signed integers or floats; same result type.                                                                                             |
-| `!`, `&&`, `\|\|`                     | Booleans; boolean result, with short-circuiting as specified by syntax.                                                                  |
-| `<`, `<=`, `>`, `>=`                  | Same numeric type or two strings; boolean result. Strings compare unsigned UTF-8 bytes lexicographically; floats with NaN compare false. |
-| `==`, `!=`                            | Compatible equality types below; boolean result, and `!=` negates `==`.                                                                  |
+| Operation            | Accepted types and result                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `+`, `-`, `*`, `/`   | Same integer or float type; result has that type.                                                                                        |
+| `%`                  | Integers; operands have the same type and the result preserves it.                                                                       |
+| Unary `-`            | Signed integers or floats; same result type.                                                                                             |
+| `!`, `&&`, `\|\|`    | Booleans; boolean result, with short-circuiting as specified by syntax.                                                                  |
+| `<`, `<=`, `>`, `>=` | Same numeric type or two strings; boolean result. Strings compare unsigned UTF-8 bytes lexicographically; floats with NaN compare false. |
+| `==`, `!=`           | Compatible equality types below; boolean result, and `!=` negates `==`.                                                                  |
 
 Integer bitwise operations are module functions: `bits.and`, `bits.or`,
 `bits.xor`, and `bits.not` from `@"bits"`. They preserve the integer operand type;

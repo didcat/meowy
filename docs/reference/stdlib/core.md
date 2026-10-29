@@ -28,12 +28,12 @@ See [callable environments](../types.md#callable-environments) for source exampl
 `core.literal` bypasses lexical lookup for the complete set of shadowable primitive
 value spellings. It accepts exactly one syntax operand from this table:
 
-| Operand | Result |
-| --- | --- |
-| Integer token, optionally directly preceded by `-` | Ordinary contextual integer literal |
+| Operand                                                   | Result                                     |
+| --------------------------------------------------------- | ------------------------------------------ |
+| Integer token, optionally directly preceded by `-`        | Ordinary contextual integer literal        |
 | Floating-point token, optionally directly preceded by `-` | Ordinary contextual floating-point literal |
-| `true` or `false` | Intrinsic `boolean` value |
-| `null` | Intrinsic `null` value |
+| `true` or `false`                                         | Intrinsic `boolean` value                  |
+| `null`                                                    | Intrinsic `null` value                     |
 
 The operand is neither looked up nor evaluated. Strings, interpolated strings, lists,
 blocks, type expressions and other expressions are outside this contract (`E207`). Their

@@ -37,14 +37,14 @@ uninitialized storage or padding can establish an initialized owner.
 
 ## Existing seams
 
-| File | Current behavior | Required extension |
-| --- | --- | --- |
-| [hir.rs](../src/hir.rs) | Typed tree with local, statement, block, emission and call identities | Concrete resource type, ownership operations and explicit storage/exit plan |
-| [check.rs](../src/check.rs) | Resolves/types HIR, then checks origins and loans | Require a complete ownership plan before returning a buildable program |
-| [borrow/value.rs](../src/borrow/value.rs) | Literal strings carry no dynamic origin | Track string-view buffer origins through copies, aggregates, calls and exits |
-| [loans.rs](../src/loans.rs) | Availability and last-use graph for reference authority | Validate resource moves, replacement and destruction against live views |
-| [backend.rs](../src/backend.rs) | Erases statement boundaries; copies values; branches directly on exits | Consume explicit cleanup/transfer operations and preserve statement cleanup |
-| [backend/storage.rs](../src/backend/storage.rs) | Maps local/result aliases to backing storage | Map each alias to its single ownership cell, including discarded emissions |
+| File                                            | Current behavior                                                       | Required extension                                                           |
+| ----------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [hir.rs](../src/hir.rs)                         | Typed tree with local, statement, block, emission and call identities  | Concrete resource type, ownership operations and explicit storage/exit plan  |
+| [check.rs](../src/check.rs)                     | Resolves/types HIR, then checks origins and loans                      | Require a complete ownership plan before returning a buildable program       |
+| [borrow/value.rs](../src/borrow/value.rs)       | Literal strings carry no dynamic origin                                | Track string-view buffer origins through copies, aggregates, calls and exits |
+| [loans.rs](../src/loans.rs)                     | Availability and last-use graph for reference authority                | Validate resource moves, replacement and destruction against live views      |
+| [backend.rs](../src/backend.rs)                 | Erases statement boundaries; copies values; branches directly on exits | Consume explicit cleanup/transfer operations and preserve statement cleanup  |
+| [backend/storage.rs](../src/backend/storage.rs) | Maps local/result aliases to backing storage                           | Map each alias to its single ownership cell, including discarded emissions   |
 
 Reuse HIR identities, resolved control targets and guarded flow machinery. Extend
 the storage/control representation described in COMPILER.md; do not reconstruct
@@ -74,14 +74,14 @@ records, track initialized primary/fields; for lists, track only initialized
 elements. Never allocate analysis state proportional to list capacity. Wider
 partial aggregates remain B001 until their own transfer/drop rules are proved.
 
-| Event | Required state transition |
-| --- | --- |
-| Constructor | Reserve cleanup and payload storage before acquiring a resource; commit and arm only after success |
-| Constructor failure | Release acquired partial resources; leave the owner unarmed; produce the documented failure alternative |
-| Move | Require an available source and no conflicting loan; transfer actual payload and arm destination before disarming source |
-| Borrow/view | Retain origin and lifetime evidence without transferring cleanup ownership |
-| Replacement | Evaluate RHS once into an owned temporary; after it returns, release the current destination, then transfer RHS |
-| Drop | Release only live state once, preserving the enclosing exit reason and panic |
+| Event               | Required state transition                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Constructor         | Reserve cleanup and payload storage before acquiring a resource; commit and arm only after success                       |
+| Constructor failure | Release acquired partial resources; leave the owner unarmed; produce the documented failure alternative                  |
+| Move                | Require an available source and no conflicting loan; transfer actual payload and arm destination before disarming source |
+| Borrow/view         | Retain origin and lifetime evidence without transferring cleanup ownership                                               |
+| Replacement         | Evaluate RHS once into an owned temporary; after it returns, release the current destination, then transfer RHS          |
+| Drop                | Release only live state once, preserving the enclosing exit reason and panic                                             |
 
 Reserve destination cleanup immediately before commitment, after effectful RHS
 evaluation. Keep the RHS in an armed temporary while destination preparation is
@@ -105,13 +105,13 @@ Keep one ordered cleanup region for an active block iteration and separate
 statement regions for remaining temporaries. Reserve in actual initialization
 order, not local ID, field order or CFG traversal order.
 
-| Exit | Result cells | Other live cells |
-| --- | --- | --- |
-| Full statement | Values already transferred remain with their owners | Release remaining temporaries in reverse initialization order |
-| Normal block completion | Transfer initialized emissions to protected result storage before publication | Release block locals in reverse initialization order |
-| Leave target | Retain the target's initialized result; discard incomplete results of intervening scopes | Unwind inner scopes through the target, preserving Leave as the cause |
-| Restart target | Release target and inner results; surviving ancestor results remain owned | Release target/inner locals and temporaries, then enter a fresh iteration |
-| Panic | Release partial results rather than publish them | Capture the panic while evidence lives, then unwind all exited regions |
+| Exit                    | Result cells                                                                             | Other live cells                                                          |
+| ----------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Full statement          | Values already transferred remain with their owners                                      | Release remaining temporaries in reverse initialization order             |
+| Normal block completion | Transfer initialized emissions to protected result storage before publication            | Release block locals in reverse initialization order                      |
+| Leave target            | Retain the target's initialized result; discard incomplete results of intervening scopes | Unwind inner scopes through the target, preserving Leave as the cause     |
+| Restart target          | Release target and inner results; surviving ancestor results remain owned                | Release target/inner locals and temporaries, then enter a fresh iteration |
+| Panic                   | Release partial results rather than publish them                                         | Capture the panic while evidence lives, then unwind all exited regions    |
 
 Retaining an emission is not publishing it: callers cannot consume a block result
 until local cleanup succeeds. Result storage needs an armed obligation in the
@@ -187,17 +187,17 @@ by a successful synchronous owner test.
 The following traces are acceptance criteria, not currently passing tests. Letters
 identify successful resource acquisitions; `drop(x)` records an actual release.
 
-| Execution | Required observation |
-| --- | --- |
-| Initialize local A, emit B, initialize local C; complete | drop(C), drop(A); B remains live until the receiving owner releases it |
-| Same initialization; Leave this block | Same drops and retained B, with Leave as the cleanup cause |
-| Same initialization; Restart this block | drop(C), drop(B), drop(A); the next iteration starts with no initialized result |
-| Initialize A; constructor for B fails | A remains live; no drop(B); allocation failure is available for matching |
-| Move A into B; exit | One release through B; no release through the moved source A |
-| Evaluate argument A; later argument leaves before call | Drop untransferred A at the exited statement boundary; callee never starts |
-| Emit B into a result that an outer Leave abandons | Release B as an initialized partial result, despite the absence of a final result field |
-| Initialize A; called scalar function panics | Preserve its diagnostic, drop(A) under panic, then propagate the failure |
-| Repeatedly replace an ancestor owner across Restart | B001 until reservation reuse has a proven bound; no eventual runtime frame-full surprise |
+| Execution                                                | Required observation                                                                     |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Initialize local A, emit B, initialize local C; complete | drop(C), drop(A); B remains live until the receiving owner releases it                   |
+| Same initialization; Leave this block                    | Same drops and retained B, with Leave as the cleanup cause                               |
+| Same initialization; Restart this block                  | drop(C), drop(B), drop(A); the next iteration starts with no initialized result          |
+| Initialize A; constructor for B fails                    | A remains live; no drop(B); allocation failure is available for matching                 |
+| Move A into B; exit                                      | One release through B; no release through the moved source A                             |
+| Evaluate argument A; later argument leaves before call   | Drop untransferred A at the exited statement boundary; callee never starts               |
+| Emit B into a result that an outer Leave abandons        | Release B as an initialized partial result, despite the absence of a final result field  |
+| Initialize A; called scalar function panics              | Preserve its diagnostic, drop(A) under panic, then propagate the failure                 |
+| Repeatedly replace an ancestor owner across Restart      | B001 until reservation reuse has a proven bound; no eventual runtime frame-full surprise |
 
 ## Implementation and acceptance order
 

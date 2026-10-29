@@ -142,8 +142,8 @@ With tabs, a nesting level is one tab and remaining alignment uses spaces.
 | ---------------- | ---------------------------------------------------------------------------------- |
 | `bindings`       | Around `:`, `:=`, and assignment `=` in value declarations/statements              |
 | `annotations`    | Before a declaration's type annotation                                             |
-| `type_tests`     | Before a predicate type suffix in any expression                                      |
-| `ascriptions`    | Around `~` before an explicit ascription type                                       |
+| `type_tests`     | Before a predicate type suffix in any expression                                   |
+| `ascriptions`    | Around `~` before an explicit ascription type                                      |
 | `type_arguments` | Before a generic argument list                                                     |
 | `binary`         | Around binary operators, including capability constraints and function-type arrows |
 | `emissions`      | After `->` and between a scope label and its emission arrow                        |

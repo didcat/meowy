@@ -190,10 +190,10 @@ behavior. This grant does not cover entropy, I/O, or mutation of caller storage.
 | `numbers.wrapping_add(a <T>, b <T>)` | `<T>`                     | Integer addition modulo the width                                             |
 | `numbers.truncate<T>(value)`         | `<T><numbers.RangeError>` | Discards a floating fractional part, then checks range                        |
 | `numbers.wrapping<T>(value)`         | `<T>`                     | Explicit integer low-bit conversion, interpreted in destination signedness    |
-| `bits.and(a <T>, b <T>)`            | `<T>`                     | Bitwise conjunction of two integers of the same type                         |
-| `bits.or(a <T>, b <T>)`             | `<T>`                     | Bitwise inclusive disjunction of two integers of the same type               |
-| `bits.xor(a <T>, b <T>)`            | `<T>`                     | Bitwise exclusive disjunction of two integers of the same type               |
-| `bits.not(value <T>)`               | `<T>`                     | Complement every bit within the integer width                               |
+| `bits.and(a <T>, b <T>)`             | `<T>`                     | Bitwise conjunction of two integers of the same type                          |
+| `bits.or(a <T>, b <T>)`              | `<T>`                     | Bitwise inclusive disjunction of two integers of the same type                |
+| `bits.xor(a <T>, b <T>)`             | `<T>`                     | Bitwise exclusive disjunction of two integers of the same type                |
+| `bits.not(value <T>)`                | `<T>`                     | Complement every bit within the integer width                                 |
 | `bits.shl(value <T>, count <usize>)` | `<T>`                     | Shift left, discarding high bits                                              |
 | `bits.shr(value <T>, count <usize>)` | `<T>`                     | Logical right shift for unsigned integers; sign-extending for signed integers |
 

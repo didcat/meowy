@@ -17,13 +17,13 @@ All functions have the `meowy_cleanup_` prefix and `_v0` suffix. Status is an i3
 leave=1, restart=2, panic=3, cancel=4. A reason names an already-selected exit;
 passing cancel does not request task cancellation or join children.
 
-| Storage | Layout or sizing | Lifetime |
-| --- | --- | --- |
-| Frame | `bytes(capacity)` and `alignment()` queries; opaque bytes | From successful open through successful finish |
-| Token | `{ptr owner, i64 index, i64 id}`, size 24, alignment 8 | Only within its original live frame; stale or foreign tokens reject |
-| Mark | `{ptr owner, i64 depth, i64 anchor}`, size 24, alignment 8 | Existing Stack prefix rules; reuse follows that Stack's mark contract |
-| Panic | `panic_bytes()`; opaque owning bytes, aligned to `alignment()` | Explicitly initialized before use; source text may then end |
-| Payload | Caller-defined generated layout passed as `ptr` | Stable until its armed callback finishes or ownership is explicitly transferred |
+| Storage | Layout or sizing                                               | Lifetime                                                                        |
+| ------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Frame   | `bytes(capacity)` and `alignment()` queries; opaque bytes      | From successful open through successful finish                                  |
+| Token   | `{ptr owner, i64 index, i64 id}`, size 24, alignment 8         | Only within its original live frame; stale or foreign tokens reject             |
+| Mark    | `{ptr owner, i64 depth, i64 anchor}`, size 24, alignment 8     | Existing Stack prefix rules; reuse follows that Stack's mark contract           |
+| Panic   | `panic_bytes()`; opaque owning bytes, aligned to `alignment()` | Explicitly initialized before use; source text may then end                     |
+| Payload | Caller-defined generated layout passed as `ptr`                | Stable until its armed callback finishes or ownership is explicitly transferred |
 
 Static assertions check the token/mark layout and the opaque alignment assumptions.
 Alignment 16 is sufficient for the current target, as checked in the bridge. Size
@@ -124,13 +124,13 @@ implicit byte-copy move, scheduler or C++ exception mechanism implements this tr
 
 ## Required compiler exit mapping
 
-| Exit | Future generated action |
-| --- | --- |
-| Normal block completion | Relocate/retain emitted owners, then unwind that block's locals while result and parent storage remain valid |
-| Leave | Unwind exited scopes from innermost through the target, retaining the completed target result |
-| Restart | Unwind the target iteration and inner scopes, invalidate old initialized slots, then establish fresh iteration marks |
-| Panic | Capture the owning diagnostic before releasing source storage; follow explicit cleanup edges or qualified landing pads to the task root |
-| Cancellation | Request cooperative child cancellation, drain/join children while parent borrows remain valid, then release parent owners |
+| Exit                    | Future generated action                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Normal block completion | Relocate/retain emitted owners, then unwind that block's locals while result and parent storage remain valid                            |
+| Leave                   | Unwind exited scopes from innermost through the target, retaining the completed target result                                           |
+| Restart                 | Unwind the target iteration and inner scopes, invalidate old initialized slots, then establish fresh iteration marks                    |
+| Panic                   | Capture the owning diagnostic before releasing source storage; follow explicit cleanup edges or qualified landing pads to the task root |
+| Cancellation            | Request cooperative child cancellation, drain/join children while parent borrows remain valid, then release parent owners               |
 
 Backend `block` and Leave/Restart branches currently emit direct control flow.
 [Scalar panic outcomes](../compiler/docs/PANIC_OUTCOMES.md) now carry owning snapshots

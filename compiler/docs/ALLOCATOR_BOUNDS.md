@@ -51,18 +51,18 @@ case in debug/release without changing the runtime allocator representation.
 
 ## Supported shapes and explicit limits
 
-| Operation | Current boundary |
-| --- | --- |
-| Immutable allocator bindings, copying and forwarding | Retain all active input bounds |
-| Immutable record fields and closed unions | Retain component paths and variant guards; scalar projections and proven null alternatives do not retain unrelated allocator bounds |
-| Shared borrows/reborrows of allocator cells and carriers | Preserve contained bounds beneath the reference; direct dereference drops only the cell access, while function results also retain their public input bounds |
-| Direct mutable memory.Allocator bindings and assignment | Retain guarded bound versions through branches, Leave and Restart; overwrite-before-read can discard expired bounds |
-| Mutable fixed allocator records and tagged values | Whole replacement and pure field paths preserve per-component bounds, shared-reference origins and current variant activity; no lists or exclusive members |
-| Bounded mutable lists and allocator-only emitted aliases | Remain B001; fixed reference-bearing aliases support identical/member/whole-union backing when Restart resets their slots or is independent |
-| Field assignment in fixed allocator records | Replace only the selected subtree after RHS completion, retaining sibling effects and constraints |
-| Indexed assignment and list construction/append | Reject active bounds before discarding their facts; existing unbounded static heap lists remain supported |
-| Calls returning allocator lists, including behind references | B001 when input constraints need to be attached to unmodeled element paths |
-| Restart headers for direct handles, tagged allocator values/records and shared references containing allocator components | Preserve bound paths and variant activity; reference components still require physical origin coverage |
+| Operation                                                                                                                 | Current boundary                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Immutable allocator bindings, copying and forwarding                                                                      | Retain all active input bounds                                                                                                                               |
+| Immutable record fields and closed unions                                                                                 | Retain component paths and variant guards; scalar projections and proven null alternatives do not retain unrelated allocator bounds                          |
+| Shared borrows/reborrows of allocator cells and carriers                                                                  | Preserve contained bounds beneath the reference; direct dereference drops only the cell access, while function results also retain their public input bounds |
+| Direct mutable memory.Allocator bindings and assignment                                                                   | Retain guarded bound versions through branches, Leave and Restart; overwrite-before-read can discard expired bounds                                          |
+| Mutable fixed allocator records and tagged values                                                                         | Whole replacement and pure field paths preserve per-component bounds, shared-reference origins and current variant activity; no lists or exclusive members   |
+| Bounded mutable lists and allocator-only emitted aliases                                                                  | Remain B001; fixed reference-bearing aliases support identical/member/whole-union backing when Restart resets their slots or is independent                  |
+| Field assignment in fixed allocator records                                                                               | Replace only the selected subtree after RHS completion, retaining sibling effects and constraints                                                            |
+| Indexed assignment and list construction/append                                                                           | Reject active bounds before discarding their facts; existing unbounded static heap lists remain supported                                                    |
+| Calls returning allocator lists, including behind references                                                              | B001 when input constraints need to be attached to unmodeled element paths                                                                                   |
+| Restart headers for direct handles, tagged allocator values/records and shared references containing allocator components | Preserve bound paths and variant activity; reference components still require physical origin coverage                                                       |
 
 ## Mutable versions and restart
 

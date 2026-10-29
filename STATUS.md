@@ -1062,13 +1062,13 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Area handoff
 
-| Area | Current boundary |
-| --- | --- |
-| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; query statement/annotation budgets are retained; descriptor outcomes and phase tracking stay open. |
-| Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
-| Editor integration | Explicit ascriptions, type predicates, dispatch receivers/callables and task-group sigils pass Vim/Neovim checks. |
-| Standard library | `bits.and/or/xor/not` execute with existing integer widths and required-evaluation rules. Other bits APIs remain gated. Proof outcomes and Net/HTTP foundations remain separate. |
-| Runtime and release | File-site runtime helpers passed native probes; platform/distribution qualification remains open. |
+| Area                  | Current boundary                                                                                                                                                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Compiler              | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; query statement/annotation budgets are retained; descriptor outcomes and phase tracking stay open. |
+| Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate.                                                                                                                                                    |
+| Editor integration    | Explicit ascriptions, type predicates, dispatch receivers/callables and task-group sigils pass Vim/Neovim checks.                                                                                                                                       |
+| Standard library      | `bits.and/or/xor/not` execute with existing integer widths and required-evaluation rules. Other bits APIs remain gated. Proof outcomes and Net/HTTP foundations remain separate.                                                                        |
+| Runtime and release   | File-site runtime helpers passed native probes; platform/distribution qualification remains open.                                                                                                                                                       |
 
 ## Proof package reference
 

@@ -463,14 +463,14 @@ guarantees for those operations.
 
 ## Lowering experiments
 
-| Edge selected by generated code | Explicit protocol exercised |
-| --- | --- |
-| Normal completion | Release all remaining local obligations back to the scope mark. |
+| Edge selected by generated code     | Explicit protocol exercised                                                                                                       |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Normal completion                   | Release all remaining local obligations back to the scope mark.                                                                   |
 | Named leave with a completed result | Transfer the emitted result obligation into surviving caller-owned storage tracking, then release inner locals to the named mark. |
-| Named restart | Keep outer reservations; release all current iteration locals and emitted results, then reserve fresh iteration slots. |
-| Failed construction | Leave incomplete slots unarmed; release only successfully initialized owners. |
-| Recoverable panic | Release locals and partial emitted results; return the original panic status to an explicit boundary. |
-| Acknowledged cancellation | Release to an explicit boundary with a cancellation reason. No cancellation checkpoint is implemented. |
+| Named restart                       | Keep outer reservations; release all current iteration locals and emitted results, then reserve fresh iteration slots.            |
+| Failed construction                 | Leave incomplete slots unarmed; release only successfully initialized owners.                                                     |
+| Recoverable panic                   | Release locals and partial emitted results; return the original panic status to an explicit boundary.                             |
+| Acknowledged cancellation           | Release to an explicit boundary with a cancellation reason. No cancellation checkpoint is implemented.                            |
 
 The fixtures supply these edges directly. The compiler does not yet generate
 them. In a full implementation, completed results cannot be published until
@@ -531,15 +531,15 @@ cleanup was added.
 
 Measured sizes on this Linux x86-64 host with Clang 22.1.8:
 
-| Value | Previous bytes | Owning snapshot bytes |
-| --- | ---: | ---: |
-| `Panic` | 24 | 280 |
-| `TaskOutcome` | 56 | 312 |
-| `TaskSlot` | 1,912 | 6,264 |
-| `TaskInfo` | 136 | 392 |
-| `Joined` | 88 | 344 |
-| `ChildFailure` | 80 | 336 |
-| `ScopeClose` | 208 | 720 |
+| Value          | Previous bytes | Owning snapshot bytes |
+| -------------- | -------------: | --------------------: |
+| `Panic`        |             24 |                   280 |
+| `TaskOutcome`  |             56 |                   312 |
+| `TaskSlot`     |          1,912 |                 6,264 |
+| `TaskInfo`     |            136 |                   392 |
+| `Joined`       |             88 |                   344 |
+| `ChildFailure` |             80 |                   336 |
+| `ScopeClose`   |            208 |                   720 |
 
 Clang 23.1.1 qualification reproduces the owning-snapshot column in debug, release
 and sanitizer runs. These are private layout measurements, not portable ABI

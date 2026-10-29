@@ -60,17 +60,17 @@ bounds. Returning a carrier or crossing a wider exclusive signature remains B001
 
 ## Acceptance matrix
 
-| Expected behavior | Source |
-| --- | --- |
-| Accept scalar mutation | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; set(&!x); v : x` |
-| E301 after a moved argument | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; p : &!x; set(p); v : *p` |
-| Accept explicit child argument | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; p : &!x; set(&!*p); v : *p` |
-| Accept implicit shared reborrow | `read <int32> : (p <&int32>) { -> *p }; x := 1; p : &!x; v : read(p); *p = 2` |
-| E302 at a suspended-parent call | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; p : &!x; s : &*p; set(p); v : *s` |
-| E302 inside a symbolic input body | `f <null> : (p <&!int32>) { s : &*p; *p = 2; v : *s }` |
-| E302 between call arguments | `f <null> : (p <&!int32>, s <&int32>) { *p = *s }; x := 1; p : &!x; s : &*p; f(p, s)` |
-| Accept shared reference return | `f <&int32> : (p <&!int32>) { -> &*p }` |
-| B001 on unused exclusive input in a restart body | `f <null> : (p <&!int32>) { 'again { 'again.restart() } }` |
+| Expected behavior                                | Source                                                                                |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Accept scalar mutation                           | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; set(&!x); v : x`                      |
+| E301 after a moved argument                      | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; p : &!x; set(p); v : *p`              |
+| Accept explicit child argument                   | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; p : &!x; set(&!*p); v : *p`           |
+| Accept implicit shared reborrow                  | `read <int32> : (p <&int32>) { -> *p }; x := 1; p : &!x; v : read(p); *p = 2`         |
+| E302 at a suspended-parent call                  | `set <null> : (p <&!int32>) { *p = 2 }; x := 1; p : &!x; s : &*p; set(p); v : *s`     |
+| E302 inside a symbolic input body                | `f <null> : (p <&!int32>) { s : &*p; *p = 2; v : *s }`                                |
+| E302 between call arguments                      | `f <null> : (p <&!int32>, s <&int32>) { *p = *s }; x := 1; p : &!x; s : &*p; f(p, s)` |
+| Accept shared reference return                   | `f <&int32> : (p <&!int32>) { -> &*p }`                                               |
+| B001 on unused exclusive input in a restart body | `f <null> : (p <&!int32>) { 'again { 'again.restart() } }`                            |
 
 Also verify nested forwarding, recursive direct calls, aliases of function bindings,
 unknown branch conditions, definite/uncertain moves, shared child copies, public

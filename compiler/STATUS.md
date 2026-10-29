@@ -67,15 +67,15 @@ lexical task-group names. Numeric type names use Type highlighting; list extents
 Number highlighting. Binding recognition cannot cross a statement newline into a later
 type alias. This does not implement gated generic or task execution.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                      |
+| ---------- | --------------------------------------------------------------------- |
 | `d09dc41e` | Tokenize digit-leading names and preserve numeric/operator boundaries |
-| `45471f11` | Apply one name rule to types, parameters and scope labels |
-| `8ff838bb` | Resolve numeric type paths and separate declaration names |
-| `5ec5d72c` | Share name validation with checked documentation links |
-| `11608832` | Update Vim/Neovim highlighting and boundary tests |
-| `3cc120df` | Cover module exports, links, dotted aliases and literal escape |
-| `100def52` | Specify the unified contract and update reviewed evidence |
+| `45471f11` | Apply one name rule to types, parameters and scope labels             |
+| `8ff838bb` | Resolve numeric type paths and separate declaration names             |
+| `5ec5d72c` | Share name validation with checked documentation links                |
+| `11608832` | Update Vim/Neovim highlighting and boundary tests                     |
+| `3cc120df` | Cover module exports, links, dotted aliases and literal escape        |
+| `100def52` | Specify the unified contract and update reviewed evidence             |
 
 All 12 checks in `python3 -B tools/verify.py --compiler --editor both` pass: 3091 library,
 923 native and 62 Python tests, formatting, all-target Clippy, build, both editors,
@@ -154,24 +154,24 @@ budget diagnostic taking precedence over the existing exclusive-borrow error;
 
 ### Numeric member commits
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `676e3d7` | Parse numeric member paths and reject dotted declarations |
-| `0c29da3` | Resolve bound numeric roots before decimal fallback |
-| `2b0148c` | Preserve storage and borrows through numeric member paths |
-| `d21acc5` | Retain numeric field paths in required evaluation |
-| `d2e22de` | Resolve numeric field candidates in captured list scopes |
-| `a36211c` | Resolve checked numeric links as member paths |
-| `7833c94` | Restrict editor name highlighting to undotted numeric spellings |
+| Commit    | Reviewable slice                                                  |
+| --------- | ----------------------------------------------------------------- |
+| `676e3d7` | Parse numeric member paths and reject dotted declarations         |
+| `0c29da3` | Resolve bound numeric roots before decimal fallback               |
+| `2b0148c` | Preserve storage and borrows through numeric member paths         |
+| `d21acc5` | Retain numeric field paths in required evaluation                 |
+| `d2e22de` | Resolve numeric field candidates in captured list scopes          |
+| `a36211c` | Resolve checked numeric links as member paths                     |
+| `7833c94` | Restrict editor name highlighting to undotted numeric spellings   |
 | `1854203` | Preserve exclusive borrow limit diagnostics during numeric lookup |
-| `b3c0ca0` | Migrate numeric fixtures to undotted declaration names |
-| `1b50ca7` | Specify numeric member lookup and dotted declaration rejection |
-| `37275f4` | Document numeric member typing and mutable paths |
-| `3735235` | Specify numeric paths in modules and documentation links |
-| `6685770` | Cover required numeric members and dotted parameter errors |
-| `fb765c0` | Pin numeric member failures without decimal fallback |
-| `346d7ff` | Teach root-first numeric member resolution |
-| `42f1426` | Document numeric member integration across compiler subsystems |
+| `b3c0ca0` | Migrate numeric fixtures to undotted declaration names            |
+| `1b50ca7` | Specify numeric member lookup and dotted declaration rejection    |
+| `37275f4` | Document numeric member typing and mutable paths                  |
+| `3735235` | Specify numeric paths in modules and documentation links          |
+| `6685770` | Cover required numeric members and dotted parameter errors        |
+| `fb765c0` | Pin numeric member failures without decimal fallback              |
+| `346d7ff` | Teach root-first numeric member resolution                        |
+| `42f1426` | Document numeric member integration across compiler subsystems    |
 
 Next: follow the current direct-field-source handoff below. Full proof evaluation
 and v0.0.1 release qualification remain
@@ -217,19 +217,19 @@ rows plus runtime-noninterference and release-matrix requirements), with require
 observations checked for drift. A mapped or blocked fixture does not qualify an
 entire obligation. Most proof outcomes and broad library/runtime areas remain gaps.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Default-required harness and pinned blockers | `3fb74df` |
-| Receiver/predicate/ascription contracts | `c29ce36` |
-| Bits widths/order and direct-extent gap | `991b356` |
-| Ownership and ordered stores | `a7b06c0` |
-| Blocks, restarts and guard invalidation | `871fb1b` |
-| Proof staging and diagnostic precedence | `e4e18af` |
-| Proof outcome obligations and blockers | `c4bbb13` |
+| Reviewable slice                              | Commit    |
+| --------------------------------------------- | --------- |
+| Default-required harness and pinned blockers  | `3fb74df` |
+| Receiver/predicate/ascription contracts       | `c29ce36` |
+| Bits widths/order and direct-extent gap       | `991b356` |
+| Ownership and ordered stores                  | `a7b06c0` |
+| Blocks, restarts and guard invalidation       | `871fb1b` |
+| Proof staging and diagnostic precedence       | `e4e18af` |
+| Proof outcome obligations and blockers        | `c4bbb13` |
 | Required evaluation and collection boundaries | `d3b4387` |
-| Reference inventory and drift checks | `7303a58` |
-| Complete proof-obligation map | `cf0cfaa` |
-| Adversarial catalog validation | `3976524` |
+| Reference inventory and drift checks          | `7303a58` |
+| Complete proof-obligation map                 | `cf0cfaa` |
+| Adversarial catalog validation                | `3976524` |
 
 All ten compiler checks pass: 1890 library/913 native tests, 28 tooling and 11
 compiler-harness groups, formatting, Clippy, build, metadata/coverage and conformance.
@@ -259,14 +259,14 @@ The previous 64 case records/source bytes, 19 capability pins and all reference
 contracts are unchanged. The catalog now has 74 cases: 55 required passes,
 19 pinned gaps and zero failures in debug/release.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Companion declaration/path validation | `2afe88b` |
-| Isolated staging and version-2 runner | `a22e003` |
-| Diamond initialization | `46e9ff1` |
-| Nested imports and borrowed returns | `0a1f087` |
-| Typed re-exports and namespaces | `5f4f9d2` |
-| Private value/type diagnostics | `f8276b9` |
+| Reviewable slice                       | Commit    |
+| -------------------------------------- | --------- |
+| Companion declaration/path validation  | `2afe88b` |
+| Isolated staging and version-2 runner  | `a22e003` |
+| Diamond initialization                 | `46e9ff1` |
+| Nested imports and borrowed returns    | `0a1f087` |
+| Typed re-exports and namespaces        | `5f4f9d2` |
+| Private value/type diagnostics         | `f8276b9` |
 | Dependency errors and re-export cycles | `8db5622` |
 | Missing imports and signature mismatch | `c6cf01e` |
 
@@ -301,14 +301,14 @@ effects, explicit panic aliases and module initialization stopping later modules
 and entry code. All 74 prior case records, entry/companion bytes, reference contracts,
 compiler implementation files and capability exceptions are unchanged.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Version-3 panic expectation schema | `e927e30` |
-| Strict runtime result recognition | `4ba13f4` |
-| Overflow and operand effect order | `360fbea` |
-| Division/remainder boundaries | `cac274c` |
+| Reviewable slice                               | Commit    |
+| ---------------------------------------------- | --------- |
+| Version-3 panic expectation schema             | `e927e30` |
+| Strict runtime result recognition              | `4ba13f4` |
+| Overflow and operand effect order              | `360fbea` |
+| Division/remainder boundaries                  | `cac274c` |
 | Collection bounds/capacity and stopped effects | `8760c69` |
-| Explicit and module-initialization panics | `6f9d3cd` |
+| Explicit and module-initialization panics      | `6f9d3cd` |
 
 All ten compiler checks pass: 1890 library/913 native tests, 32 tooling and 30
 harness groups, formatting, Clippy, build, metadata/coverage and execution.
@@ -363,11 +363,11 @@ described below. Forward groups now have their own completion path below.
 
 The dependency-ordered series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share bounded endpoint publication without changing definition validation | `29db896` |
+| Reviewable slice                                                            | Commit    |
+| --------------------------------------------------------------------------- | --------- |
+| Share bounded endpoint publication without changing definition validation   | `29db896` |
 | Classify and connect selected immutable identities with focused regressions | `6387133` |
-| Pin self/forward aliases, lexical shadowing and duplicate-name conformance | `cabfb71` |
+| Pin self/forward aliases, lexical shadowing and duplicate-name conformance  | `cabfb71` |
 
 `edges/identities.rs` classifies resolved Function items, the current foundation
 modules and print/panic/string-copy/copy-query/bit-operation identities. The original
@@ -405,11 +405,11 @@ Required-only evaluation, callee summaries and proof outcomes remain separate.
 
 The dependency-ordered series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Return exact successful exported FunctionIds without graph changes | `6fce856` |
+| Reviewable slice                                                    | Commit    |
+| ------------------------------------------------------------------- | --------- |
+| Return exact successful exported FunctionIds without graph changes  | `6fce856` |
 | Connect successful export statements with focused graph regressions | `447c0e4` |
-| Pin module initialization, chained re-exports and export errors | `3506f03` |
+| Pin module initialization, chained re-exports and export errors     | `3506f03` |
 
 `export_function` returns the exact declared/resolved ID after signature, scope,
 duplicate-export, declaration and module registration checks. Nested function
@@ -570,10 +570,10 @@ runtime reachability or complete effect-summary claims.
 
 The dependency-ordered series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Retain validated local/storage bounds after HIR transfer | `4f51efb` |
-| Capture typed canonical read effects | `cb389e2` |
+| Reviewable slice                                            | Commit    |
+| ----------------------------------------------------------- | --------- |
+| Retain validated local/storage bounds after HIR transfer    | `4f51efb` |
+| Capture typed canonical read effects                        | `cb389e2` |
 | Pin slot aliases, reference cells and required-input limits | `04ba6d8` |
 
 Reports retain the transferred program's local count after validating every stored
@@ -707,9 +707,9 @@ No target values, transfers, borrow authority or proof outcomes are inferred.
 
 The dependency-ordered implementation series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Validate and retain predicate/ascription stages | `a031d11` |
+| Reviewable slice                                          | Commit    |
+| --------------------------------------------------------- | --------- |
+| Validate and retain predicate/ascription stages           | `a031d11` |
 | Cover exclusions, diagnostic precedence and exact budgets | `da43cb7` |
 | Pin operands, computed targets, stops and guarded results | `c68e7f9` |
 
@@ -751,13 +751,13 @@ is preserved. No compiler capability or reference contract changed.
 
 The dependency-ordered implementation series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Retain bounded per-field record counts | `ac590ac` |
-| Validate identities, selectors and stored edges | `97bda15` |
+| Reviewable slice                                           | Commit    |
+| ---------------------------------------------------------- | --------- |
+| Retain bounded per-field record counts                     | `ac590ac` |
+| Validate identities, selectors and stored edges            | `97bda15` |
 | Report independent address/acquisition/result observations | `6de8c96` |
-| Cover stops, separate producers, conflicts and limits | `f4ebd60` |
-| Pin execution, overlap and field lifetimes | `44e8b39` |
+| Cover stops, separate producers, conflicts and limits      | `f4ebd60` |
+| Pin execution, overlap and field lifetimes                 | `44e8b39` |
 
 Reports retain exact local/field paths, canonical alias storage, checked shared/
 scalar-exclusive modes, control and independent per-address/acquisition/result
@@ -798,12 +798,12 @@ capability exceptions unchanged (`/tmp/meowy-place-preservation.log`). Unrelated
 
 The dependency-ordered implementation series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                            | Commit    |
+| ----------------------------------------------------------- | --------- |
 | Validate cell registration and checked statement identities | `7b28c38` |
-| Report independent acquisition/result observations | `80d6d78` |
+| Report independent acquisition/result observations          | `80d6d78` |
 | Cover stopped inputs, lifetimes, conflicts and exact limits | `eea5989` |
-| Pin initialization order, stops and temporary escapes | `fd9c16d` |
+| Pin initialization order, stops and temporary escapes       | `fd9c16d` |
 
 Reports retain exact initializer roots, temporary local/statement cells, control
 and independent acquisition/result flags. Validation checks complete point/owner/
@@ -845,12 +845,12 @@ No compiler capability or reference contract changed.
 
 The dependency-ordered implementation series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Validate parent modes, retained sites and exact edges | `6702ace` |
-| Report independent acquisition/result observations | `133ed62` |
+| Reviewable slice                                       | Commit    |
+| ------------------------------------------------------ | --------- |
+| Validate parent modes, retained sites and exact edges  | `6702ace` |
+| Report independent acquisition/result observations     | `133ed62` |
 | Cover stops, permissions, site gaps and shared budgets | `ad414a1` |
-| Pin execution, stopped parents and loan permissions | `3314092` |
+| Pin execution, stopped parents and loan permissions    | `3314092` |
 
 Reports retain exact parent roots, existing ReborrowIds, checked parent/result modes,
 control and independent acquisition/result flags. Explicit shared/scalar-exclusive
@@ -890,16 +890,16 @@ capability exceptions unchanged (`/tmp/meowy-reborrow-preservation.log`). Unrela
 
 The dependency-ordered implementation series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Retain bounded source paths and canonical storage | `d013921` |
-| Validate sources, access and partial stages | `e1fa743` |
+| Reviewable slice                                           | Commit    |
+| ---------------------------------------------------------- | --------- |
+| Retain bounded source paths and canonical storage          | `d013921` |
+| Validate sources, access and partial stages                | `e1fa743` |
 | Report independent address/acquisition/result observations | `8644137` |
-| Cover source identities, aliases and loan boundaries | `c5abe07` |
-| Bound source payloads, duplicates and merge conflicts | `9d696e8` |
-| Pin receiver order, stopped inputs and dynamic bounds | `3fa8ab0` |
-| Pin loan conflicts and temporary escapes | `658a01c` |
-| Satisfy the test-helper visibility lint | `16cd21e` |
+| Cover source identities, aliases and loan boundaries       | `c5abe07` |
+| Bound source payloads, duplicates and merge conflicts      | `9d696e8` |
+| Pin receiver order, stopped inputs and dynamic bounds      | `3fa8ab0` |
+| Pin loan conflicts and temporary escapes                   | `658a01c` |
+| Satisfy the test-helper visibility lint                    | `16cd21e` |
 
 Reports retain exact parent/index roots, Source/Access metadata, retained sites,
 capacity/optional initialized length, control and independent address/acquisition/
@@ -944,15 +944,15 @@ is preserved. No compiler capability or reference contract changed.
 
 The dependency-ordered implementation series is complete:
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Retain bounded prefix/per-field counts | `bf99d6f` |
-| Capture original index lengths and completion decisions | `29abc4b` |
-| Validate path stages and stopped frontiers | `b5cdaef` |
-| Report addresses, reservations, acquisition and results | `e8debce` |
-| Cover boundaries, snapshots, conflicts and exact limits | `720e062` |
+| Reviewable slice                                              | Commit    |
+| ------------------------------------------------------------- | --------- |
+| Retain bounded prefix/per-field counts                        | `bf99d6f` |
+| Capture original index lengths and completion decisions       | `29abc4b` |
+| Validate path stages and stopped frontiers                    | `b5cdaef` |
+| Report addresses, reservations, acquisition and results       | `e8debce` |
+| Cover boundaries, snapshots, conflicts and exact limits       | `720e062` |
 | Pin nested order, stops and dynamic initialized-length bounds | `c7abffc` |
-| Pin field permissions, reservation conflicts and lifetimes | `3d0a9bc` |
+| Pin field permissions, reservation conflicts and lifetimes    | `3d0a9bc` |
 
 Reports retain exact place/canonical storage, ordered PathSteps, prefix/per-field
 counts, per-index original length inputs and checked normal flags, overall completion
@@ -1014,14 +1014,14 @@ direct/implicit reborrows remain separate; reference cells do not identify point
 storage. No observation grants borrow authority, extends lifetimes, evaluates a
 predicate or proves runtime reachability. `queries::finish` remains B001-gated.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Exact field counts and capture bounds | `dc0777e` |
-| Source, temporary and stage validation | `d7735b0` |
-| Independent projection/conversion/acquisition/result reports | `73be259` |
-| Temporary identities, stops and ordinary error boundaries | `f821bad` |
-| Shared budgets, maximum paths and atomic conflicts | `c0b741c` |
-| Reference-chain, narrowing, order and stopped-parent execution | `39423eb` |
+| Reviewable slice                                                 | Commit    |
+| ---------------------------------------------------------------- | --------- |
+| Exact field counts and capture bounds                            | `dc0777e` |
+| Source, temporary and stage validation                           | `d7735b0` |
+| Independent projection/conversion/acquisition/result reports     | `73be259` |
+| Temporary identities, stops and ordinary error boundaries        | `f821bad` |
+| Shared budgets, maximum paths and atomic conflicts               | `c0b741c` |
+| Reference-chain, narrowing, order and stopped-parent execution   | `39423eb` |
 | Owner-write, temporary-lifetime and invalidated-guard rejections | `c6ae594` |
 
 All ten compiler checks pass (`/tmp/meowy-projection-gate.log`): 2216 library,
@@ -1061,15 +1061,15 @@ No value, allocation, reachability, storage provenance, loan authority or proof 
 is inferred. Required evaluation, list reads/methods/borrows and generic sequences
 remain separate. `queries::finish` stays B001-gated.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Explicit list identity and checked facts | `3450dfd` |
-| Root, source-slot and stage validation | `7344c0f` |
-| Independent construction and contextual-stage reports | `6ff637d` |
-| Owners, control, calls and malformed contextual plans | `520b8d2` |
-| Shared limits, maximum inputs and atomic conflicts | `e90b966` |
+| Reviewable slice                                         | Commit    |
+| -------------------------------------------------------- | --------- |
+| Explicit list identity and checked facts                 | `3450dfd` |
+| Root, source-slot and stage validation                   | `7344c0f` |
+| Independent construction and contextual-stage reports    | `6ff637d` |
+| Owners, control, calls and malformed contextual plans    | `520b8d2` |
+| Shared limits, maximum inputs and atomic conflicts       | `e90b966` |
 | Source order, contextual conversion and stopped suffixes | `9b32d9f` |
-| Capacity, inference and scalar-range diagnostics | `13f8aaa` |
+| Capacity, inference and scalar-range diagnostics         | `13f8aaa` |
 
 The report integration includes six existing regression files whose exact shared
 payload totals or Unknown expectations had to change with the new report family.
@@ -1109,15 +1109,15 @@ and exhausted budgets publish no partial collection. These observations infer no
 reachability, values, pointee storage, ownership/borrow authority or proof answers.
 `queries::finish` remains B001-gated.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Separate checked receiver/body completion | `833ab1a` |
-| Receiver binding and stage validation | `68334bb` |
-| Independent initialization/result reports | `73511c7` |
+| Reviewable slice                                             | Commit    |
+| ------------------------------------------------------------ | --------- |
+| Separate checked receiver/body completion                    | `833ab1a` |
+| Receiver binding and stage validation                        | `68334bb` |
+| Independent initialization/result reports                    | `73511c7` |
 | Opaque successors, receiver identities and source boundaries | `7768051` |
-| Shared work/map limits and atomic conflicts | `a6fae62` |
-| Receiver order, composition and stopped-stage execution | `9f5dcc5` |
-| Lifetimes, loans and composed-result diagnostics | `6d1ddbc` |
+| Shared work/map limits and atomic conflicts                  | `a6fae62` |
+| Receiver order, composition and stopped-stage execution      | `9f5dcc5` |
+| Lifetimes, loans and composed-result diagnostics             | `6d1ddbc` |
 
 All ten compiler checks pass (`/tmp/meowy-dispatch-reports-gate.log`): 2245 library,
 914 native and 32 tooling/30 harness tests, formatting, all-target Clippy, schemas,
@@ -1155,17 +1155,17 @@ work/map/payload limits. Duplicate visits merge flags without another copy. Inva
 metadata, conflicts or exhaustion publish no partial collection. No values,
 reachability, storage provenance, ownership authority or proof outcomes are inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Composition local and field-count prerequisite | `b54c7d6` |
-| Sources, targets, aliases and exact edge validation | `298e75b` |
-| Inherited matcher lifetime-site validation | `de88cc4` |
-| Independent target and statement-completion reports | `2261568` |
+| Reviewable slice                                             | Commit    |
+| ------------------------------------------------------------ | --------- |
+| Composition local and field-count prerequisite               | `b54c7d6` |
+| Sources, targets, aliases and exact edge validation          | `298e75b` |
+| Inherited matcher lifetime-site validation                   | `de88cc4` |
+| Independent target and statement-completion reports          | `2261568` |
 | Composition, lexical ancestry and canonical alias boundaries | `7c7e172` |
-| Shared payload/work limits and atomic merges | `e28d8ea` |
-| Order, composition, aliases and stopped-source execution | `acb7fe0` |
-| Composition, scope, type and lifetime errors | `36cead6` |
-| Final lint repair and compiler gate | `ff256ab` |
+| Shared payload/work limits and atomic merges                 | `e28d8ea` |
+| Order, composition, aliases and stopped-source execution     | `acb7fe0` |
+| Composition, scope, type and lifetime errors                 | `36cead6` |
+| Final lint repair and compiler gate                          | `ff256ab` |
 
 Report integration needed an 18-file slice after split review: 14 existing exact
 shared-budget regressions in 13 files had to count the new emission copies when the
@@ -1207,14 +1207,14 @@ conflicts preserve atomic publication. Unsupported nominal types remain Other;
 exclusive-reference comparisons retain their B001 ownership gate and Unknown reports.
 Values, addresses, borrow authority, reachability and proof outcomes are not inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture checked equality and bounded categories | `3db93eb` |
-| Admit supported equality reports | `308fcbc` |
-| Validate categories, owners and complete type compatibility | `240cec7` |
-| Bound shared work/maps and atomic merges | `c685bf3` |
+| Reviewable slice                                               | Commit    |
+| -------------------------------------------------------------- | --------- |
+| Capture checked equality and bounded categories                | `3db93eb` |
+| Admit supported equality reports                               | `308fcbc` |
+| Validate categories, owners and complete type compatibility    | `240cec7` |
+| Bound shared work/maps and atomic merges                       | `c685bf3` |
 | Pin whole-shape results, reference addresses and operand order | `4735fb1` |
-| Pin incompatible types and recursive opaque-member rejections | `ccebb5d` |
+| Pin incompatible types and recursive opaque-member rejections  | `ccebb5d` |
 
 Twelve new internal groups cover capture, stopped stages, matching-summary type
 mismatches, 32 corrupt signatures, fixed costs across capacities and atomic limits.
@@ -1248,9 +1248,9 @@ checked for names, annotations, duplicate declarations and operator errors. Runt
 order, stopped stages, ordinary type compatibility and required evaluation remain
 intact. No reference contract, ownership gate or proof outcome changed.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Repair context selection with checker and native regressions | `418e681` |
+| Reviewable slice                                                    | Commit    |
+| ------------------------------------------------------------------- | --------- |
+| Repair context selection with checker and native regressions        | `418e681` |
 | Require constructor/order, width and unreachable-error source cases | `e6621f4` |
 
 Four checker groups and one native group pass
@@ -1296,16 +1296,16 @@ conflicts, malformed metadata or exhausted limits publish no partial collection.
 Emission-slot initialization and result availability stay separate. No slot values,
 reachability, ownership authority, restart propagation or proof outcomes are inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture bounded checked body spans/completion | `1816109` |
-| Validate ordinary block ports and endpoint identities | `0d5b5de` |
-| Collect independent normal/result observations | `e5191fc` |
-| Cover corrupt identities and unknown sequence barriers | `84e8d09` |
-| Bound shared maps/work and atomic merges | `16a4e99` |
-| Pin block results, outer leaves and tail-effect order | `fb8b386` |
-| Pin missing and duplicate emitted fields | `b8b80a0` |
-| Require registered enclosing identities | `e00f349` |
+| Reviewable slice                                            | Commit    |
+| ----------------------------------------------------------- | --------- |
+| Capture bounded checked body spans/completion               | `1816109` |
+| Validate ordinary block ports and endpoint identities       | `0d5b5de` |
+| Collect independent normal/result observations              | `e5191fc` |
+| Cover corrupt identities and unknown sequence barriers      | `84e8d09` |
+| Bound shared maps/work and atomic merges                    | `16a4e99` |
+| Pin block results, outer leaves and tail-effect order       | `fb8b386` |
+| Pin missing and duplicate emitted fields                    | `b8b80a0` |
+| Require registered enclosing identities                     | `e00f349` |
 | Preserve module-root source spans and original replay spans | `8d53ba2` |
 
 Nineteen new internal groups cover capture, result shapes, independent roots/stages,
@@ -1355,16 +1355,16 @@ operation payload budget. Index names are borrowed; shared work charges validati
 lookups and copies. Duplicates retain one descriptor. Late failure leaves previous
 maps, capture counters and remaining payload unchanged.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                           | Commit    |
+| ---------------------------------------------------------- | --------- |
 | Capture bounded checked layouts and persistent copy totals | `0592307` |
-| Preserve remaining operation payload budget | `3395b59` |
-| Validate result-slot identities before reporting | `716f535` |
-| Join conservative emission candidates and consumers | `16cdf31` |
-| Cover independent visits, composition and discarded paths | `3a30543` |
-| Bound combined maps/payload/work and atomic publication | `cda38c4` |
-| Pin defaults, branches, composition and stopping order | `cb60d46` |
-| Pin duplicate-slot and mixed-mutability errors | `c41d71c` |
+| Preserve remaining operation payload budget                | `3395b59` |
+| Validate result-slot identities before reporting           | `716f535` |
+| Join conservative emission candidates and consumers        | `16cdf31` |
+| Cover independent visits, composition and discarded paths  | `3a30543` |
+| Bound combined maps/payload/work and atomic publication    | `cda38c4` |
+| Pin defaults, branches, composition and stopping order     | `cb60d46` |
+| Pin duplicate-slot and mixed-mutability errors             | `c41d71c` |
 
 Sixteen new internal groups cover capture, shallow validation, budget carry-over,
 source identity, independent visits, mutable discarded aliases, exact limits and
@@ -1411,15 +1411,15 @@ Seeded Never-field availability is structural evidence only; ordinary selection
 from a Never block still reports E201. No value, lifetime, caller-return or proof
 inference is added.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Index exact validated result consumers | `ec42f09` |
-| Link direct owned-field Operation ports | `e07bd3d` |
-| Link observed unary/binary primary Projection ports | `2fba3c2` |
+| Reviewable slice                                         | Commit    |
+| -------------------------------------------------------- | --------- |
+| Index exact validated result consumers                   | `ec42f09` |
+| Link direct owned-field Operation ports                  | `e07bd3d` |
+| Link observed unary/binary primary Projection ports      | `2fba3c2` |
 | Cover field identities, availability and unknown sources | `120c657` |
 | Bound shared maps/work and preserve partial observations | `2ac60c2` |
-| Pin field order, tails, owners and E201 | `06b7c8b` |
-| Pin primary order, stopped RHS and E222 | `f0dba6d` |
+| Pin field order, tails, owners and E201                  | `06b7c8b` |
+| Pin primary order, stopped RHS and E222                  | `f0dba6d` |
 
 Seventeen new internal groups cover reverse identities, 18 field corruptions,
 independent visits, seeded Never availability, 26 primary header/stage faults,
@@ -1462,14 +1462,14 @@ or result observations. Calls, ascriptions, shared-reference forwarding and
 unclassified regions remain outside these links. Later Forward and coercion-owned
 consumer support is described below; no value or proof is inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture explicit AST-group forwarding identities | `eb7e6d0` |
+| Reviewable slice                                     | Commit    |
+| ---------------------------------------------------- | --------- |
+| Capture explicit AST-group forwarding identities     | `eb7e6d0` |
 | Resolve bounded checked chains to existing consumers | `b1311c1` |
-| Cover corrupt identities, cycles and opaque regions | `a790e3e` |
-| Bound traversal, reordered IDs and atomic failures | `d1f839d` |
-| Pin grouped execution and stopping order | `4817fba` |
-| Pin grouped E201/E222 rejection behavior | `5da70d0` |
+| Cover corrupt identities, cycles and opaque regions  | `a790e3e` |
+| Bound traversal, reordered IDs and atomic failures   | `d1f839d` |
+| Pin grouped execution and stopping order             | `4817fba` |
+| Pin grouped E201/E222 rejection behavior             | `5da70d0` |
 
 Eighteen new internal groups cover capture, repeated spans, required exclusion,
 owners, stopped children, 28 corruption variants, cycles, logical terminals and
@@ -1505,12 +1505,12 @@ or proof answers are introduced. Real typed initializer roots now resolve throug
 five alternating wrappers in both entry and function owners. Local-read joins are
 qualified separately by the consumer pass below.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                           | Commit    |
+| ---------------------------------------------------------- | --------- |
 | Qualify observed Forward wrappers and resolve mixed chains | `97032a4` |
 | Cover mixed identity conflicts, cycles and resource limits | `c2552a2` |
-| Pin typed initializer order, owners and stopped execution | `31f9912` |
-| Pin typed slot E207 and width E216 rejections | `4523ee7` |
+| Pin typed initializer order, owners and stopped execution  | `31f9912` |
+| Pin typed slot E207 and width E216 rejections              | `4523ee7` |
 
 Ten new internal groups cover eligibility, exact edges, 24 corruption variants,
 classification overlap, cycles, missing results, logical terminals and exact
@@ -1546,11 +1546,11 @@ wrappers to Read; initializer traversal is handled separately below. Field wrapp
 stop at Field and preserve existing extraction links. Direct narrowing-to-block
 chains retain seeded structural evidence; field-value joins remain separate.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                           | Commit    |
+| ---------------------------------------------------------- | --------- |
 | Qualify unchanged wrappers and integrate bounded traversal | `a8442b3` |
-| Cover identity conflicts, cycles and shared work limits | `554cbfb` |
-| Pin read order, mutable snapshots, stopping and E208 | `9a251dd` |
+| Cover identity conflicts, cycles and shared work limits    | `554cbfb` |
+| Pin read order, mutable snapshots, stopping and E208       | `9a251dd` |
 
 Ten new internal groups cover real read/field boundaries, owner/control metadata,
 19 corruption variants, overlap, cycles and exact hop/work limits. Focused checks
@@ -1589,10 +1589,10 @@ Parameters and emitted aliases may be type-eligible. Eligibility grants no ordin
 initializer, owner/lifetime authority, completion, value or proof result. Eligibility
 alone grants no read or field-value join; qualified read forwarding is described below.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Retain bounded type eligibility after HIR transfer | `5af4c18` |
-| Cover identities, shared capacity and iterative type bounds | `407c6d7` |
+| Reviewable slice                                                   | Commit    |
+| ------------------------------------------------------------------ | --------- |
+| Retain bounded type eligibility after HIR transfer                 | `5af4c18` |
+| Cover identities, shared capacity and iterative type bounds        | `407c6d7` |
 | Pin immutable copies, mutable snapshots and shared-write rejection | `5e7e3a5` |
 
 Seven new eligibility groups pass (`/tmp/meowy-local-eligibility-limits.log`), along
@@ -1634,11 +1634,11 @@ input while retaining stale edges fails. Work, identity and cycle failures prese
 all reports, captured registries and payload. Qualification alone adds no map or
 read join; eligibility and alias/parameter admission belong to the index below.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                            | Commit    |
+| ----------------------------------------------------------- | --------- |
 | Qualify observed Bind identities and validate entry reports | `7ec1583` |
-| Cover corrupt identities, unknown inputs, cycles and work | `970c6a3` |
-| Pin initializer order, stopping and E207 rejection | `6d910f8` |
+| Cover corrupt identities, unknown inputs, cycles and work   | `970c6a3` |
+| Pin initializer order, stopping and E207 rejection          | `6d910f8` |
 
 All seven new Bind groups pass (`/tmp/meowy-bind-limits.log`), including 35 corrupt
 identity variants and exact/one-short work. Existing entry/module/Storage regressions
@@ -1681,12 +1681,12 @@ roots remain unresolved in the index and owners stay independent. The consumer
 pass below now handles qualified local reads.
 Late failures publish no partial map or report mutation.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Validate bounded function/parameter exclusion context | `d3b22ec` |
-| Index qualified ordinary initializer identities | `869e5c7` |
+| Reviewable slice                                             | Commit    |
+| ------------------------------------------------------------ | --------- |
+| Validate bounded function/parameter exclusion context        | `d3b22ec` |
+| Index qualified ordinary initializer identities              | `869e5c7` |
 | Cover conflicts, unknown roots, exclusions and shared limits | `a433f00` |
-| Pin source order, special sources and stopped initializers | `2d460d2` |
+| Pin source order, special sources and stopped initializers   | `2d460d2` |
 
 Eleven new internal groups pass: three parameter groups, two admission/root groups
 and six boundary groups (`/tmp/meowy-initializer-parameters.log`,
@@ -1730,13 +1730,13 @@ identities through immutable copy chains. Unary projections performed by expecte
 coercions now retain their own consumer ports below; no additional projection is inferred. Special storage,
 field values, calls, mutable/reference inputs and caller provenance stay opaque.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Reserve initializer maps before consumer extraction | `f83ba59` |
+| Reviewable slice                                                      | Commit    |
+| --------------------------------------------------------------------- | --------- |
+| Reserve initializer maps before consumer extraction                   | `f83ba59` |
 | Consolidate existing local-read expectations without behavior changes | `64339d7` |
-| Forward immutable reads to checked initializer roots | `1308c62` |
-| Bound mixed read chains, conflicts and missing evidence | `b2d0033` |
-| Pin source order, barriers, panic and shared-write rejection | `8e5c5d1` |
+| Forward immutable reads to checked initializer roots                  | `1308c62` |
+| Bound mixed read chains, conflicts and missing evidence               | `b2d0033` |
+| Pin source order, barriers, panic and shared-write rejection          | `8e5c5d1` |
 
 Eight new regression groups plus consolidated consumer coverage exercise shared
 budgets, real owner/copy chains, 17 identity corruptions, producer overlap, mixed
@@ -1773,11 +1773,11 @@ operation/result observations or a runtime completion claim. Primary-extracting
 coercions remain opaque to value forwarding. No new map, collection order or
 variable payload is introduced; late invalid stages publish no partial links.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Link observed coercion primary ports to result slots | `5001917` |
+| Reviewable slice                                                | Commit    |
+| --------------------------------------------------------------- | --------- |
+| Link observed coercion primary ports to result slots            | `5001917` |
 | Cover stopped/registration/stage and shared-resource boundaries | `0399df9` |
-| Pin scalar copy order, stopped RHS and width rejection | `9748410` |
+| Pin scalar copy order, stopped RHS and width rejection          | `9748410` |
 
 Seven new groups cover source/owner identity, three-stage selection, opaque sources,
 seeded Stopped, Convert registration, 18 late corruptions, duplicate visits and exact
@@ -1821,12 +1821,12 @@ with bounded Flow/map capacity and unchanged payload. Late failures publish no
 partial links. Seeded stopped-record anchors remain structural evidence, separate
 from runtime completion or I/O success.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Extract shared bounded slot insertion | `9aaca5d` |
-| Replay exact whole-output edge sequences | `0c5c184` |
-| Qualify sparse observed output reports | `1bf878c` |
-| Stream original primary-part ports to result slots | `7ac15f3` |
+| Reviewable slice                                    | Commit    |
+| --------------------------------------------------- | --------- |
+| Extract shared bounded slot insertion               | `9aaca5d` |
+| Replay exact whole-output edge sequences            | `0c5c184` |
+| Qualify sparse observed output reports              | `1bf878c` |
+| Stream original primary-part ports to result slots  | `7ac15f3` |
 | Cover observed stages, corruption and shared limits | `4509d0e` |
 | Pin print/panic, stopped prefixes and checked tails | `8e1269d` |
 
@@ -1871,12 +1871,12 @@ parameters, changed narrowing and unknown sources remain opaque. Seeded stopped
 anchors remain structural evidence, not runtime completion. Work/map failures
 publish no partial links, and candidate/input payload is neither copied nor charged again.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Separate whole-producer validation from stage selection | `6694ada` |
-| Qualify complete observed list reports | `d5e966b` |
-| Link contextual-list primary inputs to result slots | `c214833` |
-| Cover stopped plans, corruption and shared resources | `5d908ad` |
+| Reviewable slice                                          | Commit    |
+| --------------------------------------------------------- | --------- |
+| Separate whole-producer validation from stage selection   | `6694ada` |
+| Qualify complete observed list reports                    | `d5e966b` |
+| Link contextual-list primary inputs to result slots       | `c214833` |
+| Cover stopped plans, corruption and shared resources      | `5d908ad` |
 | Pin late-selector source order, panic and width rejection | `0c48b3e` |
 
 Ten new groups cover indexed selection, independent report stages, a genuine source
@@ -1914,11 +1914,11 @@ empty records still have slot zero. Unknown sources and mutable/aggregate candid
 values preserve their boundaries. Empty/multiple source histories are unchanged.
 These links do not infer values, runtime reachability, lifetime authority or proof results.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share complete emission report qualification | `2a2de97` |
-| Link initialized composition targets to source slots | `bcf8eb0` |
-| Cover partial observations, corruption and resources | `2ec24cf` |
+| Reviewable slice                                              | Commit    |
+| ------------------------------------------------------------- | --------- |
+| Share complete emission report qualification                  | `2a2de97` |
+| Link initialized composition targets to source slots          | `bcf8eb0` |
+| Cover partial observations, corruption and resources          | `2ec24cf` |
 | Pin source order, stopped tails and duplicate-field rejection | `b13d8fc` |
 
 Thirteen new library groups cover qualification, source mapping, independent owners,
@@ -1957,13 +1957,13 @@ original slots and independent owners. Unknown values, multiple candidate histor
 reference loads, calls and field-result values retain their boundaries. Links do
 not infer runtime reachability, selected values, loan authority or proof outcomes.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Retain actual checked ascription decisions | `beaade7` |
-| Carry and qualify typed result reports | `af3641a` |
-| Resolve mixed consumers through unchanged ascriptions | `406d35f` |
+| Reviewable slice                                           | Commit    |
+| ---------------------------------------------------------- | --------- |
+| Retain actual checked ascription decisions                 | `beaade7` |
+| Carry and qualify typed result reports                     | `af3641a` |
+| Resolve mixed consumers through unchanged ascriptions      | `406d35f` |
 | Cover conflicts, cycles, late failures and exact resources | `09a5498` |
-| Pin source behavior and classified coverage | `d4d105b` |
+| Pin source behavior and classified coverage                | `d4d105b` |
 
 Thirteen new library groups cover capture, report qualification and consumer
 boundaries. All six capture, 12 typed-report and eight ascription-consumer groups
@@ -2002,12 +2002,12 @@ remain terminal in mixed source resolution: observing a field result does not
 forward its receiver as the extracted value. Existing Unknown/candidate histories,
 borrow/lifetime rules, required/static reads and proof gates remain unchanged.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Separate checked field validation | `b395515` |
+| Reviewable slice                                                | Commit    |
+| --------------------------------------------------------------- | --------- |
+| Separate checked field validation                               | `b395515` |
 | Retain independent operation/result flags and qualify consumers | `582a7f2` |
-| Cover sparse observations, identities and exact limits | `da2b050` |
-| Pin source behavior and classified evidence | `b9031c2` |
+| Cover sparse observations, identities and exact limits          | `da2b050` |
+| Pin source behavior and classified evidence                     | `b9031c2` |
 
 All 114 matching library tests pass before/after the validation extraction
 (`/tmp/meowy-field-observations-before.log`, `/tmp/meowy-field-observations-validation.log`).
@@ -2047,13 +2047,13 @@ failures publish no partial map or remaining-budget update. Source traversal,
 field-value forwarding and proof outcomes remain separate; projected source-slot
 qualification is recorded below.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share checked result-header qualification | `98140f0` |
-| Qualify exact candidate-input identities | `4475569` |
-| Collect bounded descriptors in entry reports | `71b1d6a` |
+| Reviewable slice                                          | Commit    |
+| --------------------------------------------------------- | --------- |
+| Share checked result-header qualification                 | `98140f0` |
+| Qualify exact candidate-input identities                  | `4475569` |
+| Collect bounded descriptors in entry reports              | `71b1d6a` |
 | Cover discarded/partial sources and exact resource limits | `2f23847` |
-| Pin source behavior and classified evidence | `3afaa03` |
+| Pin source behavior and classified evidence               | `3afaa03` |
 
 All 67 matching result tests pass before/after header extraction
 (`/tmp/meowy-candidate-inputs-before.log`, `/tmp/meowy-candidate-inputs-validation.log`).
@@ -2091,12 +2091,12 @@ Original positions, independent target/result flags, discarded paths and source
 Unknown/empty/multiple histories are preserved. These associations do not select
 values, establish runtime reachability, forward fields or enable proof outcomes.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share composed-emission source qualification | `c489bd1` |
-| Retain qualified candidate source slots | `74671ed` |
+| Reviewable slice                                         | Commit    |
+| -------------------------------------------------------- | --------- |
+| Share composed-emission source qualification             | `c489bd1` |
+| Retain qualified candidate source slots                  | `74671ed` |
 | Cover sparse/corrupt sources and exact cache/work limits | `590cb3e` |
-| Pin source behavior and classified coverage | `e04ad8e` |
+| Pin source behavior and classified coverage              | `e04ad8e` |
 
 All ten emission-consumer groups pass before/after extraction
 (`/tmp/meowy-candidate-slots-before.log`, `/tmp/meowy-candidate-slots-validation.log`).
@@ -2134,12 +2134,12 @@ repeated expansion of source chains. Layouts without known slots gain no roots.
 Aggregate output/visited/pending storage is bounded before growth, with shared work
 charges and remaining-payload accounting. Failures publish no partial walk.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Qualify stored candidate graph descriptors | `322d4ed` |
+| Reviewable slice                                    | Commit    |
+| --------------------------------------------------- | --------- |
+| Qualify stored candidate graph descriptors          | `322d4ed` |
 | Add iterative traversal and the entry-report forest | `b3a6516` |
-| Cover sharing/cycles, deep chains and exact limits | `60fd5e0` |
-| Pin source behavior and classified evidence | `01baf4a` |
+| Cover sharing/cycles, deep chains and exact limits  | `60fd5e0` |
+| Pin source behavior and classified evidence         | `01baf4a` |
 
 All four graph-qualification groups pass (`/tmp/meowy-candidate-walk-qualification.log`).
 All 2489 library tests pass after integration (`/tmp/meowy-candidate-walk-library.log`).
@@ -2177,12 +2177,12 @@ reserve remaining combined map capacity. Shared work bounds validation/lookups;
 late failures publish no partial map or remaining-budget update. Unknown, empty and
 multiple histories remain intact, with no candidate selection or lifetime authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Qualify observed field-result source slots | `aeefeed` |
-| Collect bounded links to candidate forest roots | `03e46c3` |
+| Reviewable slice                                   | Commit    |
+| -------------------------------------------------- | --------- |
+| Qualify observed field-result source slots         | `aeefeed` |
+| Collect bounded links to candidate forest roots    | `03e46c3` |
 | Cover root/header/link identities and exact limits | `1ff75ba` |
-| Pin source behavior and classified evidence | `9373325` |
+| Pin source behavior and classified evidence        | `9373325` |
 
 All five qualification groups pass (`/tmp/meowy-field-result-links-qualification.log`).
 All 2504 library tests pass after collection (`/tmp/meowy-field-result-links-library.log`).
@@ -2225,13 +2225,13 @@ inputs and forest visits. Unknown/empty/multiple histories stay intact. These li
 feed the separate expanded forest below and infer no selected value, runtime
 reachability, lifetime authority or proof outcome.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Qualify cached stored field-result lookups | `1cd353b` |
-| Resolve sources through unchanged narrowing | `444a66a` |
-| Collect optional direct-candidate sources | `324fc89` |
+| Reviewable slice                                      | Commit    |
+| ----------------------------------------------------- | --------- |
+| Qualify cached stored field-result lookups            | `1cd353b` |
+| Resolve sources through unchanged narrowing           | `444a66a` |
+| Collect optional direct-candidate sources             | `324fc89` |
 | Cover conflicts, cycles, late faults and exact limits | `f4e12ff` |
-| Pin source behavior and classified coverage | `5f602e9` |
+| Pin source behavior and classified coverage           | `5f602e9` |
 
 All three lookup groups and both initial resolver groups pass
 (`/tmp/meowy-field-narrowing-lookup.log`, `/tmp/meowy-field-narrowing-resolver.log`).
@@ -2269,13 +2269,13 @@ edges share owner checks, active-cycle/completed-sharing state and bounded
 pending/visited/output storage and work. Unknown, empty, multiple and discarded
 histories remain distinct; no selected value, execution or proof outcome is inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                 | Commit    |
+| ------------------------------------------------ | --------- |
 | Qualify retained direct-source graph descriptors | `2f043ea` |
-| Traverse explicit direct field edges | `7972426` |
-| Collect a separate expanded forest | `4104d99` |
-| Cover mixed cycles and exact resource limits | `cfe9512` |
-| Pin source behavior and classified coverage | `cc43868` |
+| Traverse explicit direct field edges             | `7972426` |
+| Collect a separate expanded forest               | `4104d99` |
+| Cover mixed cycles and exact resource limits     | `cfe9512` |
+| Pin source behavior and classified coverage      | `cc43868` |
 
 Three qualifier groups, twelve original/expanded traversal groups and four seeded
 boundary groups pass (`/tmp/meowy-expanded-qualifier.log`,
@@ -2316,12 +2316,12 @@ This slice left coercions, ascriptions, initializer reads, calls, reference load
 and changed/unobserved narrowing opaque. The Forward extension follows below.
 No value, reachability or proof outcome is selected or inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share explicit group child qualification | `39032ab` |
-| Resolve grouped direct field sources | `d75b744` |
-| Reject corrupt and cyclic grouped routes | `fa55889` |
-| Bound grouped lookup and report resources | `1790a65` |
+| Reviewable slice                            | Commit    |
+| ------------------------------------------- | --------- |
+| Share explicit group child qualification    | `39032ab` |
+| Resolve grouped direct field sources        | `d75b744` |
+| Reject corrupt and cyclic grouped routes    | `fa55889` |
+| Bound grouped lookup and report resources   | `1790a65` |
 | Pin source behavior and classified coverage | `b2005f1` |
 
 All 34 grouped-consumer tests pass before and after extraction
@@ -2366,11 +2366,11 @@ hop/cycle state and work; repeated
 field/root lookups retain the same payload cache. Late corrupt headers, edges,
 owners or conflicting producers publish no partial report.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Resolve typed sources with shared Forward validation | `ffa139f` |
+| Reviewable slice                                             | Commit    |
+| ------------------------------------------------------------ | --------- |
+| Resolve typed sources with shared Forward validation         | `ffa139f` |
 | Reject absent observations, opaque stages and corrupt routes | `f781432` |
-| Bound mixed cycles, work, hops and cache payload | `df5171e` |
+| Bound mixed cycles, work, hops and cache payload             | `df5171e` |
 | Pin typed execution, stopped tails and initializer rejection | `ac14ed1` |
 
 Both new resolver regressions fail on the original code
@@ -2414,12 +2414,12 @@ loads and changed/unobserved narrowing remain opaque. This slice left initialize
 reads opaque; their extension follows below.
 No runtime value, reachability, loan authority or proof outcome is inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                                | Commit    |
+| --------------------------------------------------------------- | --------- |
 | Qualify unchanged ascription sources and integrate both reports | `206176d` |
-| Reject absent results, opaque producers and corrupt metadata | `dec8a27` |
-| Bound mixed cycles, work, hops and cache payload | `651ce9c` |
-| Pin ascribed execution, stopped tails and E208 rejection | `90d031a` |
+| Reject absent results, opaque producers and corrupt metadata    | `dec8a27` |
+| Bound mixed cycles, work, hops and cache payload                | `651ce9c` |
+| Pin ascribed execution, stopped tails and E208 rejection        | `90d031a` |
 
 Both new integration regressions fail on the prior resolver
 (`/tmp/meowy-ascribed-fields-before.log`). All eight ascribed-source groups and
@@ -2465,12 +2465,12 @@ share existing hop/cycle/work bounds and field/root caches. Unknown, empty and
 multiple source histories stay intact without value selection, reachability,
 loan authority or proof outcomes.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Resolve eligible local reads across bindings and lexical blocks | `20c2772` |
-| Preserve eligibility, missing evidence and special-cell boundaries | `389a7a9` |
-| Reject corrupt read/Bind/registry identities and producer conflicts | `9e9125d` |
-| Bound initializer cycles, mixed hops, work and cache payload | `ee389a5` |
+| Reviewable slice                                                     | Commit    |
+| -------------------------------------------------------------------- | --------- |
+| Resolve eligible local reads across bindings and lexical blocks      | `20c2772` |
+| Preserve eligibility, missing evidence and special-cell boundaries   | `389a7a9` |
+| Reject corrupt read/Bind/registry identities and producer conflicts  | `9e9125d` |
+| Bound initializer cycles, mixed hops, work and cache payload         | `ee389a5` |
 | Pin copy execution, stopped tails and immutable-assignment rejection | `4714018` |
 
 Both integration regressions fail on the prior resolver
@@ -2518,15 +2518,15 @@ remain intact. Missing associations stay opaque, while inconsistent retained
 observations fail atomically. Result visits do not invent normal visits or runtime
 reachability. No value, ownership authority or proof outcome is inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share terminal block qualification without changing behavior | `7b48583` |
-| Qualify scalar-only results with exact consumer/slot identities | `15be758` |
-| Collect and requalify distinct direct block descriptors | `19e33be` |
-| Traverse explicit block sources alongside field/composed edges | `0efa670` |
-| Reject corrupt producers, layouts and observations | `7405868` |
+| Reviewable slice                                                    | Commit    |
+| ------------------------------------------------------------------- | --------- |
+| Share terminal block qualification without changing behavior        | `7b48583` |
+| Qualify scalar-only results with exact consumer/slot identities     | `15be758` |
+| Collect and requalify distinct direct block descriptors             | `19e33be` |
+| Traverse explicit block sources alongside field/composed edges      | `0efa670` |
+| Reject corrupt producers, layouts and observations                  | `7405868` |
 | Bound shared map/qualification/traversal resources and mixed cycles | `7173551` |
-| Pin scalar execution, stopped inputs and duplicate emissions | `7c52bb1` |
+| Pin scalar execution, stopped inputs and duplicate emissions        | `7c52bb1` |
 
 All 135 consumer tests pass before/after extraction
 (`/tmp/meowy-scalar-blocks-before.log`, `/tmp/meowy-scalar-blocks-shared.log`).
@@ -2579,19 +2579,19 @@ cycle, visited-state, payload and work bounds with Field/Block/composed visits.
 No runtime value, reachability, loan authority or proof outcome is inferred.
 Receiver reads remain excluded from ordinary initializer forwarding.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Qualify observed dispatch result bodies and layouts | `c6956d1` |
+| Reviewable slice                                                  | Commit    |
+| ----------------------------------------------------------------- | --------- |
+| Qualify observed dispatch result bodies and layouts               | `c6956d1` |
 | Share bounded slot-history construction without changing behavior | `2a29342` |
-| Distinguish dispatch origins from ordinary consumers | `a7a0289` |
-| Collect bounded dispatch result-slot histories | `2020bdd` |
-| Resolve wrapped dispatch inputs separately from blocks | `9c671bf` |
-| Retain qualified scalar dispatch source descriptors | `381f32e` |
-| Traverse explicit dispatch result sources | `d47b7b8` |
-| Bound descriptor/origin identity and result indexing | `08185b5` |
-| Bound mixed dispatch traversal and wrapper hops | `c81709b` |
-| Pin receiver order, nested scopes and permissions | `6e23f08` |
-| Pin stopped receiver/body behavior | `32fadb7` |
+| Distinguish dispatch origins from ordinary consumers              | `a7a0289` |
+| Collect bounded dispatch result-slot histories                    | `2020bdd` |
+| Resolve wrapped dispatch inputs separately from blocks            | `9c671bf` |
+| Retain qualified scalar dispatch source descriptors               | `381f32e` |
+| Traverse explicit dispatch result sources                         | `d47b7b8` |
+| Bound descriptor/origin identity and result indexing              | `08185b5` |
+| Bound mixed dispatch traversal and wrapper hops                   | `c81709b` |
+| Pin receiver order, nested scopes and permissions                 | `6e23f08` |
+| Pin stopped receiver/body behavior                                | `32fadb7` |
 
 All 70 result tests pass before/after history extraction. Qualifier, origin,
 collection, wrapper and descriptor checks pass. All 50 dispatch-focused tests and
@@ -2643,16 +2643,16 @@ expanded traversal shares existing cycle, cache, payload, hop and work limits.
 Read/dispatch control marks remain independent. No receiver evaluation is replayed,
 no lifetime or loan authority changes, and no runtime value or proof outcome is inferred.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture checked receiver shapes and replay identity | `7e39bae` |
-| Index exact receiver local/producer/body identities | `5fe6db1` |
-| Qualify initialized scalar receiver reads | `0c54a35` |
-| Bound lexical scope and initialization lookup | `13c3767` |
-| Follow receiver inputs in existing source walkers | `5edabcf` |
-| Reject conflicting and stale receiver source links | `e9bd825` |
+| Reviewable slice                                            | Commit    |
+| ----------------------------------------------------------- | --------- |
+| Capture checked receiver shapes and replay identity         | `7e39bae` |
+| Index exact receiver local/producer/body identities         | `5fe6db1` |
+| Qualify initialized scalar receiver reads                   | `0c54a35` |
+| Bound lexical scope and initialization lookup               | `13c3767` |
+| Follow receiver inputs in existing source walkers           | `5edabcf` |
+| Reject conflicting and stale receiver source links          | `e9bd825` |
 | Pin traversal budgets, cache reuse and control independence | `fd6bdbc` |
-| Cover receiver source order and lifetime boundaries | `1420c15` |
+| Cover receiver source order and lifetime boundaries         | `1420c15` |
 
 Focused evidence covers 13 index faults, nine qualifier faults, five scope faults,
 five stale-source faults, producer overlap, mixed receiver/initializer cycles,
@@ -2699,13 +2699,13 @@ Existing operation/result map limits, root/field cache payload and work budgets 
 shared. Repeated lookup caches by exact field point, keeping separate field points
 that select the same slot distinct. Late failures publish no partial reports.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Qualify exact record dispatch result bodies | `e0f7abf` |
-| Link scalar fields to dispatch result slots | `bd1a820` |
+| Reviewable slice                                        | Commit    |
+| ------------------------------------------------------- | --------- |
+| Qualify exact record dispatch result bodies             | `e0f7abf` |
+| Link scalar fields to dispatch result slots             | `bd1a820` |
 | Reject conflicting/stale sources and initializer cycles | `eed5144` |
-| Bound operation/result reports and lookup caches | `ac6c779` |
-| Cover field order and source boundaries | `12af8c0` |
+| Bound operation/result reports and lookup caches        | `ac6c779` |
+| Cover field order and source boundaries                 | `12af8c0` |
 
 All twelve focused record-dispatch tests pass (`/tmp/meowy-record-dispatch-limits.log`).
 Evidence includes twelve independent observation combinations, twelve origin/layout
@@ -2755,16 +2755,16 @@ condition identity and checked statement site. Ordinary parent containment and a
 owner/body/cycle/hop/work checks remain intact. This validates lexical structure
 without evaluating guards or widening receiver permissions.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Qualify scalar dispatch primary slots and exact kinds | `66228c3` |
-| Link observed unary projections | `8dd35df` |
-| Preserve receiver scope across checked matcher arms | `f06cfeb` |
-| Link binary operand projections independently | `35d46b4` |
+| Reviewable slice                                        | Commit    |
+| ------------------------------------------------------- | --------- |
+| Qualify scalar dispatch primary slots and exact kinds   | `66228c3` |
+| Link observed unary projections                         | `8dd35df` |
+| Preserve receiver scope across checked matcher arms     | `f06cfeb` |
+| Link binary operand projections independently           | `35d46b4` |
 | Bound binary links, cycles, conflicts and control marks | `731aa08` |
-| Cover arithmetic order, guarded scope and E222 | `57a3a4d` |
-| Pin stopped operands and checked overflow | `30d762a` |
-| Keep explicit test visibility compatible with Clippy | `55033e0` |
+| Cover arithmetic order, guarded scope and E222          | `57a3a4d` |
+| Pin stopped operands and checked overflow               | `30d762a` |
+| Keep explicit test visibility compatible with Clippy    | `55033e0` |
 
 Focused evidence covers four slot-qualifier tests, five unary tests, eight binary
 tests and ten receiver-scope tests. Seven slot/type faults, six unary faults, eight
@@ -2822,13 +2822,13 @@ ordinary consumers, result histories, scalar/field/dispatch descriptors and eval
 edges are preserved. No variable payload, runtime value selection or loan/proof
 authority is introduced.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture primary source shape before conversion | `b0153fd` |
-| Retain and requalify source shape in coercion reports | `bd0312c` |
+| Reviewable slice                                                | Commit    |
+| --------------------------------------------------------------- | --------- |
+| Capture primary source shape before conversion                  | `b0153fd` |
+| Retain and requalify source shape in coercion reports           | `bd0312c` |
 | Link observed scalar coercion projections to dispatch primaries | `68f229d` |
-| Bound links and reject stale shapes, origins and cycles | `cda72ce` |
-| Cover copies, conversion and stopped sources | `4a9592a` |
+| Bound links and reject stale shapes, origins and cycles         | `cda72ce` |
+| Cover copies, conversion and stopped sources                    | `4a9592a` |
 
 Focused evidence includes three capture tests, three report tests and eight dispatch
 consumer tests. Twelve producer/report faults, atomic merge conflicts, eight late
@@ -2873,13 +2873,13 @@ value forwarding are preserved. Mutable reads, parameters, calls and reference l
 remain opaque. Shared map/work bounds apply without additional variable payload,
 value selection, evaluation edges, loan/lifetime authority or proof outcomes.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture formatting primary source shapes | `053241c` |
-| Requalify source shapes in output reports | `bf5b1d8` |
+| Reviewable slice                                       | Commit    |
+| ------------------------------------------------------ | --------- |
+| Capture formatting primary source shapes               | `053241c` |
+| Requalify source shapes in output reports              | `bf5b1d8` |
 | Link observed output projections to dispatch primaries | `65a82d4` |
-| Bound links and reject late shape/identity conflicts | `82659ca` |
-| Cover formatting, panic order and stopped suffixes | `7b71fd6` |
+| Bound links and reject late shape/identity conflicts   | `82659ca` |
+| Cover formatting, panic order and stopped suffixes     | `7b71fd6` |
 
 Focused evidence includes ten producer tests, 35 output tests and eight dispatch-output
 tests. Sparse stages, source-result independence, ten late shape/origin/owner/registration
@@ -2932,14 +2932,14 @@ nine files including STATUS: eight cross-family fixtures assert the same descrip
 cost and needed consistent exact capacities/remainders. It was kept separate from
 consumer behavior after the required split review.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Capture contextual primary source shapes | `126a2da` |
-| Retain and bound source shapes in list reports | `efe756b` |
-| Align shared-payload fixture costs | `840c2e8` |
+| Reviewable slice                                     | Commit    |
+| ---------------------------------------------------- | --------- |
+| Capture contextual primary source shapes             | `126a2da` |
+| Retain and bound source shapes in list reports       | `efe756b` |
+| Align shared-payload fixture costs                   | `840c2e8` |
 | Link observed list projections to dispatch primaries | `54ef4b2` |
-| Bound links and reject source conflicts | `faeaedf` |
-| Cover list order, kinds and stopped elements | `9c5c3e8` |
+| Bound links and reject source conflicts              | `faeaedf` |
+| Cover list order, kinds and stopped elements         | `9c5c3e8` |
 
 Focused evidence includes 24 producer tests, 68 list tests and eight dispatch-list
 tests. Exact shape/replay/merge faults, full suffix validation, sparse stage/source
@@ -2988,13 +2988,13 @@ parameter sources retain their existing opacity.
 Shared map/cache/scratch/work limits apply without new payload or value selection,
 evaluation edges, lifetime authority or proof answers.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Separate complete source-layout validation | `4e3b5a5` |
-| Link composed emissions to dispatch source slots | `aa7b5d6` |
-| Bound links and reject stale layouts | `0f76be5` |
-| Verify candidate and forest integration | `110fbb9` |
-| Bound caches and requalify stored graph sources | `cd4287f` |
+| Reviewable slice                                         | Commit    |
+| -------------------------------------------------------- | --------- |
+| Separate complete source-layout validation               | `4e3b5a5` |
+| Link composed emissions to dispatch source slots         | `aa7b5d6` |
+| Bound links and reject stale layouts                     | `0f76be5` |
+| Verify candidate and forest integration                  | `110fbb9` |
+| Bound caches and requalify stored graph sources          | `cd4287f` |
 | Cover composition order, shapes and stopped destinations | `9c1cd15` |
 
 The refactor preserved 45 emission and ten candidate-source checks before/after.
@@ -3049,14 +3049,14 @@ selected slots remain opaque. Generic/coercion/output/list/composition receiver 
 are unchanged. These reports grant no value selection, evaluation edges, lifetime,
 loan or proof authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Separate receiver headers from scope qualification | `73e0f47` |
-| Qualify eligible record receiver inputs | `06bcf2a` |
-| Link owned scalar fields through receiver inputs | `44e4887` |
-| Bound field links and requalify stored results | `cc0243a` |
-| Bound shared wrapper hops and initializer cycles | `4ee0fac` |
-| Cover field order, snapshots and borrow bounds | `df73b72` |
+| Reviewable slice                                       | Commit    |
+| ------------------------------------------------------ | --------- |
+| Separate receiver headers from scope qualification     | `73e0f47` |
+| Qualify eligible record receiver inputs                | `06bcf2a` |
+| Link owned scalar fields through receiver inputs       | `44e4887` |
+| Bound field links and requalify stored results         | `cc0243a` |
+| Bound shared wrapper hops and initializer cycles       | `4ee0fac` |
+| Cover field order, snapshots and borrow bounds         | `df73b72` |
 | Keep explicit helper visibility compatible with Clippy | `cd93c4e` |
 
 All 30 receiver tests passed before and after the prerequisite refactor. Qualification
@@ -3102,12 +3102,12 @@ stay opaque. Empty and multiple candidate histories remain structural possibilit
 the collector selects no runtime value. Existing map/work limits and atomic failure
 apply without new report payload or loan/proof authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Share qualified record receiver body lookup | `683b88c` |
+| Reviewable slice                                          | Commit    |
+| --------------------------------------------------------- | --------- |
+| Share qualified record receiver body lookup               | `683b88c` |
 | Link scalar coercion projections through record receivers | `185eb65` |
-| Bound sources and reject stale primary shapes | `7be796d` |
-| Cover primary copies, conversion and stopped bodies | `645d23d` |
+| Bound sources and reject stale primary shapes             | `7be796d` |
+| Cover primary copies, conversion and stopped bodies       | `645d23d` |
 
 All 16 record-receiver checks pass before and after extraction
 (`/tmp/meowy-receiver-primary-before.log`, `/tmp/meowy-receiver-primary-after.log`).
@@ -3153,13 +3153,13 @@ paths and arithmetic results retain their boundaries. Empty/multiple histories
 select no value. Shared map/work limits and atomic failure add no payload or
 loan/proof authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                         | Commit    |
+| -------------------------------------------------------- | --------- |
 | Link binary primary projections through record receivers | `ceab575` |
-| Preserve independent stages and opaque sources | `971156b` |
-| Bound source links and reject stale metadata | `be928f2` |
-| Cover receiver order and scalar boundaries | `c1c1c9c` |
-| Cover stops, overflow and width errors | `bf9e509` |
+| Preserve independent stages and opaque sources           | `971156b` |
+| Bound source links and reject stale metadata             | `be928f2` |
+| Cover receiver order and scalar boundaries               | `c1c1c9c` |
+| Cover stops, overflow and width errors                   | `bf9e509` |
 
 Both new integration tests demonstrated the missing link before the change
 (`/tmp/meowy-receiver-binary-before.log`); all 741 forward-report tests pass after
@@ -3206,12 +3206,12 @@ calls, parameters, reference loads and nonscalar primaries keep their boundaries
 Empty/multiple histories select no value. Shared map/work limits and atomic failure
 add no payload, I/O-success claim or loan/proof authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                         | Commit    |
+| -------------------------------------------------------- | --------- |
 | Link output primary projections through record receivers | `072eebd` |
-| Preserve independent stages and stopped prefixes | `79b4e80` |
-| Bound links and revalidate stopped suffixes | `737aefa` |
-| Cover formatting order, panic and checked suffixes | `b8aa46b` |
+| Preserve independent stages and stopped prefixes         | `79b4e80` |
+| Bound links and revalidate stopped suffixes              | `737aefa` |
+| Cover formatting order, panic and checked suffixes       | `b8aa46b` |
 
 Both new integration tests demonstrated the missing links before the change
 (`/tmp/meowy-receiver-output-before.log`); all 750 forward-report tests pass after
@@ -3258,12 +3258,12 @@ ports; generic receiver forwarding, mutable sources, calls, parameters, referenc
 loads and nonscalar primaries stay separate. Empty/multiple histories select no
 value. Shared map/work limits and atomic failure add no payload or loan/proof authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
-| Link contextual list primaries through record receivers | `3b576da` |
-| Preserve stages and construction registration | `1c55795` |
-| Bound links and validate stopped suffixes | `69e9e33` |
-| Cover order, stops and width errors | `d318485d` |
+| Reviewable slice                                        | Commit     |
+| ------------------------------------------------------- | ---------- |
+| Link contextual list primaries through record receivers | `3b576da`  |
+| Preserve stages and construction registration           | `1c55795`  |
+| Bound links and validate stopped suffixes               | `69e9e33`  |
+| Cover order, stops and width errors                     | `d318485d` |
 
 Both new integration tests demonstrated missing links before the change
 (`/tmp/meowy-receiver-list-before.log`); all 760 forward-report tests pass after
@@ -3309,14 +3309,14 @@ resource failures publish no partial reports. No new variable payload, value sel
 loan authority or proof evaluation is introduced. Checked forwarding/narrowing wrappers
 must be resolved before a cycle test selects the underlying read.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                 | Commit     |
+| ------------------------------------------------ | ---------- |
 | Link composed emissions through record receivers | `0c505c6c` |
-| Preserve stages and source histories | `fc8f83a6` |
-| Bound emission links and reject stale layouts | `fdd62067` |
-| Cover composition candidate graphs | `f576207d` |
-| Bound candidate caches, graphs and forest walks | `564e8d13` |
-| Cover composition order, boundaries and errors | `c1f73fe5` |
+| Preserve stages and source histories             | `fc8f83a6` |
+| Bound emission links and reject stale layouts    | `fdd62067` |
+| Cover composition candidate graphs               | `f576207d` |
+| Bound candidate caches, graphs and forest walks  | `564e8d13` |
+| Cover composition order, boundaries and errors   | `c1f73fe5` |
 
 Both integration regressions demonstrated missing links before the change
 (`/tmp/meowy-receiver-emission-before.log`); all 771 forward-report tests pass after
@@ -3363,13 +3363,13 @@ paths remain opaque; multiple histories select no value and arithmetic results d
 gain provenance. Missing evidence and late failures preserve atomic reports without
 new payload or loan/proof authority.
 
-| Reviewable slice | Commit |
-| --- | --- |
+| Reviewable slice                                        | Commit     |
+| ------------------------------------------------------- | ---------- |
 | Link unary primary projections through record receivers | `63433675` |
-| Preserve stages and opaque source boundaries | `f2696e83` |
-| Bound sources and validate ascription evidence | `8695a59b` |
-| Cover kinds, order and stopped bodies | `4f6316bf` |
-| Cover overflow and type rejections | `6f0dfbbe` |
+| Preserve stages and opaque source boundaries            | `f2696e83` |
+| Bound sources and validate ascription evidence          | `8695a59b` |
+| Cover kinds, order and stopped bodies                   | `4f6316bf` |
+| Cover overflow and type rejections                      | `6f0dfbbe` |
 
 Both integration tests confirmed unary-owned projections before exposing the missing
 links (`/tmp/meowy-receiver-unary-before.log`). All 789 forward-report tests pass after
@@ -3515,14 +3515,14 @@ reference conversion can retain a non-Never final type without any later binary
 operation/result observation. No slot link grants reference-value provenance,
 candidate selection, runtime reachability, loan authority or a proof outcome.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `0f11f29c` | Capture shared scalar referents in body shapes |
-| `41d703f7` | Capture and validate binary referent descriptors |
-| `12a9b1bb` | Qualify direct dispatch reference-primary slots |
-| `0c79d65f` | Connect observed binary reference projections |
+| Commit     | Reviewable slice                                      |
+| ---------- | ----------------------------------------------------- |
+| `0f11f29c` | Capture shared scalar referents in body shapes        |
+| `41d703f7` | Capture and validate binary referent descriptors      |
+| `12a9b1bb` | Qualify direct dispatch reference-primary slots       |
+| `0c79d65f` | Connect observed binary reference projections         |
 | `095be2e0` | Reject stale evidence and bound slot-link publication |
-| `2213db2b` | Keep explicit test visibility compatible with Clippy |
+| `2213db2b` | Keep explicit test visibility compatible with Clippy  |
 
 Focused tests cover exact referents, malformed widths, replay identity and fixed report
 costs. Late stale metadata, missing source/type evidence, group cycles, independent
@@ -3563,12 +3563,12 @@ coercion-owned receiver paths, nonscalar referents and exclusive-reference paths
 No link grants reference-value provenance, candidate selection, runtime reachability,
 loan/lifetime authority or a proof outcome.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                    |
+| ---------- | ------------------------------------------------------------------- |
 | `d3da9ebd` | Characterize shared-reference source descriptors and stopped inputs |
-| `19edd7ed` | Link observed coercion projections to dispatch primaries |
-| `64a964e0` | Reject stale identities and bound atomic link publication |
-| `39558714` | Qualify ascribed-reference execution order and stopped dispatches |
+| `19edd7ed` | Link observed coercion projections to dispatch primaries            |
+| `64a964e0` | Reject stale identities and bound atomic link publication           |
+| `39558714` | Qualify ascribed-reference execution order and stopped dispatches   |
 
 Eight new structural tests cover exact referents/owners, independent stages, preserved
 producer boundaries, late stale metadata, missing evidence, group cycles, control and
@@ -3608,14 +3608,14 @@ ordinary stored copies, reference-bearing fields, mutable records, nonscalar ref
 generic record/field/value forwarding remain separate; coercion receiver links follow below.
 No metadata grants reference values, pointee provenance, loan authority or proof outcomes.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `8e74c4c6` | Share the unchanged bounded type-eligibility walk |
-| `b026ca9d` | Index optional shared scalar primary eligibility |
-| `3fa014b1` | Anchor eligibility to checked dispatch types |
-| `b5940145` | Qualify typed receiver hops and primary slots |
-| `e7205cc9` | Integrate binary receiver projections |
-| `b872d507` | Bound publication and reject crossed dispatch scopes |
+| Commit     | Reviewable slice                                       |
+| ---------- | ------------------------------------------------------ |
+| `8e74c4c6` | Share the unchanged bounded type-eligibility walk      |
+| `b026ca9d` | Index optional shared scalar primary eligibility       |
+| `3fa014b1` | Anchor eligibility to checked dispatch types           |
+| `b5940145` | Qualify typed receiver hops and primary slots          |
+| `e7205cc9` | Integrate binary receiver projections                  |
+| `b872d507` | Bound publication and reject crossed dispatch scopes   |
 | `c37a3fe1` | Cover receiver execution order and stopped comparisons |
 
 The eight pre-existing eligibility tests passed before/after extraction. Fourteen new
@@ -3655,12 +3655,12 @@ loads, mutable/reference-bearing fields, nonscalar referents and whole-record
 forwarding remain excluded; scalar field sources are qualified below. Reference histories stay Unknown; no value selection,
 pointee provenance, borrow authority or proof outcome is inferred.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                |
+| ---------- | --------------------------------------------------------------- |
 | `6ee93699` | Characterize receiver coercion sources and stopped observations |
-| `46c12b48` | Link observed coercion projections through qualified receivers |
-| `6bba46ec` | Reject stale types/scopes and bound atomic publication |
-| `8aecd78a` | Cover typed copies, reference returns and stopped suffixes |
+| `46c12b48` | Link observed coercion projections through qualified receivers  |
+| `6bba46ec` | Reject stale types/scopes and bound atomic publication          |
+| `8aecd78a` | Cover typed copies, reference returns and stopped suffixes      |
 
 Eight new structural tests cover source descriptors and owners, independent stages,
 unchanged storage/type boundaries, type/index/canonical conflicts, missing registration,
@@ -3698,14 +3698,14 @@ without selecting values. Ordinary stored copies, reference loads, mutable/refer
 bearing fields, nonscalar selected fields/referents, whole-record forwarding and composed
 receiver emissions remain separate. No link grants pointee provenance or loan/proof authority.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                             |
+| ---------- | ------------------------------------------------------------ |
 | `dd5afb94` | Capture exact reference-primary descriptors for owned fields |
 | `162bfb9a` | Retain and validate descriptors in independent field reports |
-| `1b822659` | Link scalar operation/result slots and candidate consumers |
-| `c15b2853` | Reject stale identities, layouts and scopes atomically |
-| `278e8143` | Bound operation maps, result roots and work |
-| `689a6879` | Cover scalar field order and stopped reads |
+| `1b822659` | Link scalar operation/result slots and candidate consumers   |
+| `c15b2853` | Reject stale identities, layouts and scopes atomically       |
+| `278e8143` | Bound operation maps, result roots and work                  |
+| `689a6879` | Cover scalar field order and stopped reads                   |
 
 Thirteen new structural tests cover capture, implicit/explicit load distinctions,
 replay, descriptors, independent stages, type/owner/layout conflicts, missing evidence,
@@ -3745,16 +3745,16 @@ Ordinary stored copies, reference loads, mutable/reference-bearing fields, nonsc
 referents and generic receiver forwarding retain their existing boundaries. No new
 loan authority, value provenance or proof outcomes arise.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `48e32957` | Capture exact shared primary descriptors for composition |
-| `67c6c12d` | Validate descriptors in independent emission reports |
-| `65403c2c` | Link initialized source slots through typed receivers |
+| Commit     | Reviewable slice                                               |
+| ---------- | -------------------------------------------------------------- |
+| `48e32957` | Capture exact shared primary descriptors for composition       |
+| `67c6c12d` | Validate descriptors in independent emission reports           |
+| `65403c2c` | Link initialized source slots through typed receivers          |
 | `83e15dc9` | Reject stale referents, suffixes, scopes and cycles atomically |
-| `7bef72d2` | Revalidate candidate and expanded source graphs |
-| `d5587bbc` | Bound maps/work and preserve independent control |
-| `2e3fbd47` | Correct the graph collector assertion for Clippy |
-| `cf9eeac6` | Cover composition identity, order and stopped destinations |
+| `7bef72d2` | Revalidate candidate and expanded source graphs                |
+| `d5587bbc` | Bound maps/work and preserve independent control               |
+| `2e3fbd47` | Correct the graph collector assertion for Clippy               |
+| `cf9eeac6` | Cover composition identity, order and stopped destinations     |
 
 Seventeen new structural tests cover capture/replay, exact referents/owners, partial
 observations, stale layouts/targets/scopes, missing evidence, cycles, source caching,
@@ -3792,15 +3792,15 @@ layouts, including unselected fields, remain mandatory. Field operations/results
 source initialization/publication and control flags stay independent. Reference
 histories stay Unknown; no link grants pointee provenance or loan/proof authority.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                    |
+| ---------- | ------------------------------------------------------------------- |
 | `777b1028` | Characterize local types, Binds, aliases and stored-copy boundaries |
-| `1353a71a` | Capture original shared-record descriptors with replay/work checks |
-| `57c777b1` | Index qualified immutable typed initializers under shared budgets |
-| `d096bd31` | Link owned scalar fields through typed local reads and copy chains |
-| `65a0dddc` | Reject stale identities, layouts, scopes and cycles atomically |
-| `e96cc2df` | Validate independent stages, source forests and exact limits |
-| `a207e27c` | Cover stored field order, reference identity and stopped reads |
+| `1353a71a` | Capture original shared-record descriptors with replay/work checks  |
+| `57c777b1` | Index qualified immutable typed initializers under shared budgets   |
+| `d096bd31` | Link owned scalar fields through typed local reads and copy chains  |
+| `65a0dddc` | Reject stale identities, layouts, scopes and cycles atomically      |
+| `e96cc2df` | Validate independent stages, source forests and exact limits        |
+| `a207e27c` | Cover stored field order, reference identity and stopped reads      |
 
 Nineteen new structural tests cover all scalar referent kinds, direct block/dispatch
 sources, stored copies, named aliases, guarded bodies, independent owners, original
@@ -3837,14 +3837,14 @@ emission qualifier with their shared source cache. Reference/nonscalar histories
 Unknown; multiple scalar histories stay distinct. No value selection, pointee provenance,
 loan authority or proof outcome is inferred.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `0997cfb7` | Extract typed local body qualification without changing behavior |
-| `4644c533` | Link composed targets through qualified local records and copies |
-| `bd5cb715` | Reject stale descriptors, suffixes, scopes and mixed cycles |
-| `6c82b2b5` | Revalidate candidate and expanded composition source graphs |
+| Commit     | Reviewable slice                                                  |
+| ---------- | ----------------------------------------------------------------- |
+| `0997cfb7` | Extract typed local body qualification without changing behavior  |
+| `4644c533` | Link composed targets through qualified local records and copies  |
+| `bd5cb715` | Reject stale descriptors, suffixes, scopes and mixed cycles       |
+| `6c82b2b5` | Revalidate candidate and expanded composition source graphs       |
 | `772188c3` | Bound maps, source caches, work and hops with independent control |
-| `7efcc30f` | Cover copy identity, execution order and stopped destinations |
+| `7efcc30f` | Cover copy identity, execution order and stopped destinations     |
 
 All 881 forward-report tests pass before/after extraction. Fourteen new structural
 tests cover all scalar referents, block/dispatch sources, copy chains, ascriptions,
@@ -3881,14 +3881,14 @@ initialization, projection, conversion and result observations stay independent.
 Projection-only Convert visits need no operation registration; conversion/result visits
 retain their existing checks. Binary-owned projections and receiver copies remain opaque.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `dca797e6` | Characterize shared local coercion and binary projection ownership |
-| `d19b1a41` | Capture original shared-record counts before projection |
-| `c4301ec4` | Propagate and validate counts in independent coercion reports |
-| `3826b3a5` | Link observed coercion primaries through typed local sources |
-| `5adcabb1` | Reject stale counts, types, layouts, scopes and cycles atomically |
-| `700aa8b7` | Bound maps, work and hops with independent control flags |
+| Commit     | Reviewable slice                                                     |
+| ---------- | -------------------------------------------------------------------- |
+| `dca797e6` | Characterize shared local coercion and binary projection ownership   |
+| `d19b1a41` | Capture original shared-record counts before projection              |
+| `c4301ec4` | Propagate and validate counts in independent coercion reports        |
+| `3826b3a5` | Link observed coercion primaries through typed local sources         |
+| `5adcabb1` | Reject stale counts, types, layouts, scopes and cycles atomically    |
+| `700aa8b7` | Bound maps, work and hops with independent control flags             |
 | `dab59c83` | Cover typed/nullable copies, return identity and stopped projections |
 
 Eighteen new structural tests cover all scalar referent families, direct block/dispatch
@@ -3926,16 +3926,16 @@ projection, operation and result stay independent. Shared expected typing can le
 stopped operands with normal final types; missing observations never establish completion.
 Reference histories remain Unknown and no value, pointee, loan or proof authority is added.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                   |
+| ---------- | ------------------------------------------------------------------ |
 | `fcc69802` | Characterize operand ownership, full equality and stopped prefixes |
-| `c4b6d55b` | Capture original record counts with operation/sequence replay |
-| `876262fa` | Validate operand counts in independent binary reports |
-| `86097270` | Scope regression families and preserve opaque-reference seeds |
-| `284eb11f` | Link observed binary primaries through typed local sources |
-| `052a1e1b` | Reject stale operands, counts, layouts, scopes and mixed cycles |
-| `111b65ad` | Bound maps, work and hops with independent control |
-| `f622cdd3` | Cover operand order, reference identity, full equality and panic |
+| `c4b6d55b` | Capture original record counts with operation/sequence replay      |
+| `876262fa` | Validate operand counts in independent binary reports              |
+| `86097270` | Scope regression families and preserve opaque-reference seeds      |
+| `284eb11f` | Link observed binary primaries through typed local sources         |
+| `052a1e1b` | Reject stale operands, counts, layouts, scopes and mixed cycles    |
+| `111b65ad` | Bound maps, work and hops with independent control                 |
+| `f622cdd3` | Cover operand order, reference identity, full equality and panic   |
 
 Eighteen new structural tests cover scalar referent families, block/dispatch sources,
 stored copies, wrappers, both operand positions, guarded/function owners and partial
@@ -3975,14 +3975,14 @@ Missing evidence preserves earlier links; stale maps reject until rebuilt. Remov
 publication also invalidates its retained upstream result map. Reference histories remain
 Unknown, with no new pointee, loan or proof authority.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `ccd33bc3` | Characterize stored receiver inputs and opaque consumer boundaries |
+| Commit     | Reviewable slice                                                          |
+| ---------- | ------------------------------------------------------------------------- |
+| `ccd33bc3` | Characterize stored receiver inputs and opaque consumer boundaries        |
 | `3805a676` | Retain exact receiver descriptors with independent stages and work bounds |
-| `30b1e137` | Link owned scalar fields after qualified receiver jumps |
-| `dcb53304` | Reject stale identities and missing evidence without partial publication |
-| `89b5a0cc` | Bound maps, roots, work and hops with independent control |
-| `8a73fdce` | Cover source/receiver order and stopped reads in debug and release |
+| `30b1e137` | Link owned scalar fields after qualified receiver jumps                   |
+| `dcb53304` | Reject stale identities and missing evidence without partial publication  |
+| `89b5a0cc` | Bound maps, roots, work and hops with independent control                 |
+| `8a73fdce` | Cover source/receiver order and stopped reads in debug and release        |
 
 Fourteen new structural tests cover exact referents/counts, block/dispatch sources,
 stored copies, wrappers, guarded/nested/function scopes, stopped prefixes and opaque
@@ -4021,16 +4021,16 @@ preserves earlier links; stale graphs reject until rebuilt with unresolved proje
 Reference and nonscalar histories stay Unknown; scalar alternatives remain distinct.
 Binary/coercion receiver paths and pointee/loan/proof authority stay separate.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `530c494d` | Characterize local receiver composition and existing field links |
-| `6308d3e5` | Share exact record receiver-body qualification without behavior changes |
-| `05689e81` | Admit composed emissions with independent target stages |
+| Commit     | Reviewable slice                                                            |
+| ---------- | --------------------------------------------------------------------------- |
+| `530c494d` | Characterize local receiver composition and existing field links            |
+| `6308d3e5` | Share exact record receiver-body qualification without behavior changes     |
+| `05689e81` | Admit composed emissions with independent target stages                     |
 | `07616063` | Guard descriptors, unobserved suffixes, scopes, cycles and missing evidence |
-| `94f5de1d` | Revalidate candidate/expanded graphs and unresolved links |
-| `e505001d` | Bound traversal, source caches, forest room, work and control |
-| `d5b9db7f` | Cover source/receiver/composition order and reached-emission panic |
-| `1ebed45b` | Retain explicit test-helper visibility accepted by all-target Clippy |
+| `94f5de1d` | Revalidate candidate/expanded graphs and unresolved links                   |
+| `e505001d` | Bound traversal, source caches, forest room, work and control               |
+| `d5b9db7f` | Cover source/receiver/composition order and reached-emission panic          |
+| `1ebed45b` | Retain explicit test-helper visibility accepted by all-target Clippy        |
 
 Sixteen new structural tests cover exact source slots, all scalar referent families,
 block/dispatch sources, copies, wrappers, named/guarded/nested/function scopes and stopped
@@ -4072,12 +4072,12 @@ parameters and call results stay opaque. Fields/compositions retain their existi
 binary-owned projections remain separate and reference histories stay Unknown. Ordinary
 local eligibility and pointee/loan/proof authority are unchanged.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `bc1d7257` | Characterize original coercion counts and projection ownership |
-| `84e70f0f` | Link counted receiver projections with independent stage coverage |
-| `4ff935d8` | Guard exact identities, scopes, cycles and excluded inputs |
-| `874c06a8` | Preserve missing-evidence boundaries and exact budgets/control |
+| Commit     | Reviewable slice                                                   |
+| ---------- | ------------------------------------------------------------------ |
+| `bc1d7257` | Characterize original coercion counts and projection ownership     |
+| `84e70f0f` | Link counted receiver projections with independent stage coverage  |
+| `4ff935d8` | Guard exact identities, scopes, cycles and excluded inputs         |
+| `874c06a8` | Preserve missing-evidence boundaries and exact budgets/control     |
 | `3dfddf7f` | Cover reference identity, evaluation order and stopped projections |
 
 Eleven new structural tests cover all scalar referent families, block/dispatch sources,
@@ -4118,13 +4118,13 @@ Mutable/parameter/call inputs and copies of receiver cells remain opaque, while 
 field/composition/coercion links are preserved. Ordinary eligibility and pointee/loan/proof
 authority are unchanged.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                          |
+| ---------- | ------------------------------------------------------------------------- |
 | `3ef38fcd` | Characterize actual binary/coercion ownership and scope family assertions |
-| `5a22b0ed` | Share counted primary qualification without changing admission |
-| `fdb8acb9` | Admit counted binary operands with independent observation stages |
-| `402bd737` | Guard operands, descriptors, layouts, scopes and mixed cycles |
-| `97d8f92d` | Preserve missing-evidence boundaries and exact budgets/control |
+| `5a22b0ed` | Share counted primary qualification without changing admission            |
+| `fdb8acb9` | Admit counted binary operands with independent observation stages         |
+| `402bd737` | Guard operands, descriptors, layouts, scopes and mixed cycles             |
+| `97d8f92d` | Preserve missing-evidence boundaries and exact budgets/control            |
 | `a8a95775` | Cover reference identity, full equality, evaluation order and stopped RHS |
 
 Twelve new binary receiver tests cover scalar referent families, block/dispatch sources,
@@ -4167,13 +4167,13 @@ Reference histories remain Unknown. Binary-owned primaries through receiver copi
 opaque; composition and coercion qualification follow below. Structural links add no
 value, lifetime, loan or proof authority.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `04b5dac2` | Characterize typed copy bindings and original receiver reads |
-| `9bab49a9` | Admit scalar fields with a separate alternating traversal mode |
-| `ab129a4c` | Guard each hop's descriptors, storage, scopes and mixed cycles |
+| Commit     | Reviewable slice                                                     |
+| ---------- | -------------------------------------------------------------------- |
+| `04b5dac2` | Characterize typed copy bindings and original receiver reads         |
+| `9bab49a9` | Admit scalar fields with a separate alternating traversal mode       |
+| `ab129a4c` | Guard each hop's descriptors, storage, scopes and mixed cycles       |
 | `292d78e8` | Revalidate missing evidence, stale graphs, exact budgets and control |
-| `278b19df` | Cover copied field order, nested receivers and stopped reads |
+| `278b19df` | Cover copied field order, nested receivers and stopped reads         |
 
 Twelve new tests cover all scalar referents, transitive copies, ascriptions, nested/guarded/
 function scopes, stopped initializers and excluded mutable/load/parameter/nonscalar inputs.
@@ -4213,15 +4213,15 @@ Missing evidence preserves earlier links; stale graphs reject until rebuilt. Rem
 dispatch publication or target initialization still invalidates retained result reports.
 Structural links add no value, lifetime, loan or proof authority.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                  |
+| ---------- | ----------------------------------------------------------------- |
 | `bb346a5e` | Characterize copied compositions and unresolved scalar candidates |
-| `691b97ad` | Extract the field qualifier without changing behavior or budgets |
+| `691b97ad` | Extract the field qualifier without changing behavior or budgets  |
 | `bba67bbb` | Admit copied composition sources with independent observed stages |
 | `b76c2622` | Guard descriptors, storage, full layouts, scopes and mixed cycles |
 | `97b4ea6a` | Revalidate missing evidence and composition-chain graph histories |
 | `389e5732` | Bound maps, hops, source caches and both forests under exact work |
-| `62a1e309` | Cover composition order and stopped emissions in source cases |
+| `62a1e309` | Cover composition order and stopped emissions in source cases     |
 
 Fourteen new tests cover direct/copied/transitive sources, six scalar referents,
 original/nested/guarded/function scopes, stopped copies and existing primary boundaries.
@@ -4263,14 +4263,14 @@ Missing evidence suppresses only the affected link; late faults preserve existin
 and edge counts. Reference histories remain Unknown; no value/lifetime/loan/proof
 or broader function-result authority was added.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `05e94b82` | Characterize owned copy projections and separate binary selection |
-| `8c1d96bc` | Admit copied coercion primaries with focused regression checks |
-| `dcaca127` | Qualify observation stages, stopped prefixes and count fallback |
+| Commit     | Reviewable slice                                                   |
+| ---------- | ------------------------------------------------------------------ |
+| `05e94b82` | Characterize owned copy projections and separate binary selection  |
+| `8c1d96bc` | Admit copied coercion primaries with focused regression checks     |
+| `dcaca127` | Qualify observation stages, stopped prefixes and count fallback    |
 | `2cb4cf62` | Guard exact identities, suffix layouts, original scopes and cycles |
-| `49928b3c` | Preserve earlier links when late observations disappear |
-| `f4d5b51c` | Bound map/work/hop limits, duplicates and independent control |
+| `49928b3c` | Preserve earlier links when late observations disappear            |
+| `f4d5b51c` | Bound map/work/hop limits, duplicates and independent control      |
 | `f9435a66` | Cover reference identity, conversion order and stopped projections |
 
 Eleven focused tests cover direct/copied/transitive Forward and Convert sources, six
@@ -4311,14 +4311,14 @@ Reference histories remain Unknown. Canonical receiver cells stay excluded from 
 initializer indexes; mutable copies, reference-bearing suffixes and broader value,
 lifetime, loan and proof authority remain outside this admission.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `6e6b9a66` | Characterize both binary ports and earlier coercion ownership |
-| `7cf0676e` | Link counted binary primaries through immutable receiver copies |
-| `13c4aec0` | Qualify independent stages, referent kinds and count fallback |
-| `7edb75b3` | Guard operand identities, suffix layouts, scopes and cycles |
-| `cf727720` | Preserve earlier links when late evidence disappears |
-| `85535a31` | Bound map/work/hop limits, duplicate visits and control |
+| Commit     | Reviewable slice                                                    |
+| ---------- | ------------------------------------------------------------------- |
+| `6e6b9a66` | Characterize both binary ports and earlier coercion ownership       |
+| `7cf0676e` | Link counted binary primaries through immutable receiver copies     |
+| `13c4aec0` | Qualify independent stages, referent kinds and count fallback       |
+| `7edb75b3` | Guard operand identities, suffix layouts, scopes and cycles         |
+| `cf727720` | Preserve earlier links when late evidence disappears                |
+| `85535a31` | Bound map/work/hop limits, duplicate visits and control             |
 | `ba81e0d0` | Cover address identity, complete shapes, order and stopped operands |
 
 All twelve focused tests pass: direct/copied/transitive sources, guarded/nested/function
@@ -4362,19 +4362,19 @@ post-change cost sets match the candidate measurements taken before consolidatio
 Exact work limits on both ports and the existing map/hop limits remain checked.
 
 | Representative input | Prior work | Current work |
-| --- | --- | --- |
-| Local record | 579 | 379 |
-| Receiver copy | 2476 | 1429 |
-| Receiver read | 759 | 796 |
+| -------------------- | ---------- | ------------ |
+| Local record         | 579        | 379          |
+| Receiver copy        | 2476       | 1429         |
+| Receiver read        | 759        | 796          |
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `d334a76c` | Characterize source identity, opacity and lookup work |
-| `8dfdaf93` | Compare missing evidence and complete identity diagnostics |
-| `372e0fc6` | Exercise shared-copy traversal in local budget tests |
-| `9730f8c3` | Preserve receiver boundaries and migrate receiver budget tests |
+| Commit     | Reviewable slice                                                  |
+| ---------- | ----------------------------------------------------------------- |
+| `d334a76c` | Characterize source identity, opacity and lookup work             |
+| `8dfdaf93` | Compare missing evidence and complete identity diagnostics        |
+| `372e0fc6` | Exercise shared-copy traversal in local budget tests              |
+| `9730f8c3` | Preserve receiver boundaries and migrate receiver budget tests    |
 | `1f4ac417` | Consolidate the counted selector and retire unused modes/wrappers |
-| `c4bbd32e` | Document the unified traversal and measured work costs |
+| `c4bbd32e` | Document the unified traversal and measured work costs            |
 
 All 1029 Forward tests pass (`/tmp/meowy-binary-lookup-unified.log`). The final three
 focused lookup tests and all-target Clippy pass (`/tmp/meowy-binary-lookup-focused.log`,
@@ -4410,15 +4410,15 @@ prove runtime completion. Source execution remains distinct from seeded structur
 observations. No call result sources, callee summaries, values, loan authority or proof
 outcomes are enabled.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                          |
+| ---------- | ------------------------------------------------------------------------- |
 | `58211edd` | Characterize sparse call visits, ordered arguments and independent owners |
-| `819861c9` | Extract the bounded validator without changing reports |
-| `b520fe00` | Aggregate independent call stages and gate call-graph sites |
-| `7da5f465` | Reject stale identities, stages and conflicting partial reports |
-| `ff01f1c3` | Bound argument copies, map growth and work with atomic failures |
-| `1274815c` | Add guarded/conditional-return source cases and coverage evidence |
-| `d27b5a95` | Require caller membership before filtering result-only reports |
+| `819861c9` | Extract the bounded validator without changing reports                    |
+| `b520fe00` | Aggregate independent call stages and gate call-graph sites               |
+| `7da5f465` | Reject stale identities, stages and conflicting partial reports           |
+| `ff01f1c3` | Bound argument copies, map growth and work with atomic failures           |
+| `1274815c` | Add guarded/conditional-return source cases and coverage evidence         |
+| `d27b5a95` | Require caller membership before filtering result-only reports            |
 
 All ten compiler checks pass: 3109 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution
@@ -4457,13 +4457,13 @@ reference-load and call-result sources remain opaque; shared-reference histories
 Unknown. Source tests cover order, address identity, P006 stopping and incompatible-primary
 E212. These checks grant no values, loan authority, runtime reachability or proof answers.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                          |
+| ---------- | ------------------------------------------------------------------------- |
 | `df87c5e6` | Characterize existing call-argument projection owners and type boundaries |
-| `852c2270` | Qualify independent observations, stopped arguments and opaque sources |
-| `d6c710df` | Reject identity/scope faults and enforce exact work/map/payload bounds |
-| `91365ea5` | Add block-emission regression and four required source cases |
-| `9edeffaf` | Document existing reuse and link structural coverage evidence |
+| `852c2270` | Qualify independent observations, stopped arguments and opaque sources    |
+| `d6c710df` | Reject identity/scope faults and enforce exact work/map/payload bounds    |
+| `91365ea5` | Add block-emission regression and four required source cases              |
+| `9edeffaf` | Document existing reuse and link structural coverage evidence             |
 
 All ten compiler checks pass: 3120 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-inputs-gate.log`).
@@ -4499,14 +4499,14 @@ captured shapes on unobserved calls. A returning signature keeps its shape when 
 panics; declared Never has no normal result. Values, list lengths, field contents,
 full-domain fact transfer, call-result provenance and callee summaries remain separate.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                      |
+| ---------- | --------------------------------------------------------------------- |
 | `948733f7` | Characterize signature shapes, outer conversions and panicking bodies |
-| `05cd1f2e` | Capture bounded checked result shapes and validate return agreement |
-| `cc23b803` | Retain shapes in stages/reports and revalidate graph consumption |
+| `05cd1f2e` | Capture bounded checked result shapes and validate return agreement   |
+| `cc23b803` | Retain shapes in stages/reports and revalidate graph consumption      |
 | `02ab5a8e` | Reject invalid/stale shapes and enforce exact map/work/payload limits |
-| `deecd04f` | Add four required scalar/aggregate/panic/outer-type source cases |
-| `9165f8c1` | Document shallow classification and link structural coverage |
+| `deecd04f` | Add four required scalar/aggregate/panic/outer-type source cases      |
+| `9165f8c1` | Document shallow classification and link structural coverage          |
 
 All ten compiler checks pass: 3133 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-shapes-gate.log`).
@@ -4541,14 +4541,14 @@ after Never. Individual call reports and graphs revalidate callee headers, inclu
 result-only reports. Missing, foreign, stale or oversized metadata and exhausted budgets
 reject atomically. No values, origins or loan authority cross caller/callee ownership.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `7869d674` | Characterize parameter order, transferred HIR and alias compatibility |
-| `080b6c5b` | Retain bounded headers/reverse positions and reserve shared payload |
-| `57e911eb` | Validate retained context and qualify call arity/result/body identity |
+| Commit     | Reviewable slice                                                         |
+| ---------- | ------------------------------------------------------------------------ |
+| `7869d674` | Characterize parameter order, transferred HIR and alias compatibility    |
+| `080b6c5b` | Retain bounded headers/reverse positions and reserve shared payload      |
+| `57e911eb` | Validate retained context and qualify call arity/result/body identity    |
 | `194275e0` | Cover missing/foreign/oversized identities and exact work/payload limits |
-| `4f677a17` | Add four required alias/forward/reference/unused-arity source cases |
-| `467e2d3c` | Document signature context and link structural coverage evidence |
+| `4f677a17` | Add four required alias/forward/reference/unused-arity source cases      |
+| `467e2d3c` | Document signature context and link structural coverage evidence         |
 
 All ten compiler checks pass: 3147 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution (`/tmp/meowy-signatures-gate.log`).
@@ -4583,14 +4583,14 @@ The current input-shape extension reserves three records per parameter before ef
 initializer rebuilds borrow that context and shared records charge only their own entries.
 Stale/oversized source or cached metadata and exhausted work reject atomically.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `81083e56` | Characterize transferred/reordered HIR, initializer maps and exclusions |
+| Commit     | Reviewable slice                                                           |
+| ---------- | -------------------------------------------------------------------------- |
+| `81083e56` | Characterize transferred/reordered HIR, initializer maps and exclusions    |
 | `55bee5d0` | Move parameter validation/tests into signatures and migrate evidence paths |
-| `0256845b` | Enforce construction identities directly without parameter scratch |
-| `36001da0` | Validate source/header agreement and reuse retained parameter membership |
-| `8a53a1bf` | Cover oversized/stale context and exact combined payload/work boundaries |
-| `ab560b14` | Document retained initializer context and link structural evidence |
+| `0256845b` | Enforce construction identities directly without parameter scratch         |
+| `36001da0` | Validate source/header agreement and reuse retained parameter membership   |
+| `8a53a1bf` | Cover oversized/stale context and exact combined payload/work boundaries   |
+| `ab560b14` | Document retained initializer context and link structural evidence         |
 
 All ten compiler checks pass: 3153 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution
@@ -4617,13 +4617,13 @@ and reverse-index validation. These are logical charges, not runtime timings. Th
 characterizations retain identical initializer maps and payloads
 (`/tmp/meowy-parameter-context-characterization.log`, `/tmp/meowy-parameter-context-work.log`).
 
-| Input | Header work before/after | Ordinary before/after | Shared before/after |
-| --- | --- | --- | --- |
-| Empty program | 8 / 6 | 8 / 6 | 8 / 6 |
-| Ordinary/unused/empty functions | 121 / 80 | 206 / 233 | 176 / 203 |
-| Nested functions/shared records | 94 / 63 | 451 / 475 | 444 / 468 |
-| Forward definitions | 72 / 48 | 187 / 205 | 159 / 177 |
-| Typed export | 50 / 35 | 168 / 181 | 140 / 153 |
+| Input                           | Header work before/after | Ordinary before/after | Shared before/after |
+| ------------------------------- | ------------------------ | --------------------- | ------------------- |
+| Empty program                   | 8 / 6                    | 8 / 6                 | 8 / 6               |
+| Ordinary/unused/empty functions | 121 / 80                 | 206 / 233             | 176 / 203           |
+| Nested functions/shared records | 94 / 63                  | 451 / 475             | 444 / 468           |
+| Forward definitions             | 72 / 48                  | 187 / 205             | 159 / 177           |
+| Typed export                    | 50 / 35                  | 168 / 181             | 140 / 153           |
 
 ### Bounded call-argument and parameter associations
 
@@ -4643,13 +4643,13 @@ operation visit. Stale/oversized metadata and exact late budget exhaustion rejec
 atomically. Parameter values, initializer eligibility, source histories, callee summaries,
 loan authority, call-result provenance and proof outcomes remain unchanged.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `1e745c38` | Characterize positional identity, transferred HIR and partial observations |
-| `bc4c1585` | Extract the existing call validator with unchanged logic and visibility |
-| `bfbb81db` | Return borrowed associations and integrate stage/report consumers |
+| Commit     | Reviewable slice                                                               |
+| ---------- | ------------------------------------------------------------------------------ |
+| `1e745c38` | Characterize positional identity, transferred HIR and partial observations     |
+| `bc4c1585` | Extract the existing call validator with unchanged logic and visibility        |
+| `bfbb81db` | Return borrowed associations and integrate stage/report consumers              |
 | `1166f1e2` | Cover stale identities, arity, oversized vectors and exact work/payload bounds |
-| `0d74f587` | Document the qualifier and link structural coverage evidence |
+| `0d74f587` | Document the qualifier and link structural coverage evidence                   |
 
 All ten compiler checks pass: 3161 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-parameters-gate.log`).
@@ -4673,11 +4673,11 @@ Qualification adds exactly `argument count + 1` logical work units. Characteriza
 retain reports, edges and payloads (`/tmp/meowy-call-parameters-characterization.log`,
 `/tmp/meowy-call-parameters-work.log`). These are logical charges, not runtime timings.
 
-| Call | Arguments | Work before/after |
-| --- | --- | --- |
-| Mixed typed export | 3 | 77 / 81 |
-| Empty function | 0 | 38 / 39 |
-| Recursive function | 1 | 50 / 52 |
+| Call               | Arguments | Work before/after |
+| ------------------ | --------- | ----------------- |
+| Mixed typed export | 3         | 77 / 81           |
+| Empty function     | 0         | 38 / 39           |
+| Recursive function | 1         | 50 / 52           |
 
 ### Individual call-argument observations
 
@@ -4698,13 +4698,13 @@ wrapped roots and declared-return semantics remain intact, including a returning
 whose body panics. Flags describe structural visits, not runtime completion or values.
 No initializer links, argument/origin transfer, callee summaries or loan authority are added.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `3419be69` | Characterize argument ports, stopped prefixes and independent observations |
+| Commit     | Reviewable slice                                                             |
+| ---------- | ---------------------------------------------------------------------------- |
+| `3419be69` | Characterize argument ports, stopped prefixes and independent observations   |
 | `eb836942` | Validate caller roots and share existing bounded call helpers within Forward |
-| `9f90add7` | Retain sparse argument observations with one lookup and one scan per walk |
-| `5782d49c` | Cover stale identities and exact index/row/payload/work limits |
-| `219e7cdd` | Document the report and budgets and link structural coverage |
+| `9f90add7` | Retain sparse argument observations with one lookup and one scan per walk    |
+| `5782d49c` | Cover stale identities and exact index/row/payload/work limits               |
+| `219e7cdd` | Document the report and budgets and link structural coverage                 |
 
 All ten compiler checks pass: 3173 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution
@@ -4744,13 +4744,13 @@ payload and work exhaustion and stale producer metadata fail atomically. Existin
 bounds, generic eligibility, Unknown histories and caller/callee ownership remain intact;
 no parameter values/origins, callee summaries or proof outcomes are transferred.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                        |
+| ---------- | ----------------------------------------------------------------------- |
 | `38e8ce8c` | Characterize direct sources and opaque cases at original argument roots |
-| `54ffa289` | Revalidate retained argument identities and conservative observations |
-| `05c3e483` | Retain caller source descriptors using the shared bounded Lookup cache |
-| `4ee16569` | Cover stale metadata, cache reuse, exact budgets and opaque inputs |
-| `6c1ee465` | Document the source report and link structural coverage evidence |
+| `54ffa289` | Revalidate retained argument identities and conservative observations   |
+| `05c3e483` | Retain caller source descriptors using the shared bounded Lookup cache  |
+| `4ee16569` | Cover stale metadata, cache reuse, exact budgets and opaque inputs      |
+| `6c1ee465` | Document the source report and link structural coverage evidence        |
 
 All ten compiler checks pass: 3185 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution (`/tmp/meowy-argument-sources-gate.log`).
@@ -4793,13 +4793,13 @@ keys stay distinct. A scalar-block descriptor can remain valid while its candida
 map is stale: future traversal must also qualify those graphs before exposing visits.
 The view transfers no parameter values/origins; retained forest integration is below.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `e7d3fc7e` | Qualify the installed LLVM 23.1.3 patch pin independently |
+| Commit     | Reviewable slice                                                    |
+| ---------- | ------------------------------------------------------------------- |
+| `e7d3fc7e` | Qualify the installed LLVM 23.1.3 patch pin independently           |
 | `995dfc1e` | Characterize exact retained Normal-row source keys and observations |
-| `cb6c0427` | Qualify the borrowed source view before report publication |
-| `ffcecee0` | Bound shared caches, work/payload and stale producer evidence |
-| `af71976e` | Characterize qualified argument slots at existing forest entry |
+| `cb6c0427` | Qualify the borrowed source view before report publication          |
+| `ffcecee0` | Bound shared caches, work/payload and stale producer evidence       |
+| `af71976e` | Characterize qualified argument slots at existing forest entry      |
 
 All three source-map characterization, eight source-view and three forest-entry tests
 pass. Logs: `/tmp/meowy-argument-view-characterization.log`,
@@ -4836,14 +4836,14 @@ qualification cache costs. Late identity/owner failures and exhausted budgets pu
 no partial report or changes to earlier reports/edges. Call, argument and source flags
 remain independent, including stopped prefixes and conservative omitted observations.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                    |
+| ---------- | ------------------------------------------------------------------- |
 | `482f0b69` | Extract single-root traversal without changing visits or accounting |
-| `b05b2f4b` | Qualify combined borrowed argument and candidate/direct graphs |
-| `2871eaa9` | Retain original argument visits and their source forests |
-| `f7a67bf7` | Bound sharing, cycles, deep storage and late traversal faults |
-| `532809d1` | Validate independent observations and atomic report budgets |
-| `3b80c8ae` | Use explicit module visibility for the test helper |
+| `b05b2f4b` | Qualify combined borrowed argument and candidate/direct graphs      |
+| `2871eaa9` | Retain original argument visits and their source forests            |
+| `f7a67bf7` | Bound sharing, cycles, deep storage and late traversal faults       |
+| `532809d1` | Validate independent observations and atomic report budgets         |
+| `3b80c8ae` | Use explicit module visibility for the test helper                  |
 
 All 31 existing graph/walk tests pass after extraction. Three combined-view, four raw
 traversal and nine source-forest tests pass, including 2048-node exact peak storage and
@@ -4883,13 +4883,13 @@ before exposure. Iterator lookup work is prepaid even when unconsumed. Entry pub
 reuses one qualified context across calls, with no argument-vector copy or per-call
 payload reservation. Late faults and exact aggregate exhaustion leave reports/edges intact.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `d5bd8f15` | Characterize per-call parameter/argument/forest associations |
-| `0df6b56c` | Qualify retained walks and index original argument markers |
-| `1882808f` | Expose borrowed per-call access and reuse one qualified context |
+| Commit     | Reviewable slice                                                      |
+| ---------- | --------------------------------------------------------------------- |
+| `d5bd8f15` | Characterize per-call parameter/argument/forest associations          |
+| `0df6b56c` | Qualify retained walks and index original argument markers            |
+| `1882808f` | Expose borrowed per-call access and reuse one qualified context       |
 | `e338c8a4` | Reject late marker/call faults and preserve conservative observations |
-| `7b15dd42` | Bound prepaid iterator work and aggregate qualification budgets |
+| `7b15dd42` | Bound prepaid iterator work and aggregate qualification budgets       |
 
 Three association, four retained-view, four access, three identity/observation and
 three budget tests pass. Logs: `/tmp/meowy-call-forest-pairs.log`,
@@ -4931,14 +4931,14 @@ referent types and unsupported shallow forms remain opaque. Unused/stopped input
 their declarations independently of observations. The borrowed pair and forest APIs,
 generic eligibility, owner boundaries and declared-domain proof rules remain unchanged.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `77f1e426` | Characterize declared shapes through HIR and per-call associations |
-| `716d48f9` | Capture checked parameter identities/shapes atomically |
+| Commit     | Reviewable slice                                                       |
+| ---------- | ---------------------------------------------------------------------- |
+| `77f1e426` | Characterize declared shapes through HIR and per-call associations     |
+| `716d48f9` | Capture checked parameter identities/shapes atomically                 |
 | `495ede7e` | Centralize prior signature payload accounting without behavior changes |
-| `ba499a80` | Retain ordered input shapes and validate captured/HIR agreement |
-| `ec324b05` | Revalidate call boundaries and repair empty-context capture checks |
-| `cd803fcd` | Preserve existing fixture contracts with complete parameter metadata |
+| `ba499a80` | Retain ordered input shapes and validate captured/HIR agreement        |
+| `ec324b05` | Revalidate call boundaries and repair empty-context capture checks     |
+| `cd803fcd` | Preserve existing fixture contracts with complete parameter metadata   |
 
 Two characterization, three capture, three header and six per-call tests pass: fourteen
 new structural tests. All 49 signature-focused checks, the initializer payload check
@@ -5012,10 +5012,10 @@ return transfers and inputs publish only after their combined reservation succee
 Repeated sites must retain the same header. Replay discards intermediate-pass snapshots
 and merges only converged function facts, including bounded merge work.
 
-| Commit | Review question |
-| --- | --- |
-| `336d38a6` | Isolate call evaluation without changing behavior |
-| `52c8da05` | Retain bounded argument snapshots with call results |
+| Commit     | Review question                                               |
+| ---------- | ------------------------------------------------------------- |
+| `336d38a6` | Isolate call evaluation without changing behavior             |
+| `52c8da05` | Retain bounded argument snapshots with call results           |
 | `aff10422` | Preserve guards, aliases, frames and converged restart inputs |
 
 Eleven new tests cover primitive/shared/exclusive/aggregate inputs, later argument writes,
@@ -5056,12 +5056,12 @@ traversal depth and pending-item bounds reject before exposure. Late failures le
 reports and edge counts unchanged. This validates association and safe metadata bounds;
 it does not re-prove semantic source eligibility or grant mutation permission.
 
-| Commit | Review question |
-| --- | --- |
-| `64aea7b5` | Retain original call and argument identities in snapshots |
-| `03ec58d7` | Validate bounded HIR calls against checked invocations |
+| Commit     | Review question                                              |
+| ---------- | ------------------------------------------------------------ |
+| `64aea7b5` | Retain original call and argument identities in snapshots    |
+| `03ec58d7` | Validate bounded HIR calls against checked invocations       |
 | `08e32246` | Expose qualified borrowed parameter/point/state associations |
-| `8bea99fc` | Reject corruption and bound combined view/traversal work |
+| `8bea99fc` | Reject corruption and bound combined view/traversal work     |
 
 All eleven new tests pass: four HIR index tests and seven bridge tests, including exact
 limits, late corruption, invalid guard payloads, wrappers, nested/unreached calls and
@@ -5096,11 +5096,11 @@ parameter/PointId/access/state associations. Exact lookup/revalidation work is p
 before returning the iterator. State references and independent borrow/graph observations
 are preserved; no state copying, caller specialization or callee-body analysis.
 
-| Commit | Review question |
-| --- | --- |
-| `b6020ca3` | Classify complete declared parameter types with bounded work |
+| Commit     | Review question                                                |
+| ---------- | -------------------------------------------------------------- |
+| `b6020ca3` | Classify complete declared parameter types with bounded work   |
 | `fbc96cf7` | Expose revalidated declared access beside borrowed call inputs |
-| `963abce9` | Reject stale descriptors and bound map/accessor work |
+| `963abce9` | Reject stale descriptors and bound map/accessor work           |
 
 All twelve new tests pass: scalar modes, complete aggregate traversal, opaque boundaries,
 unused/stopped inputs, shared contracts for exclusive arguments, declared reference unions,
@@ -5138,14 +5138,14 @@ information. Qualified candidates coexist with an explicit unknown flag for unsu
 or incomplete evidence. All indexes, snapshots, rows and candidates share one bounded
 allowance; late failures publish no partial collection. No scalar facts are invalidated.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `7084f211` | Capture scalar kinds and qualify current local storage |
-| `92120dfa` | Index complete borrowed HIR block types |
-| `38cdd40c` | Qualify emitted alias roots, views and backing types |
+| Commit     | Reviewable slice                                        |
+| ---------- | ------------------------------------------------------- |
+| `7084f211` | Capture scalar kinds and qualify current local storage  |
+| `92120dfa` | Index complete borrowed HIR block types                 |
+| `38cdd40c` | Qualify emitted alias roots, views and backing types    |
 | `ca5c2e6e` | Index candidate storage and revalidate selected origins |
-| `3efadc5b` | Integrate bounded per-call candidate collections |
-| `a80ed3ae` | Cover guarded, missing and retargeted origins |
+| `3efadc5b` | Integrate bounded per-call candidate collections        |
+| `a80ed3ae` | Cover guarded, missing and retargeted origins           |
 
 All ten compiler checks pass: 3306 library, 923 native and 62 Python tests, formatting,
 all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-storage-gate.log`).
@@ -5181,12 +5181,12 @@ fallback. Neither establishes callee purity. Original caller snapshots remain bo
 late failures publish no partial maps. Ordinary refinement forgetting and monotone dependency
 marks are unchanged; the scheduled scalar consumer below now applies direct-call invalidation.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                            |
+| ---------- | --------------------------------------------------------------------------- |
 | `305d2655` | Characterize canonical roots and separate refinements from dependency marks |
-| `9245a267` | Map qualified origins to bounded guarded fact roots |
-| `61c1e599` | Associate roots with Call operations and entry guards |
-| `edfeec3c` | Cover capacity, stale reports, projections and final-map independence |
+| `9245a267` | Map qualified origins to bounded guarded fact roots                         |
+| `61c1e599` | Associate roots with Call operations and entry guards                       |
+| `edfeec3c` | Cover capacity, stale reports, projections and final-map independence       |
 
 All 14 `make test` groups pass: 3324 library, 923 native and 80 Python tests, both editors,
 runtime/sanitizers, formatting, all-target Clippy, build, metadata and source execution
@@ -5240,14 +5240,14 @@ context and do not mutate retained reports
 or dependency marks. The compiler now qualifies entry states, but does not traverse the CFG
 or apply mutation/value transfers to them. These are structural inputs, not proof answers.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                         |
+| ---------- | ------------------------------------------------------------------------ |
 | `73ef4601` | Bounded state carrier, explicit evidence states and historical snapshots |
-| `5b778dca` | Guard restriction and conservative state joins |
-| `4bdbec1d` | Declared per-owner entry states and production integration |
-| `91f357ec` | Canonical joins, guard/budget/entry boundaries and traceability |
-| `d0b3357c` | Single-pass copy validation and checked sorted-state construction |
-| `683988e1` | Sorted entry batches preserve the 1000-matcher work budget |
+| `5b778dca` | Guard restriction and conservative state joins                           |
+| `4bdbec1d` | Declared per-owner entry states and production integration               |
+| `91f357ec` | Canonical joins, guard/budget/entry boundaries and traceability          |
+| `d0b3357c` | Single-pass copy validation and checked sorted-state construction        |
+| `683988e1` | Sorted entry batches preserve the 1000-matcher work budget               |
 
 All 14 `make test` groups pass: 3401 library, 923 native and 80 Python tests, both editors,
 runtime/sanitizers, formatting, all-target Clippy, build, metadata and source execution
@@ -5283,14 +5283,14 @@ identity, owner and scope remain checked. Result-only observations cannot create
 and candidate values cannot select a definition site. Entry snapshots and dependency marks
 remain unchanged; no current read value or merged version is inferred from these locations.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                            |
+| ---------- | --------------------------------------------------------------------------- |
 | `23d0b994` | Bounded hash lookup for adjacency/membership with unchanged traversal order |
-| `2c9bcca2` | Qualified scalar port metadata and entry associations |
-| `9fe799a8` | Predecessor edges, unreached sources and restart boundaries |
-| `d6d5d8df` | Source-ordered acyclic scheduling after reached predecessors |
-| `2a32f41f` | Explicit helper visibility accepted by Clippy |
-| `c6d769f5` | Parameter/Bind/Write definition sites and independent observations |
+| `2c9bcca2` | Qualified scalar port metadata and entry associations                       |
+| `9fe799a8` | Predecessor edges, unreached sources and restart boundaries                 |
+| `d6d5d8df` | Source-ordered acyclic scheduling after reached predecessors                |
+| `2a32f41f` | Explicit helper visibility accepted by Clippy                               |
+| `c6d769f5` | Parameter/Bind/Write definition sites and independent observations          |
 
 Seventeen new structural tests cover these boundaries. All focused tests, all-target Clippy,
 formatting and the original 1000-matcher acceptance case pass. Before adding the port pass,
@@ -5332,12 +5332,12 @@ not caller arguments. Bind/Write candidate values cannot initialize snapshots. O
 definition sites and independent normal observations are checked before publishing the complete
 context. Partial schedules, foreign owners and late resource/definition failures publish nothing.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `680a2862` | Independent seed snapshots and immutable before/after rows |
-| `68c26ab3` | Completed predecessor contributions and canonical joins |
-| `ef477820` | Exact join limits, branch authority and restart boundaries |
-| `d1465268` | Linear port membership lookup with unchanged processing order |
+| Commit     | Reviewable slice                                                       |
+| ---------- | ---------------------------------------------------------------------- |
+| `680a2862` | Independent seed snapshots and immutable before/after rows             |
+| `68c26ab3` | Completed predecessor contributions and canonical joins                |
+| `ef477820` | Exact join limits, branch authority and restart boundaries             |
+| `d1465268` | Linear port membership lookup with unchanged processing order          |
 | `9cc8c2b7` | Scheduled capture, conservative boundaries and definition associations |
 
 All 13 snapshot tests, the lookup regression and 1,346 forward tests pass. The original
@@ -5378,12 +5378,12 @@ operations and scope/result boundaries still yield unavailable storage output. T
 structural analysis only: Bind/Write updates, call invalidation, restart resets and
 proof outcomes remain unimplemented. No source contract or capability pin changed.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `1bbd4ec6` | Qualify literal observation ports and preserve storage snapshots |
-| `b44c6653` | Capture bounded literal result facts and independent value origins |
-| `2c546b5a` | Qualify scalar read stages and shared declared storage domains |
-| `7a6359a5` | Capture current read values with version/type/control validation |
+| Commit     | Reviewable slice                                                               |
+| ---------- | ------------------------------------------------------------------------------ |
+| `1bbd4ec6` | Qualify literal observation ports and preserve storage snapshots               |
+| `b44c6653` | Capture bounded literal result facts and independent value origins             |
+| `2c546b5a` | Qualify scalar read stages and shared declared storage domains                 |
+| `7a6359a5` | Capture current read values with version/type/control validation               |
 | `f2ab89d3` | Cover publication limits, malformed observations and missing/bottom boundaries |
 
 Seventeen new structural regressions and all 228 focused scalar tests pass. The original
@@ -5425,17 +5425,17 @@ types, conversions, primary projections and stopped operands gain no value trans
 Calls, Bind/Write and scope/result boundaries remain conservative; cached initializers never
 reconstruct a current value. Proof outcomes remain gated.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `4eb876ea` | Centralize observation construction without behavior changes |
-| `e9040435` | Qualify explicit-group result associations and predecessor identity |
-| `f0d92d7b` | Dispatch snapshot work only at relevant stages |
-| `6fce86c3` | Forward group values with shared budgets and independent histories |
-| `ea320c20` | Forward unchanged coercions to typed binding inputs |
+| Commit     | Reviewable slice                                                     |
+| ---------- | -------------------------------------------------------------------- |
+| `4eb876ea` | Centralize observation construction without behavior changes         |
+| `e9040435` | Qualify explicit-group result associations and predecessor identity  |
+| `f0d92d7b` | Dispatch snapshot work only at relevant stages                       |
+| `6fce86c3` | Forward group values with shared budgets and independent histories   |
+| `ea320c20` | Forward unchanged coercions to typed binding inputs                  |
 | `8734d211` | Index candidate-copy lookup while retaining deterministic root order |
-| `daee7ed1` | Forward current facts through unchanged narrowing |
-| `b3e969c3` | Preserve independent ascription operation/result stages |
-| `11c3b0d6` | Cover mixed chains, historical copies and complete capture limits |
+| `daee7ed1` | Forward current facts through unchanged narrowing                    |
+| `b3e969c3` | Preserve independent ascription operation/result stages              |
+| `11c3b0d6` | Cover mixed chains, historical copies and complete capture limits    |
 
 All 249 focused scalar tests pass, including 21 new structural regressions. The original
 1000-matcher acceptance case, formatting and all-target Clippy pass under unchanged limits.
@@ -5577,11 +5577,11 @@ Reference/opaque inputs without scalar facts, float/string results and non-scala
 shapes retain conservative fallback. No callee body or final mutable frontend map is read
 for result facts. Late identity, work and payload failures publish no partial result.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `291a3c81` | Qualify independent result observations and entry control |
+| Commit     | Reviewable slice                                                            |
+| ---------- | --------------------------------------------------------------------------- |
+| `291a3c81` | Qualify independent result observations and entry control                   |
 | `77df0c02` | Capture declared domains with saved argument dependencies and fresh origins |
-| `480cbb78` | Verify historical/nested dependencies, missing inputs and exact limits |
+| `480cbb78` | Verify historical/nested dependencies, missing inputs and exact limits      |
 
 All 15 new structural tests and all 236 scalar-fact tests pass. Four result regressions
 first reproduced absent facts. Guards, Bind/Write copies, coercion forwarding, stopped calls
@@ -5631,10 +5631,10 @@ initialization; completion dependencies and result publication remain separate. 
 inventories cannot select values. Named aliases, composed emissions, broader shapes,
 dispatch and restart resets remain separate; no proof query executes or gains a capability waiver.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `dbbc5e1a` | Qualify scalar block completion histories |
-| `03f84a7e` | Qualify direct primary emission sources and observations |
+| Commit     | Reviewable slice                                                  |
+| ---------- | ----------------------------------------------------------------- |
+| `dbbc5e1a` | Qualify scalar block completion histories                         |
+| `03f84a7e` | Qualify direct primary emission sources and observations          |
 | `7397a00c` | Capture emission-time values and preserve storage for tail writes |
 | `5cb125af` | Verify control, missing/stale history and exact budget boundaries |
 
@@ -5687,12 +5687,12 @@ inventories or the last emission cannot select a result. Broader nested-body non
 propagation, alias/composition precision, restart resets, termination and proof/query E225
 remain separate.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `a3ecfd72` | Qualify original leave-source coverage and identity |
-| `b144487f` | Qualify absent routes and observed leave authority |
-| `df9a553f` | Qualify transparent non-fallthrough leave regions |
-| `347cc21f` | Transport storage through qualified completion routes |
+| Commit     | Reviewable slice                                            |
+| ---------- | ----------------------------------------------------------- |
+| `a3ecfd72` | Qualify original leave-source coverage and identity         |
+| `b144487f` | Qualify absent routes and observed leave authority          |
+| `df9a553f` | Qualify transparent non-fallthrough leave regions           |
+| `347cc21f` | Transport storage through qualified completion routes       |
 | `3484120b` | Verify control, missing history and exact budget boundaries |
 
 All 17 new structural regressions and 270 scalar-fact tests pass. Two storage tests first
@@ -5748,13 +5748,13 @@ Completion dependencies and result publication remain separate; entry control al
 prove completion independence. Candidate inventories, final local maps and callee bodies
 cannot supply a slot value or restore unavailable evidence.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                            |
+| ---------- | ----------------------------------------------------------- |
 | `7b274573` | Retain separate slot state in immutable snapshots and joins |
-| `2562714a` | Qualify declared scalar slot entry headers |
-| `b172ae4f` | Initialize owner/nested scope entry slots |
-| `9cdeaa07` | Initialize slots from saved emission-time values |
-| `2df18eee` | Verify control, reentry and atomic budget boundaries |
+| `2562714a` | Qualify declared scalar slot entry headers                  |
+| `b172ae4f` | Initialize owner/nested scope entry slots                   |
+| `9cdeaa07` | Initialize slots from saved emission-time values            |
+| `2df18eee` | Verify control, reentry and atomic budget boundaries        |
 
 All 18 new structural regressions and 288 scalar-fact tests pass. Entry and emission tests
 first reproduced absent initialization. Namespace isolation, historical copies, nested
@@ -5802,13 +5802,13 @@ Ordinary storage, emitted values and completion history stay separate. Tail guar
 not rewrite earlier emission facts. No completed block expression or implicit null value is
 published; unsupported shapes and incomplete state cannot recover from a known control mark.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `d8178fc0` | Reserve explicit completion control in existing snapshot rows |
+| Commit     | Reviewable slice                                                |
+| ---------- | --------------------------------------------------------------- |
+| `d8178fc0` | Reserve explicit completion control in existing snapshot rows   |
 | `95e7fae2` | Accumulate straight-line and scope history through predecessors |
-| `e3e588f4` | Retain guard dependencies through branches and joins |
+| `e3e588f4` | Retain guard dependencies through branches and joins            |
 | `34a0ddfd` | Qualify call completion from saved arguments and result sources |
-| `71e97522` | Verify joins, foreign owners and atomic control publication |
+| `71e97522` | Verify joins, foreign owners and atomic control publication     |
 
 All 15 new structural regressions and 303 scalar-fact tests pass. Coverage distinguishes
 missing/dependent controls, ordinary guard paths, bottom/unknown joins, foreign owners,
@@ -5862,12 +5862,12 @@ per-query E225 qualification. The following handoffs extend nested/dead-tail abs
 conditional null results. Wider shapes, alias/composition and restart/arithmetic/guard
 transfers remain separate.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `8d0d887b` | Retain graph Ports as forwarding source identities |
-| `6848117b` | Qualify exact scalar block result consumers |
-| `0f144470` | Publish initialized slots with completion checks |
-| `eadbc7d9` | Materialize qualified implicit null and integrate consumers |
+| Commit     | Reviewable slice                                                  |
+| ---------- | ----------------------------------------------------------------- |
+| `8d0d887b` | Retain graph Ports as forwarding source identities                |
+| `6848117b` | Qualify exact scalar block result consumers                       |
+| `0f144470` | Publish initialized slots with completion checks                  |
+| `eadbc7d9` | Materialize qualified implicit null and integrate consumers       |
 | `c58bf85f` | Verify missing/partial/bottom states, identity and atomic budgets |
 
 All 15 new structural regressions, 318 scalar-fact tests and 3684 library tests pass.
@@ -5922,15 +5922,15 @@ execution remain distinct; whole-record equality gains no scalar projection. Exa
 and identity failures preserve earlier records. Empty-map fast paths retain record-free
 costs, and stored projection copies reserve only their actual output payload.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `607a2e79` | Qualify immutable record Bind descriptors |
-| `9bcb383c` | Retain completed record facts separately |
-| `164a6482` | Store primary histories and forward record wrappers |
-| `063db0f1` | Propagate exact record reads and immutable copies |
-| `1ba30f2f` | Project saved record-copy values |
+| Commit     | Reviewable slice                                      |
+| ---------- | ----------------------------------------------------- |
+| `607a2e79` | Qualify immutable record Bind descriptors             |
+| `9bcb383c` | Retain completed record facts separately              |
+| `164a6482` | Store primary histories and forward record wrappers   |
+| `063db0f1` | Propagate exact record reads and immutable copies     |
+| `1ba30f2f` | Project saved record-copy values                      |
 | `daa6c209` | Verify missing/stale histories and atomic publication |
-| `0542b99a` | Verify exact observation/storage budgets |
+| `0542b99a` | Verify exact observation/storage budgets              |
 | `7bc651c9` | Keep test-helper visibility explicit and Clippy-clean |
 
 All 24 new structural regressions and 3787 library tests pass, including the original
@@ -5985,13 +5985,13 @@ right operand. Missing/ambiguous slots, incompatible values and unknown historie
 unavailable. Known bottom and unobserved skipped projections remain distinct. Wholly
 nonreturning entries retain their existing unknown-control boundary.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `09e67c0d` | Qualify exact ordinary record primary scope/slot headers |
-| `3097476b` | Preserve primary state across qualified named-field emissions |
+| Commit     | Reviewable slice                                                  |
+| ---------- | ----------------------------------------------------------------- |
+| `09e67c0d` | Qualify exact ordinary record primary scope/slot headers          |
+| `3097476b` | Preserve primary state across qualified named-field emissions     |
 | `27c60088` | Qualify original scalar Projection sources and independent stages |
-| `bb2a1814` | Publish saved primary values at original Projection ports |
-| `5c6e4f25` | Verify adversarial histories and exact atomic shared limits |
+| `bb2a1814` | Publish saved primary values at original Projection ports         |
+| `5c6e4f25` | Verify adversarial histories and exact atomic shared limits       |
 
 All 21 new structural regressions and 3763 library tests pass, including the original
 1000-matcher case without budget changes (`/tmp/meowy-primary-boundaries-library.log`).
@@ -6037,12 +6037,12 @@ ordinary copies and call arguments preserve saved histories. Call results remain
 full declared domains. Missing sources/state/control and incompatible domains remain
 unavailable. Known bottom requires known bottom state; unobserved operations create no fact.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `4a153cde` | Capture exact scalar nullable conversion types from checked HIR |
-| `e6f8fe19` | Retain and validate exact descriptor pairs in coercion reports |
-| `98227ab1` | Qualify independent conversion stages and preserve storage |
-| `0f02cdb8` | Propagate converted values through complete histories |
+| Commit     | Reviewable slice                                                    |
+| ---------- | ------------------------------------------------------------------- |
+| `4a153cde` | Capture exact scalar nullable conversion types from checked HIR     |
+| `e6f8fe19` | Retain and validate exact descriptor pairs in coercion reports      |
+| `98227ab1` | Qualify independent conversion stages and preserve storage          |
+| `0f02cdb8` | Propagate converted values through complete histories               |
 | `99e935ed` | Verify missing/control/type boundaries and exact publication limits |
 
 All 18 new structural regressions and 3742 library tests pass, including the original
@@ -6092,12 +6092,12 @@ origin. Tail writes, nested leaves, copies and call arguments preserve historica
 Missing/opaque inputs, unknown control, incompatible domains and restart paths remain
 unavailable. Ordinary local joins and must-initialization are unchanged.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `b3fd1066` | Capture and validate exact scalar body type descriptors |
-| `bed6cbed` | Preserve exact descriptors across block reports |
-| `d76b79c0` | Qualify nullable scope and result-slot headers |
-| `9866e674` | Publish completed nullable scalar block values |
+| Commit     | Reviewable slice                                         |
+| ---------- | -------------------------------------------------------- |
+| `b3fd1066` | Capture and validate exact scalar body type descriptors  |
+| `bed6cbed` | Preserve exact descriptors across block reports          |
+| `d76b79c0` | Qualify nullable scope and result-slot headers           |
+| `9866e674` | Publish completed nullable scalar block values           |
 | `8ac7ad78` | Verify missing/control/type boundaries and exact budgets |
 
 All 17 new structural regressions and 3724 library tests pass, including the original
@@ -6211,11 +6211,11 @@ without inventing version identity. Dependent/unknown guard and call histories r
 This is internal scalar propagation, not proof evaluation or termination proof. Missing
 metadata, unproved stopped calls, opaque partial slots and restart cycles retain their boundaries.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `4af94c1a` | Qualify complete body endpoints and preserve entry control |
-| `f5653fd3` | Derive bounded absence from original continuation edges |
-| `2ae59295` | Integrate nested/stopped evidence into scalar snapshots |
+| Commit     | Reviewable slice                                                   |
+| ---------- | ------------------------------------------------------------------ |
+| `4af94c1a` | Qualify complete body endpoints and preserve entry control         |
+| `f5653fd3` | Derive bounded absence from original continuation edges            |
+| `2ae59295` | Integrate nested/stopped evidence into scalar snapshots            |
 | `30816630` | Verify unknown sources, restart cycles, identity and exact budgets |
 
 All 13 new structural regressions, 331 scalar-fact tests and 3697 library tests pass.
@@ -6263,11 +6263,11 @@ types and literal work. Grouped/negated boolean operands, other names, strings a
 expressions remain invalid syntax operands (E207); wrong arity is E212. Boolean results cannot
 be used as integer capacities. Existing capability and proof-outcome gates remain separate.
 
-| Commit | Reviewable slice |
-| --- | --- |
+| Commit     | Reviewable slice                                                                 |
+| ---------- | -------------------------------------------------------------------------------- |
 | `1bbc1a18` | Add boolean syntax expansion, context integration and checker/native regressions |
-| `cde3e0e8` | Specify the core contract and three required conformance cases |
-| `08bd73b1` | Align syntax/required references and compiler guides |
+| `cde3e0e8` | Specify the core contract and three required conformance cases                   |
+| `08bd73b1` | Align syntax/required references and compiler guides                             |
 
 All four new checker tests, 9 literal tests, 196 required-evaluation tests and 22 list-probe
 tests pass. Both numeric/boolean native cases and all three new conformance cases pass in
@@ -6357,28 +6357,28 @@ The dependency-ordered plan separated syntax admission, bits runtime/required
 integration, bounded fixture migration, uniform predicates/operator retirement,
 and parser cleanup. Reviewed commits:
 
-| Slice | Commit |
-| --- | --- |
-| Vim explicit ascription highlighting | `f58c1ce` |
-| Lexically resolved bit functions | `e669908` |
-| Ascription and predicate contract | `c7045e7` |
-| Bits-module documentation | `92d9f61` |
-| Required integer evidence for bit functions | `5b224dd` |
+| Slice                                             | Commit    |
+| ------------------------------------------------- | --------- |
+| Vim explicit ascription highlighting              | `f58c1ce` |
+| Lexically resolved bit functions                  | `e669908` |
+| Ascription and predicate contract                 | `c7045e7` |
+| Bits-module documentation                         | `92d9f61` |
+| Required integer evidence for bit functions       | `5b224dd` |
 | Explicit proven ascription parser and regressions | `020568c` |
-| Ascription teaching guides | `e889dad` |
-| Contextual list inference for bit functions | `540cff9` |
-| Documented ascription examples | `70e02e6` |
-| Checker ascription fixtures | `129cdd6` |
-| Ownership ascription fixtures | `b93f443` |
-| Loan ascription fixtures | `6209ee5` |
-| Native scalar/type ascription fixtures | `e91293e` |
-| Native loan/slot ascription fixtures | `128fbd7` |
-| Native restart/header ascriptions | `dad0bf9` |
-| Native reference-return ascriptions | `5451e23` |
-| Integer checker bit-function fixtures | `c1a12b4` |
-| Native integer bit-function fixtures | `5ce0eb3` |
-| Context-independent type predicates | `5d07043` |
-| Retired bitwise operator syntax | `a85adf1` |
+| Ascription teaching guides                        | `e889dad` |
+| Contextual list inference for bit functions       | `540cff9` |
+| Documented ascription examples                    | `70e02e6` |
+| Checker ascription fixtures                       | `129cdd6` |
+| Ownership ascription fixtures                     | `b93f443` |
+| Loan ascription fixtures                          | `6209ee5` |
+| Native scalar/type ascription fixtures            | `e91293e` |
+| Native loan/slot ascription fixtures              | `128fbd7` |
+| Native restart/header ascriptions                 | `dad0bf9` |
+| Native reference-return ascriptions               | `5451e23` |
+| Integer checker bit-function fixtures             | `c1a12b4` |
+| Native integer bit-function fixtures              | `5ce0eb3` |
+| Context-independent type predicates               | `5d07043` |
+| Retired bitwise operator syntax                   | `a85adf1` |
 
 The final cleanup commit removes obsolete parser mode parameters and records this
 handoff. All 12 checks in `python3 -B tools/verify.py --compiler --editor both`

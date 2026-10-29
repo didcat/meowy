@@ -262,8 +262,8 @@ aliases use the same rules; unrelated or shadowed types named `Type` remain ordi
 data types. Existing unannotated identity and runtime data bindings are unchanged.
 
 Runtime branch reachability does not defer a metatype initializer: the compiler checks
-it even in a statically unreachable runtime arm. A skipped branch *inside required
-evaluation* still skips its initializer under the existing matcher rules. Initializer
+it even in a statically unreachable runtime arm. A skipped branch _inside required
+evaluation_ still skips its initializer under the existing matcher rules. Initializer
 errors preserve their original source spans, and known forbidden effects remain E219.
 
 The binding's name follows ordinary lexical scope. It is not implicitly exported and
@@ -1531,11 +1531,11 @@ use does not grant runtime access.
 
 One outer type-value resolution shares these bootstrap bounds with nested resolutions:
 
-| Bound | Maximum |
-| --- | --- |
-| Resolver/scalar-validation expressions and block-statement visits | 4096 |
-| Active resolver depth | 64 |
-| Concrete type nodes traversed across resolved values/local aliases | 16384 |
+| Bound                                                              | Maximum |
+| ------------------------------------------------------------------ | ------- |
+| Resolver/scalar-validation expressions and block-statement visits  | 4096    |
+| Active resolver depth                                              | 64      |
+| Concrete type nodes traversed across resolved values/local aliases | 16384   |
 
 Exhaustion reports B001. Nested blocks share the counters; independent roots reset
 them. Existing parser, type/layout and proof limits still apply. These limits qualify

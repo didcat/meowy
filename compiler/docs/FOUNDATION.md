@@ -3260,11 +3260,11 @@ Foundation types now belong to the HIR type system. They remain distinct from
 records with similar fields and from each other. Normal union construction,
 retagging, storage and direct calls preserve the full nominal type.
 
-| Type | Private LLVM payload | Size/alignment | Copy | Destruction |
-| --- | --- | --- | --- | --- |
-| memory.Allocator | ptr | 8/8 | Yes | No |
-| memory.AllocationFailure | {i32, i64, i64} | 24/8 | Yes | No |
-| strings.Owned | {ptr, ptr, i64} | 24/8 | No | Required; source storage is gated |
+| Type                     | Private LLVM payload | Size/alignment | Copy | Destruction                       |
+| ------------------------ | -------------------- | -------------- | ---- | --------------------------------- |
+| memory.Allocator         | ptr                  | 8/8            | Yes  | No                                |
+| memory.AllocationFailure | {i32, i64, i64}      | 24/8           | Yes  | No                                |
+| strings.Owned            | {ptr, ptr, i64}      | 24/8           | No   | Required; source storage is gated |
 
 These are pinned bootstrap layouts, not public FFI layouts. The string layout
 matches the [private descriptor](../../runtime/STRINGS.md); failure facts retain

@@ -225,7 +225,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `value.&name`, `value.&!name`                 | Shared or exclusive borrow of the selected field                 |
 | `value.*name`                                 | Dereference the selected field                                   |
 | `value.(f)`                                   | Call `f` with `value` as its first argument                      |
-| `value.{ ... }`                               | Evaluate block with `$` bound to `value`                      |
+| `value.{ ... }`                               | Evaluate block with `$` bound to `value`                         |
 | `\| condition \| statement`                   | Conditional matcher arm                                          |
 | `'scope { ... }`                              | Named, immediately evaluated block                               |
 | `'scope -> value`                             | Primary emission into a named enclosing block                    |
@@ -235,7 +235,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `\| value <T> \| statement`                   | Type predicate in a matcher condition                            |
 | `value<>`                                     | Compile-time type query                                          |
 | `value<T>`                                    | Boolean type predicate in any expression                         |
-| `value~<T>`                                   | Proven type ascription; no conversion                             |
+| `value~<T>`                                   | Proven type ascription; no conversion                            |
 | `name <(expression)> : value`                 | Binding annotated by a computed type                             |
 | `@"name"`                                     | Module import                                                    |
 | `&value`, `&!value`                           | Shared or exclusive borrow                                       |
@@ -244,7 +244,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `>> expression`, `<< task`                    | Start or join a task                                             |
 | `%group<T[N]>`                                | Declare a bounded task group                                     |
 | `%group >> expression`                        | Submit a task to a group                                         |
-| `<< %group`                                  | Seal and join a group, consuming its result storage               |
+| `<< %group`                                   | Seal and join a group, consuming its result storage              |
 | `!{ ... }`                                    | Block permitting operations with caller-proven safety conditions |
 | `(x <T>) !{ ... }`                            | Function whose callers must establish those conditions           |
 | `<:T : memory.Copy>`                          | Generic type binder constrained by a capability value            |
@@ -297,14 +297,14 @@ Generic type arguments remain inside the target type: `obj~<D<S, K, T, V>>`.
 `obj~<S, K, T, V>` does not name one target type and is invalid. Generic function
 calls retain `f<S, K, T, V>(args)`; `value<>` retains its type-query meaning.
 
-| Form                                   | Interpretation                                  |
-| -------------------------------------- | ----------------------------------------------- |
-| `\| value <T> \| use(value)`           | Test `value` and refine it in the arm            |
-| `matches : value<T>`                    | Store the boolean test result                   |
-| `accepts(value<T>)`                     | Pass the boolean test result                    |
-| `accepts(value~<T>)`                    | Pass the proven ascribed value                  |
-| `\| accepts<T>(value) \| use(value)`   | Call a specialized boolean function             |
-| `copy : value ~ <T>`                    | Ascribe, with optional spaces                   |
+| Form                                 | Interpretation                        |
+| ------------------------------------ | ------------------------------------- |
+| `\| value <T> \| use(value)`         | Test `value` and refine it in the arm |
+| `matches : value<T>`                 | Store the boolean test result         |
+| `accepts(value<T>)`                  | Pass the boolean test result          |
+| `accepts(value~<T>)`                 | Pass the proven ascribed value        |
+| `\| accepts<T>(value) \| use(value)` | Call a specialized boolean function   |
+| `copy : value ~ <T>`                 | Ascribe, with optional spaces         |
 
 A nullable boolean makes the distinction useful:
 
@@ -350,7 +350,7 @@ From highest to lowest precedence:
 | ----- | ------------------------------------------------------------------------------------ |
 | 1     | Prefix borrow `&`, `&!` and dereference `*`                                          |
 | 2     | Calls, field selection/borrow/dereference, indexing, dispatch, type query/ascription |
-| 3     | Unary `!`, `-`, task start `>>`, join `<<`                                      |
+| 3     | Unary `!`, `-`, task start `>>`, join `<<`                                           |
 | 4     | `*`, `/`, `%`                                                                        |
 | 5     | `+`, `-`                                                                             |
 | 6     | `<`, `<=`, `>`, `>=`, type predicates                                                |

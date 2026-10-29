@@ -8,28 +8,28 @@ remain unchanged. All migration stages completed on 2026-09-09;
 
 ## Grammar
 
-| Expression | Structure and intent |
-| --- | --- |
-| `&object.field` | `(&object).field`: borrow the receiver, then select |
-| `object.&field` | `&(object.field)`: borrow the selected field |
-| `object.&!field` | `&!(object.field)`: exclusively borrow the selected field |
-| `&items[i]` | `(&items)[i]`: borrow the collection, then index |
-| `&(items[i])` | Borrow the selected element |
-| `object.inner.&field` | Borrow the nested field |
-| `object.&inner.field` | Borrow inner, then select field through that reference |
-| `object.&items[i]` | Borrow items, then index; element borrowing requires grouping |
-| `*pointer.field` | `(*pointer).field`: dereference the receiver, then select |
-| `object.*field` | `*(object.field)`: dereference the selected reference field |
-| `*items[i]` | `(*items)[i]`: dereference the receiver, then index |
-| `*(items[i])` | Dereference the selected reference element, subject to supported types |
-| `*f()` | `(*f)()`: call the dereferenced value, subject to callable support |
-| `*(f())` | Dereference the call result |
-| `&f()` | `(&f)()`: call the borrowed value, subject to callable support |
-| `&(f())` | Borrow the call result, subject to temporary lifetime rules |
-| `&value<>` | Query the reference's type |
-| `&value~<T>` | Ascribe the resulting reference, using an explicit type target |
-| `&object.&!field` | `(&object).&!field`; exclusive access through a shared receiver stays restricted |
-| `&(object.&!field)` | Borrow the produced exclusive reference; existing nested-reference gates apply |
+| Expression            | Structure and intent                                                             |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `&object.field`       | `(&object).field`: borrow the receiver, then select                              |
+| `object.&field`       | `&(object.field)`: borrow the selected field                                     |
+| `object.&!field`      | `&!(object.field)`: exclusively borrow the selected field                        |
+| `&items[i]`           | `(&items)[i]`: borrow the collection, then index                                 |
+| `&(items[i])`         | Borrow the selected element                                                      |
+| `object.inner.&field` | Borrow the nested field                                                          |
+| `object.&inner.field` | Borrow inner, then select field through that reference                           |
+| `object.&items[i]`    | Borrow items, then index; element borrowing requires grouping                    |
+| `*pointer.field`      | `(*pointer).field`: dereference the receiver, then select                        |
+| `object.*field`       | `*(object.field)`: dereference the selected reference field                      |
+| `*items[i]`           | `(*items)[i]`: dereference the receiver, then index                              |
+| `*(items[i])`         | Dereference the selected reference element, subject to supported types           |
+| `*f()`                | `(*f)()`: call the dereferenced value, subject to callable support               |
+| `*(f())`              | Dereference the call result                                                      |
+| `&f()`                | `(&f)()`: call the borrowed value, subject to callable support                   |
+| `&(f())`              | Borrow the call result, subject to temporary lifetime rules                      |
+| `&value<>`            | Query the reference's type                                                       |
+| `&value~<T>`          | Ascribe the resulting reference, using an explicit type target                   |
+| `&object.&!field`     | `(&object).&!field`; exclusive access through a shared receiver stays restricted |
+| `&(object.&!field)`   | Borrow the produced exclusive reference; existing nested-reference gates apply   |
 
 Prefix `&`, `&!` and `*` consume a prefix operand before subsequent postfix operations.
 That boundary applies through nested prefix operators: `&*pointer.field` groups as
